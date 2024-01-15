@@ -41,7 +41,10 @@ import com.akshay.weatherapp.R
  * - MAY Include up to 2 actions.
  * [Reference](https://developers.google.com/cars/design/create-apps/apps-for-drivers/templates/long-message-template)
  */
-class LongMessageTemplateExample(carContext: CarContext) : Screen(carContext) {
+class LongMessageTemplateExample(
+    carContext: CarContext,
+    private val title: String = carContext.getString(R.string.privacy_policy)
+) : Screen(carContext) {
     override fun onGetTemplate(): Template {
         if (carContext.carAppApiLevel < CarAppApiLevels.LEVEL_2) {
             return MessageTemplate.Builder(
@@ -65,7 +68,7 @@ class LongMessageTemplateExample(carContext: CarContext) : Screen(carContext) {
         return LongMessageTemplate.Builder(
             carContext.getString(R.string.long_message)
         )
-            .setTitle(carContext.getString(R.string.privacy_policy))
+            .setTitle(title)
             .setHeaderAction(BACK)
             .addAction(primaryActionBuilder.build())
             .addAction(

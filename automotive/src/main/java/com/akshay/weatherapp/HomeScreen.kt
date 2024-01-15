@@ -20,7 +20,7 @@ import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.PANE_TEMPLATE
-import com.akshay.weatherapp.common.Constants.Companion.SEARCH
+import com.akshay.weatherapp.common.Constants.Companion.SEARCH_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SIGN_IN_TEMPLATE
 import com.akshay.weatherapp.common.Utility.Companion.requestPermission
 import com.akshay.weatherapp.common.Utility.Companion.showToast
@@ -86,7 +86,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
             addItem(createWeatherRow(PANE_TEMPLATE))
             addItem(createWeatherRow(MAP_TEMPLATE))
             addItem(createWeatherRow(NAVIGATION_TEMPLATE))
-            addItem(createWeatherRow(SEARCH))
+            addItem(createWeatherRow(SEARCH_TEMPLATE))
             addItem(createWeatherRow(SIGN_IN_TEMPLATE))
         }
         return ListTemplate.Builder()
@@ -115,7 +115,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
                     PANE_TEMPLATE -> screenManager.push(PaneTemplateExample(carContext))
                     MAP_TEMPLATE -> screenManager.push(MapTemplateExample(carContext))
                     NAVIGATION_TEMPLATE -> screenManager.push(NavigationTemplateExample(carContext))
-                    SEARCH -> screenManager.push(SearchTemplateExample(carContext))
+                    SEARCH_TEMPLATE -> screenManager.push(SearchTemplateExample(carContext))
                     SIGN_IN_TEMPLATE -> screenManager.push(SignInTemplateExample(carContext))
                 }
             }

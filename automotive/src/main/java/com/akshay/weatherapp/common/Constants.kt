@@ -33,7 +33,6 @@ class Constants {
         const val CREDIT_CARD = "Credit Card Accepted"
         const val MOBILE_PAYMENT = "Mobile Payment Supported"
         const val CASH = "Cash Accepted"
-        const val HOME_SCREEN = "Home Screen"
         const val LIST_TEMPLATE = "List Template"
         const val GRID_TEMPLATE = "Grid Template"
         const val PANE_TEMPLATE = "Pane Template"
@@ -44,5 +43,14 @@ class Constants {
         const val SIGN_IN_TEMPLATE = "Sign-In Template"
         const val SEARCH_TEMPLATE = "Search Template"
         const val PACKAGE_PREFIX = "androidx.car.app"
+        const val DUMMY_LOGIN_URL = "https://practicetestautomation.com/practice-test-login/"
+
+        enum class SignInState {
+            EMAIL,
+            PASSWORD,
+            PIN,
+            OR_CODE,
+            SUCCESS
+        }
     }
 }

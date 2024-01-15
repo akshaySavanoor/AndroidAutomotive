@@ -11,6 +11,7 @@ import androidx.car.app.CarAppPermission
 import androidx.car.app.CarContext
 import androidx.car.app.CarToast
 import androidx.car.app.model.CarColor
+import androidx.car.app.model.ClickableSpan
 import androidx.car.app.model.ForegroundCarColorSpan
 import androidx.core.net.toUri
 import com.akshay.weatherapp.R
@@ -80,7 +81,10 @@ class Utility {
             return isConnected
         }
 
-        fun requestPermission(carContext: CarContext, permissionCallback: (List<String>, List<String>) -> Unit) {
+        fun requestPermission(
+            carContext: CarContext,
+            permissionCallback: (List<String>, List<String>) -> Unit
+        ) {
             val permissions = ArrayList<String>()
             val declaredPermissions: Array<String>
 
@@ -117,6 +121,66 @@ class Utility {
             if (!carContext.packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
                 showToast(carContext, carContext.getString(R.string.phone_screen_permission_msg))
             }
+        }
+
+        fun clickable(
+            s: String,
+            startingIndexOfFirstText: Int,
+            endingIndexOfFirstText: Int,
+            startingIndexOfSecondText: Int,
+            endingIndexOfSecondText: Int,
+            action1: Runnable,
+            action2: Runnable
+        ): CharSequence {
+            val ss = SpannableString(s)
+            ss.setSpan(
+                ClickableSpan.create { action1.run() },
+                startingIndexOfFirstText,
+                startingIndexOfFirstText + endingIndexOfFirstText,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            ss.setSpan(
+                ClickableSpan.create { action2.run() },
+                startingIndexOfSecondText,
+                startingIndexOfSecondText + endingIndexOfSecondText,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            return ss
+        }
+
+        fun validateEmail(carContext: CarContext, email: String): String? {
+            val emailRegex = Regex("""^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$""")
+
+            return when {
+                email.isBlank() -> carContext.getString(R.string.error_email_empty)
+                email.length < 7 -> carContext.getString(R.string.error_email_too_short)
+                !emailRegex.matches(email) -> carContext.getString(R.string.error_invalid_email_format)
+                else -> null
+            }
+        }
+
+        fun validatePassword(carContext: CarContext, password: String): String? {
+            val digitRegex = Regex(".*\\d.*")
+            val specialCharRegex = Regex(".*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")
+            val upperCaseRegex = Regex(".*[A-Z].*")
+            val lowerCaseRegex = Regex(".*[a-z].*")
+
+            return when {
+                password.isBlank() -> carContext.getString(R.string.error_password_empty)
+                password.length < 8 || password.length > 14 -> carContext.getString(R.string.error_password_length)
+                !digitRegex.matches(password) -> carContext.getString(R.string.error_password_digit)
+                !specialCharRegex.matches(password) -> carContext.getString(R.string.error_password_special_char)
+                !upperCaseRegex.matches(password) -> carContext.getString(R.string.error_password_uppercase)
+                !lowerCaseRegex.matches(password) -> carContext.getString(R.string.error_password_lowercase)
+                else -> null
+            }
+        }
+
+        fun generateRandomString(length: Int): String {
+            val chars = ('0'..'9') + ('A'..'Z')
+            return (1..length)
+                .map { chars.random() }
+                .joinToString("")
         }
 
     }

@@ -85,4 +85,27 @@
     <string name="mobile">Mobile</string>
     <string name="exit">Exit</string>
     <string name="permission_already_granted">Permission already granted.</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_instruction">Sign In for Instant Weather Updates</string>
+    <string name="sign_in_additional_text">By signing in, you agree to our Terms of Service. Review our Privacy Policy for more details.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="terms_of_policy">Terms of Policy</string>
+    <string name="pin_sign_in_instruction">Enter this PIN on your phone</string>
+    <string name="qr_code_sign_in_title">Sign in by scanning the QR Code</string>
+    <string name="error_email_empty">Email cannot be empty.</string>
+    <string name="error_email_too_short">Email is too short.</string>
+    <string name="error_invalid_email_format">Invalid email format. Please include "@".</string>
+    <string name="error_password_empty">Password cannot be empty.</string>
+    <string name="error_password_length">Password should be between 8 and 14 characters.</string>
+    <string name="error_password_digit">Password should contain at least one digit.</string>
+    <string name="error_password_special_char">Password should contain at least one special character.</string>
+    <string name="error_password_uppercase">Password should contain at least one uppercase letter.</string>
+    <string name="error_password_lowercase">Password should contain at least one lowercase letter.</string>
+    <string name="use_pin">Use PIN</string>
+    <string name="use_qr_code">Use QR Code</string>
+    <string name="use_email">Sign in using email</string>
+    <string name="login_successful">Login successful</string>
+    <string name="go_to_home">Go to home</string>
+
 </resources>
