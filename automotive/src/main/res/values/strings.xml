@@ -83,4 +83,6 @@
     <string name="request_permission_msg">Grant the necessary permissions for optimal app functionality</string>
     <string name="permission_cancelled">Permission request cancelled</string>
     <string name="mobile">Mobile</string>
+    <string name="exit">Exit</string>
+    <string name="permission_already_granted">Permission already granted.</string>
 </resources>

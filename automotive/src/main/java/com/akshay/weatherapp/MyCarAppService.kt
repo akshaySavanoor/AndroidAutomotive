@@ -6,7 +6,6 @@ import androidx.car.app.CarAppService
 import androidx.car.app.Screen
 import androidx.car.app.Session
 import androidx.car.app.validation.HostValidator
-import com.akshay.weatherapp.ui.RequestPermissionScreen
 
 /**
  * The CarAppService validates that a host connection can be trusted and henceforth be used to provide session instances.
@@ -40,7 +39,7 @@ class MyCarAppService : CarAppService() {
  */
 class WeatherAppSession : Session() {
     override fun onCreateScreen(intent: Intent): Screen {
-        return RequestPermissionScreen(carContext)
+        return HomeScreen(carContext)
     }
 }
 

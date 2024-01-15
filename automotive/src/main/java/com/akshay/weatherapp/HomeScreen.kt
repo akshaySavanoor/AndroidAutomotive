@@ -1,22 +1,18 @@
 package com.akshay.weatherapp
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
+import androidx.car.app.model.Action
+import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
-import com.akshay.weatherapp.templates.GridTemplateExample
-import com.akshay.weatherapp.templates.ListTemplateExample
-import com.akshay.weatherapp.templates.LongMessageTemplateExample
-import com.akshay.weatherapp.templates.MapTemplateExample
-import com.akshay.weatherapp.templates.MessageTemplateExample
-import com.akshay.weatherapp.templates.NavigationTemplateExample
-import com.akshay.weatherapp.templates.PaneTemplateExample
-import com.akshay.weatherapp.templates.SearchTemplateExample
-import com.akshay.weatherapp.templates.SignInTemplateExample
+import androidx.core.content.ContextCompat
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LONG_MESSAGE_TEMPLATE
@@ -26,13 +22,61 @@ import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.PANE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH
 import com.akshay.weatherapp.common.Constants.Companion.SIGN_IN_TEMPLATE
+import com.akshay.weatherapp.common.Utility.Companion.requestPermission
+import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.templates.GridTemplateExample
+import com.akshay.weatherapp.templates.ListTemplateExample
+import com.akshay.weatherapp.templates.LongMessageTemplateExample
+import com.akshay.weatherapp.templates.MapTemplateExample
+import com.akshay.weatherapp.templates.MessageTemplateExample
+import com.akshay.weatherapp.templates.NavigationTemplateExample
+import com.akshay.weatherapp.templates.PaneTemplateExample
+import com.akshay.weatherapp.templates.SearchTemplateExample
+import com.akshay.weatherapp.templates.SignInTemplateExample
 
 class HomeScreen(carContext: CarContext) : Screen(carContext) {
+
+    private var hasPermissionLocation: Boolean = false
+    private var requestedPermission = false
     private val itemListBuilder = ItemList.Builder()
         .setNoItemsMessage(carContext.getString(R.string.no_data_found))
 
+    private fun checkPermission() {
+        hasPermissionLocation =
+            ContextCompat.checkSelfPermission(
+                carContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) ==
+                    PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        carContext,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) ==
+                    PackageManager.PERMISSION_GRANTED
+
+        if (!hasPermissionLocation && !requestedPermission) {
+            requestedPermission = true
+            requestPermission(carContext) { approved, rejected ->
+                if (approved.isNotEmpty()) {
+                    showToast(carContext, carContext.getString(R.string.approved))
+
+                } else if (rejected.isNotEmpty()) {
+                    showToast(carContext, carContext.getString(R.string.rejected))
+                }
+            }
+        }
+    }
+
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
+        checkPermission()
+
+        val exitAction = Action.Builder()
+            .setTitle(carContext.getString(R.string.exit))
+            .setOnClickListener {
+                carContext.finishCarApp()
+            }
+            .build()
         itemListBuilder.apply {
             clearItems()
             addItem(createWeatherRow(LIST_TEMPLATE))
@@ -47,6 +91,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
         }
         return ListTemplate.Builder()
             .setTitle(carContext.getString(R.string.templates))
+            .setActionStrip(ActionStrip.Builder().addAction(exitAction).build())
             .setSingleList(itemListBuilder.build())
             .build()
     }

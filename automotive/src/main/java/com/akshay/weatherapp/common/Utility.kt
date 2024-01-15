@@ -2,10 +2,12 @@ package com.akshay.weatherapp.common
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.text.Spannable
 import android.text.SpannableString
+import androidx.car.app.CarAppPermission
 import androidx.car.app.CarContext
 import androidx.car.app.CarToast
 import androidx.car.app.model.CarColor
@@ -77,5 +79,45 @@ class Utility {
 
             return isConnected
         }
+
+        fun requestPermission(carContext: CarContext, permissionCallback: (List<String>, List<String>) -> Unit) {
+            val permissions = ArrayList<String>()
+            val declaredPermissions: Array<String>
+
+            try {
+                val info = carContext.packageManager.getPackageInfo(
+                    carContext.packageName,
+                    PackageManager.GET_PERMISSIONS
+                )
+                declaredPermissions = info.requestedPermissions ?: emptyArray()
+            } catch (e: PackageManager.NameNotFoundException) {
+                showToast(carContext, carContext.getString(R.string.package_not_found))
+                return
+            }
+
+            for (declaredPermission in declaredPermissions) {
+                // Exclude permissions related to the car app host as they are considered normal
+                // but might appear as ungranted by the system.
+                if (declaredPermission.startsWith(Constants.PACKAGE_PREFIX)) {
+                    continue
+                }
+                try {
+                    CarAppPermission.checkHasPermission(carContext, declaredPermission)
+                } catch (e: SecurityException) {
+                    permissions.add(declaredPermission)
+                }
+            }
+
+            carContext.requestPermissions(
+                permissions.toTypedArray().toMutableList()
+            ) { approved, rejected ->
+                permissionCallback(approved, rejected)
+            }
+
+            if (!carContext.packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
+                showToast(carContext, carContext.getString(R.string.phone_screen_permission_msg))
+            }
+        }
+
     }
 }

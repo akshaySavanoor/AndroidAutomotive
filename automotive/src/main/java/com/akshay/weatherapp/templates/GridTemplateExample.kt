@@ -13,7 +13,6 @@ import androidx.car.app.model.*
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
@@ -23,7 +22,6 @@ import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.service.RetrofitInstance
 import com.akshay.weatherapp.ui.MyLocationListener
-import com.akshay.weatherapp.ui.RequestPermissionScreen
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 import retrofit2.Call
@@ -66,13 +64,36 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private var mIsLoading = true
     private var errorMessage: String? = null
 
-    init {
-        lifecycle.addObserver(this)
+    /**
+     * Represents a grid item with an image and an optional title.
+     *
+     * Note: There is a limit on the number of grid items allowed to be shown, but the limit will not be less than 6 and may be higher in some vehicles.
+     * To retrieve the item limit for a given vehicle refer constraintManager
+     */
+    private fun createGridItem(title: String, icon: IconCompat): GridItem {
+        return GridItem.Builder()
+            .apply {
+                setTitle(title) //set short title to avoid truncation of grid item title
+                setImage(
+                    CarIcon.Builder(icon).build(),
+                    GridItem.IMAGE_TYPE_LARGE
+                ) //Keep large image for reducing driver distraction
+                setOnClickListener {
+                    weatherResponseData?.let {
+                        screenManager.push(WeatherDetailsScreen(carContext, it, title))
+
+                    } ?: run {
+                        Utility.showErrorMessage(
+                            carContext,
+                            carContext.getString(R.string.failed_to_fetch_weather_data)
+                        )
+                    }
+                } // Don't use grid item for showing only information
+            }
+            .build()
     }
 
-    override fun onCreate(owner: LifecycleOwner) {
-        super.onCreate(owner)
-
+    private fun setUpObserversAndCallApi() {
         weatherViewModel.apply {
             weatherData.observe(this@GridTemplateExample) { weatherResponse ->
                 weatherResponseData = weatherResponse
@@ -128,41 +149,23 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 myLocationListener
             )
         } else {
-            screenManager.push(RequestPermissionScreen(carContext, currentScreen = GRID_TEMPLATE))
-        }
-    }
+            Utility.requestPermission(carContext) { approved, rejected ->
+                if (approved.isNotEmpty()) {
+                    Utility.showToast(carContext, carContext.getString(R.string.approved))
+                    invalidate()
 
-    /**
-     * Represents a grid item with an image and an optional title.
-     *
-     * Note: There is a limit on the number of grid items allowed to be shown, but the limit will not be less than 6 and may be higher in some vehicles.
-     * To retrieve the item limit for a given vehicle refer constraintManager
-     */
-    private fun createGridItem(title: String, icon: IconCompat): GridItem {
-        return GridItem.Builder()
-            .apply {
-                setTitle(title) //set short title to avoid truncation of grid item title
-                setImage(
-                    CarIcon.Builder(icon).build(),
-                    GridItem.IMAGE_TYPE_LARGE
-                ) //Keep large image for reducing driver distraction
-                setOnClickListener {
-                    weatherResponseData?.let {
-                        screenManager.push(WeatherDetailsScreen(carContext, it, title))
-
-                    } ?: run {
-                        Utility.showErrorMessage(
-                            carContext,
-                            carContext.getString(R.string.failed_to_fetch_weather_data)
-                        )
-                    }
-                } // Don't use grid item for showing only information
+                } else if (rejected.isNotEmpty()) {
+                    Utility.showToast(carContext, carContext.getString(R.string.rejected))
+                    screenManager.pop()
+                }
             }
-            .build()
+        }
     }
 
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
+        setUpObserversAndCallApi()
+
         val coordinatesIcon = IconCompat.createWithResource(carContext, R.drawable.ic_coordinate)
         val weatherIcon = IconCompat.createWithResource(carContext, R.drawable.ic_weather)
         val temperatureIcon = IconCompat.createWithResource(carContext, R.drawable.ic_temperature)

@@ -20,8 +20,18 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.location.LocationManagerCompat
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Constants.Companion.PACKAGE_PREFIX
 import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.templates.GridTemplateExample
+import com.akshay.weatherapp.templates.ListTemplateExample
+import com.akshay.weatherapp.templates.LongMessageTemplateExample
+import com.akshay.weatherapp.templates.MapTemplateExample
+import com.akshay.weatherapp.templates.MessageTemplateExample
+import com.akshay.weatherapp.templates.NavigationTemplateExample
+import com.akshay.weatherapp.templates.PaneTemplateExample
+import com.akshay.weatherapp.templates.SearchTemplateExample
+import com.akshay.weatherapp.templates.SignInTemplateExample
 
 class RequestPermissionScreen(
     carContext: CarContext,
@@ -74,12 +84,19 @@ class RequestPermissionScreen(
 
         if (permissions.isEmpty()) {
             return MessageTemplate.Builder(
-                carContext.getString(R.string.skip)
+                carContext.getString(R.string.permission_already_granted)
+            ).setIcon(
+                CarIcon.Builder(
+                    IconCompat.createWithResource(
+                        carContext,
+                        R.drawable.ic_route
+                    )
+                ).build()
             )
                 .setHeaderAction(headerAction)
                 .addAction(
                     Action.Builder()
-                        .setTitle(carContext.getString(R.string.closed))
+                        .setTitle(carContext.getString(R.string.ok))
                         .setOnClickListener { finish() }
                         .build()
                 ).build()
@@ -93,6 +110,54 @@ class RequestPermissionScreen(
                     showToast(carContext, carContext.getString(R.string.approved))
                     currentScreen?.let {
                         screenManager.pop()
+                        when (currentScreen) {
+                            Constants.LIST_TEMPLATE -> screenManager.push(
+                                ListTemplateExample(
+                                    carContext
+                                )
+                            )
+
+                            Constants.GRID_TEMPLATE -> screenManager.push(
+                                GridTemplateExample(
+                                    carContext
+                                )
+                            )
+
+                            Constants.MESSAGE_TEMPLATE -> screenManager.push(
+                                MessageTemplateExample(
+                                    carContext
+                                )
+                            )
+
+                            Constants.LONG_MESSAGE_TEMPLATE -> screenManager.push(
+                                LongMessageTemplateExample(
+                                    carContext
+                                )
+                            )
+
+                            Constants.PANE_TEMPLATE -> screenManager.push(
+                                PaneTemplateExample(
+                                    carContext
+                                )
+                            )
+
+                            Constants.MAP_TEMPLATE -> screenManager.push(
+                                MapTemplateExample(
+                                    carContext
+                                )
+                            )
+
+                            Constants.NAVIGATION_TEMPLATE -> screenManager.push(
+                                NavigationTemplateExample(carContext)
+                            )
+
+                            Constants.SEARCH -> screenManager.push(SearchTemplateExample(carContext))
+                            Constants.SIGN_IN_TEMPLATE -> screenManager.push(
+                                SignInTemplateExample(
+                                    carContext
+                                )
+                            )
+                        }
                     } ?: screenManager.push(HomeScreen(carContext))
                 } else if (rejected.isNotEmpty()) {
                     showToast(carContext, carContext.getString(R.string.rejected))

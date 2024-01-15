@@ -19,7 +19,6 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
@@ -29,7 +28,6 @@ import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.service.RetrofitInstance
 import com.akshay.weatherapp.ui.MyLocationListener
 import com.akshay.weatherapp.ui.PlaceDetailsScreen
-import com.akshay.weatherapp.ui.RequestPermissionScreen
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 import retrofit2.Call
 
@@ -53,9 +51,7 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
         lifecycle.addObserver(this)
     }
 
-    override fun onCreate(owner: LifecycleOwner) {
-        super.onCreate(owner)
-
+    private fun setUpObserversAndCallApi() {
         weatherViewModel.apply {
             weatherData.observe(this@NavigationTemplateExample) { weatherResponse ->
                 weatherResponseData = weatherResponse
@@ -111,11 +107,21 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
                 myLocationListener
             )
         } else {
-            screenManager.push(RequestPermissionScreen(carContext, currentScreen = NAVIGATION_TEMPLATE))
+            Utility.requestPermission(carContext) { approved, rejected ->
+                if (approved.isNotEmpty()) {
+                    Utility.showToast(carContext, carContext.getString(R.string.approved))
+                    invalidate()
+
+                } else if (rejected.isNotEmpty()) {
+                    Utility.showToast(carContext, carContext.getString(R.string.rejected))
+                    screenManager.pop()
+                }
+            }
         }
     }
 
     override fun onGetTemplate(): Template {
+        setUpObserversAndCallApi()
 
         val placeDetailRow = Row.Builder()
         weatherResponseData?.let {

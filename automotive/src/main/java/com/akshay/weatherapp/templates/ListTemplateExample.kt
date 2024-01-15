@@ -14,8 +14,6 @@ import androidx.car.app.model.*
 import androidx.car.app.model.CarColor.YELLOW
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
@@ -28,11 +26,11 @@ import com.akshay.weatherapp.common.Constants.Companion.WEATHER_CONDITION
 import com.akshay.weatherapp.common.Constants.Companion.WIND
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.colorize
+import com.akshay.weatherapp.common.Utility.Companion.requestPermission
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.service.RetrofitInstance
 import com.akshay.weatherapp.ui.MyLocationListener
-import com.akshay.weatherapp.ui.RequestPermissionScreen
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 import retrofit2.Call
@@ -68,7 +66,7 @@ import retrofit2.Call
  * For content limit [check](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:car/app/app/src/main/res/values/integers.xml)
  *
  */
-class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
+class ListTemplateExample(carContext: CarContext) : Screen(carContext) {
 
     private val weatherViewModel = WeatherViewModel()
     private var weatherResponseData: WeatherResponse? = null
@@ -82,73 +80,6 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private var mIsLoading = true
     private var errorMessage: String? = null
     private var mIsEnabled = true
-
-    init {
-        lifecycle.addObserver(this)
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
-        super.onCreate(owner)
-
-        weatherViewModel.apply {
-            weatherData.observe(this@ListTemplateExample) { weatherResponse ->
-                weatherResponseData = weatherResponse
-                invalidate()
-            }
-
-            isLoading.observe(this@ListTemplateExample) {
-                mIsLoading = it
-                if (it) {
-                    invalidate()
-                }
-            }
-            mError.observe(this@ListTemplateExample) {
-                errorMessage = it
-                invalidate()
-            }
-        }
-
-        myLocationListener = MyLocationListener { location ->
-            if (location.latitude != currentLocation?.latitude && location.longitude != currentLocation?.longitude) {
-                currentLocation = location
-                call =
-                    RetrofitInstance.weatherApiService.getCurrentWeather(
-                        location.latitude,
-                        location.longitude,
-                        ApiKey.API_KEY
-                    )
-                weatherViewModel.fetchWeatherData(
-                    carContext,
-                    call ?: weatherViewModel.getDefaultCall()
-                )
-            }
-        }
-
-        locationManager = carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        hasPermissionLocation =
-            ContextCompat.checkSelfPermission(
-                carContext,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) ==
-                    PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        carContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) ==
-                    PackageManager.PERMISSION_GRANTED
-
-        if (hasPermissionLocation) {
-            locationManager!!.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                1000L,
-                0f,
-                myLocationListener
-            )
-        } else {
-            screenManager.push(RequestPermissionScreen(carContext, currentScreen = LIST_TEMPLATE))
-        }
-    }
-
 
     /**
      * Adds an extra action to the end of the row using addAction().
@@ -224,6 +155,75 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         return str
     }
 
+    private fun setUpObserversAndCallApi() {
+        weatherViewModel.apply {
+            weatherData.observe(this@ListTemplateExample) { weatherResponse ->
+                weatherResponseData = weatherResponse
+                invalidate()
+            }
+
+            isLoading.observe(this@ListTemplateExample) {
+                mIsLoading = it
+                if (it) {
+                    invalidate()
+                }
+            }
+            mError.observe(this@ListTemplateExample) {
+                errorMessage = it
+                invalidate()
+            }
+        }
+
+        myLocationListener = MyLocationListener { location ->
+            if (location.latitude != currentLocation?.latitude && location.longitude != currentLocation?.longitude) {
+                currentLocation = location
+                call =
+                    RetrofitInstance.weatherApiService.getCurrentWeather(
+                        location.latitude,
+                        location.longitude,
+                        ApiKey.API_KEY
+                    )
+                weatherViewModel.fetchWeatherData(
+                    carContext,
+                    call ?: weatherViewModel.getDefaultCall()
+                )
+            }
+        }
+
+        locationManager = carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        hasPermissionLocation =
+            ContextCompat.checkSelfPermission(
+                carContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) ==
+                    PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        carContext,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) ==
+                    PackageManager.PERMISSION_GRANTED
+
+        if (hasPermissionLocation) {
+            locationManager!!.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                1000L,
+                0f,
+                myLocationListener
+            )
+        } else {
+            requestPermission(carContext) { approved, rejected ->
+                if (approved.isNotEmpty()) {
+                    showToast(carContext, carContext.getString(R.string.approved))
+                    invalidate()
+
+                } else if (rejected.isNotEmpty()) {
+                    showToast(carContext, carContext.getString(R.string.rejected))
+                    screenManager.pop()
+                }
+            }
+        }
+    }
+
     /**
      * setOnSelectedListener{} adds a radio button to each list item.
      * CAUTION: When using setOnSelectedListener{}, toggling is not allowed.
@@ -231,6 +231,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      */
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
+        setUpObserversAndCallApi()
 //        if (carContext.carAppApiLevel > CarAppApiLevels.LEVEL_1) {
 //            val listLimit = Integer.min(
 //                Constants.MAX_LIST_ITEMS,
