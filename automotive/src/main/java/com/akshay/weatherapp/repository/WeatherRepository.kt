@@ -68,7 +68,6 @@ class WeatherRepository {
 
     fun fetchWeatherData(carContext: CarContext, call: Call<WeatherResponse>) {
         if (!Utility.isDeviceOnLine(carContext)) {
-            println("no network")
             mError.value = carContext.getString(R.string.no_internet)
             isLoading.value = false
             return
