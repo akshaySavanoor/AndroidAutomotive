@@ -95,3 +95,15 @@ cd AndroidAutomotive
 
 run
 ```
+
+## IMPORTANT: Setting up API Keys
+
+To configure your application, create a directory named `app_secrets` and within it, add a file named `ApiKey` with the following content:
+
+```kotlin
+object ApiKey {
+    const val API_KEY = "31xxxxxxxxxxxxxxxxxxxxxxb0"
+    const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+}
+```
+
