@@ -31,6 +31,38 @@ import com.akshay.weatherapp.ui.PlaceDetailsScreen
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 import retrofit2.Call
 
+/**
+ * The Place List template is designed for navigation apps and presents an ordered list
+ * of locations overlaid on a full-screen map drawn by the app. This template is distinct
+ * from the Place List (map) variant tailored for navigation apps.
+ *
+ * Includes:
+ * - Header (in card) with an optional refresh button for users to request a list update
+ *   (Note: Refresh button action does not contribute to step count).
+ * - Action strip (optional).
+ * - Base map (full-screen, not drawn by apps).
+ * - Optional map action strip with up to 4 buttons for map interactivity.
+ * - List rows within defined limits.
+ * - Markers linking list items with map locations.
+ *
+ * Place List (navigation) template UX requirements for app developers:
+ *
+ * MUST:
+ * - Show duration or distance for each list item (except for container items).
+ * - Associate an action with each list row; information-only rows are not allowed.
+ *
+ * SHOULD:
+ * - Include at least one location or browsable (container).
+ * - Include only information relevant to app capabilities, avoiding unrelated data like
+ *   "favorite friends."
+ * - Limit locations to those that are closest or most relevant.
+ * - Show a corresponding marker on the map for each location on the list.
+ * - Use a font size of at least 24dp Roboto or an equivalent for map markers.
+ * - Consider supporting content refresh for the list when supporting map interactions.
+ *
+ * Developers are encouraged to adhere to these guidelines to ensure a consistent and
+ * user-friendly experience within the Place List (navigation) template.
+ */
 
 class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
     DefaultLifecycleObserver {
@@ -53,10 +85,6 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
 
     private fun setUpObserversAndCallApi() {
         weatherViewModel.apply {
-            weatherData.observe(this@NavigationTemplateExample) { weatherResponse ->
-                weatherResponseData = weatherResponse
-                invalidate()
-            }
 
             isLoading.observe(this@NavigationTemplateExample) {
                 mIsLoading = it
@@ -68,6 +96,14 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
                 errorMessage = it
                 invalidate()
             }
+
+            weatherData.observe(this@NavigationTemplateExample) { weatherResponse ->
+                weatherResponseData = weatherResponse
+                errorMessage = null
+                mIsLoading = false
+                invalidate()
+            }
+
         }
 
         myLocationListener = MyLocationListener { location ->
@@ -163,7 +199,6 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
                     carContext,
                     call ?: weatherViewModel.getDefaultCall()
                 )
-                mIsLoading = true
                 invalidate()
             }.build()
 

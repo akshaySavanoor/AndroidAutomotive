@@ -68,8 +68,9 @@ class WeatherRepository {
 
     fun fetchWeatherData(carContext: CarContext, call: Call<WeatherResponse>) {
         if (!Utility.isDeviceOnLine(carContext)) {
-            isLoading.value = false
+            println("no network")
             mError.value = carContext.getString(R.string.no_internet)
+            isLoading.value = false
             return
         }
 
@@ -79,7 +80,6 @@ class WeatherRepository {
                 call: Call<WeatherResponse>,
                 response: Response<WeatherResponse>
             ) {
-                isLoading.value = false
                 try {
                     if (response.isSuccessful) {
                         if (response.body() == null) {
@@ -98,6 +98,8 @@ class WeatherRepository {
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mError.value = carContext.getString(R.string.something_went_wrong)
+                } finally {
+                    isLoading.value = false
                 }
             }
 

@@ -14,6 +14,7 @@ import androidx.car.app.model.*
 import androidx.car.app.model.CarColor.YELLOW
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
+import androidx.lifecycle.DefaultLifecycleObserver
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
@@ -66,7 +67,7 @@ import retrofit2.Call
  * For content limit [check](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:car/app/app/src/main/res/values/integers.xml)
  *
  */
-class ListTemplateExample(carContext: CarContext) : Screen(carContext) {
+class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
 
     private val weatherViewModel = WeatherViewModel()
     private var weatherResponseData: WeatherResponse? = null
@@ -157,11 +158,6 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext) {
 
     private fun setUpObserversAndCallApi() {
         weatherViewModel.apply {
-            weatherData.observe(this@ListTemplateExample) { weatherResponse ->
-                weatherResponseData = weatherResponse
-                invalidate()
-            }
-
             isLoading.observe(this@ListTemplateExample) {
                 mIsLoading = it
                 if (it) {
@@ -170,6 +166,12 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext) {
             }
             mError.observe(this@ListTemplateExample) {
                 errorMessage = it
+                invalidate()
+            }
+            weatherData.observe(this@ListTemplateExample) { weatherResponse ->
+                weatherResponseData = weatherResponse
+                mIsLoading = false
+                errorMessage = null
                 invalidate()
             }
         }
@@ -334,7 +336,6 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext) {
                     carContext,
                     call ?: weatherViewModel.getDefaultCall()
                 )
-                mIsLoading = true
                 invalidate()
             }.build()
 

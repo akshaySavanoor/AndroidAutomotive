@@ -95,10 +95,6 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
     private fun setUpObserversAndCallApi() {
         weatherViewModel.apply {
-            weatherData.observe(this@GridTemplateExample) { weatherResponse ->
-                weatherResponseData = weatherResponse
-                invalidate()
-            }
 
             isLoading.observe(this@GridTemplateExample) {
                 mIsLoading = it
@@ -106,10 +102,19 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     invalidate()
                 }
             }
+
             mError.observe(this@GridTemplateExample) {
                 errorMessage = it
                 invalidate()
             }
+
+            weatherData.observe(this@GridTemplateExample) { weatherResponse ->
+                weatherResponseData = weatherResponse
+                errorMessage = null
+                mIsLoading = false
+                invalidate()
+            }
+
         }
 
         myLocationListener = MyLocationListener { location ->
@@ -214,7 +219,6 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     carContext,
                     call ?: weatherViewModel.getDefaultCall()
                 )
-                mIsLoading = true
                 invalidate()
             }.build()
 
