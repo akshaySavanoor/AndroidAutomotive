@@ -4,13 +4,14 @@ A comprehensive guide to working with Android Automotive templates, highlighting
 limitations, and best practices.
 
 Before diving into the project, it is strongly recommended to thoroughly review this
-documentation `https://akshay-2.gitbook.io/untitled/`
+documentation [Gitbook](https://akshay-2.gitbook.io/untitled/)
 
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
 - [Templates Overview](automotive/src/main/java/com/akshay/weatherapp/HomeScreen.kt)
     - [Grid Template](automotive/src/main/java/com/akshay/weatherapp/templates/GridTemplateExample.kt)
     - [List Template](automotive/src/main/java/com/akshay/weatherapp/templates/ListTemplateExample.kt)
@@ -83,3 +84,14 @@ Before getting started with this project, ensure that you have the following pre
 - **Basic Knowledge of Templates:** A basic understanding of working with templates in Android
   development, including how to integrate and customize them for your project.
 
+## Installation
+
+**Clone the repository:**
+
+```bash
+git clone https://github.com/akshaySavanoor/AndroidAutomotive
+
+cd AndroidAutomotive
+
+run
+```
