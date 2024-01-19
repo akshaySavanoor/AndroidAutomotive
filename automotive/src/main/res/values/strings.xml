@@ -107,5 +107,38 @@
     <string name="use_email">Sign in using email</string>
     <string name="login_successful">Login successful</string>
     <string name="go_to_home">Go to home</string>
+    <string name="navigation_alert_title">Still a speed trap?</string>
+    <string name="navigation_alert_subtitle">Reported 10m ago</string>
+    <string name="yes">YES</string>
+    <string name="yes_action_toast_msg">Yes button pressed!</string>
+    <string name="no">NO</string>
+    <string name="no_action_toast_msg">No button pressed!</string>
+    <string name="request_timeout">Request Timeout!</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="current_step_cue" translatable="false">Roy st 520</string>
+    <string name="next_step_cue" translatable="false">I5 Aurora Ave N</string>
+    <string name="travel_est_trip_text">Pick Up Alice</string>
+    <string name="bug_reported_toast_msg">Bug reported!</string>
+    <string name="zoomed_in_toast_msg">Zoomed in</string>
+    <string name="zoomed_out_toast_msg">Zoomed out</string>
+    <string name="stop_action_title">Stop</string>
+    <string name="short_route">Short route</string>
+    <string name="less_busy">Less busy</string>
+    <string name="hov_friendly">HOV friendly</string>
+    <string name="long_route">Long route</string>
+    <string name="continue_start_nav">Continue to start navigation</string>
+    <string name="continue_route">Continue </string>
+    <string name="routes_title">Routes</string>
+    <string name="nav_requested_toast_msg">Navigation Requested</string>
+    <string name="selected_route_toast_msg">Selected route: %s</string>
+    <string name="visible_routes_toast_msg">Visible routes: %d</string>
+    <string name="route_preview_template_demo_title">Route template</string>
+    <string name="favorite_toast_msg">Favorite!</string>
+    <string name="not_favorite_toast_msg">Not a favorite!</string>
+    <string name="content_limit">Content Limit %d</string>
+    <string name="template_restriction">Template Restrictions</string>
+    <string name="move">Move</string>
+    <string name="reset">Reset</string>
+
 
 </resources>

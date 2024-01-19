@@ -43,7 +43,10 @@ class Constants {
         const val SIGN_IN_TEMPLATE = "Sign-In Template"
         const val SEARCH_TEMPLATE = "Search Template"
         const val PACKAGE_PREFIX = "androidx.car.app"
-        const val DUMMY_LOGIN_URL = "https://practicetestautomation.com/practice-test-login/"
+        const val ROUTE_PREVIEW_TEMPLATE = "Route Preview Template"
+        const val PLACE_LIST = "Place List"
+        const val ROUTE_LIST = "Route List"
+        const val TEMPLATE_RESTRICTION = "Template Restrictions"
 
         enum class SignInState {
             EMAIL,

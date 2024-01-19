@@ -10,8 +10,8 @@ import androidx.car.app.model.*
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.akshay.weatherapp.ui.FilterForSearch
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.model.Place
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
+import com.akshay.weatherapp.model.Place
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 
 /**

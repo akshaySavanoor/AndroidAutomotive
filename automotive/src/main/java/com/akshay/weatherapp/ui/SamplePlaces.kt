@@ -25,14 +25,15 @@ import androidx.car.app.model.Row
 import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.model.Location
+import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
+import com.akshay.weatherapp.model.Location
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class SamplePlaces(placeDataScreen: Screen) {
+class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
 
     private val placesViewModel = WeatherViewModel()
     private val placeCoordinates = placesViewModel.getAllCoordinatesData()
@@ -40,8 +41,8 @@ class SamplePlaces(placeDataScreen: Screen) {
     private val currentContext: CarContext = placeDataScreen.carContext
 
     companion object {
-        fun create(placeDataScreen: Screen): SamplePlaces {
-            return SamplePlaces(placeDataScreen)
+        fun create(placeDataScreen: Screen, root: String? = null): SamplePlaces {
+            return SamplePlaces(placeDataScreen, root)
         }
     }
 
@@ -61,9 +62,33 @@ class SamplePlaces(placeDataScreen: Screen) {
                     markerIconColor[randomIndex]
                 )
             )
+            root?.let {
+                itemListBuilder.setOnSelectedListener { onRouteSelected(gasStationData[index].name) }
+                    .setOnItemsVisibilityChangedListener { startIndex, endIndex ->
+                        onRoutesVisible(
+                            startIndex,
+                            endIndex
+                        )
+                    }
+            }
+
         }
 
         return itemListBuilder.build()
+    }
+
+    private fun onRouteSelected(currentPlace: String) {
+        showToast(
+            currentContext,
+            currentContext.getString(R.string.selected_route_toast_msg, currentPlace)
+        )
+    }
+
+    private fun onRoutesVisible(startIndex: Int, endIndex: Int) {
+        showToast(
+            currentContext,
+            currentContext.getString(R.string.visible_routes_toast_msg, (endIndex - startIndex))
+        )
     }
 
     private fun calculateListLimit(): Int {
@@ -120,14 +145,16 @@ class SamplePlaces(placeDataScreen: Screen) {
             colorSpanEnd,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
-        return Row.Builder()
-            .setTitle(currentPlace.name)
-            .addText(statusWithDesc)
-            .setOnClickListener {
+        val rowItem = Row.Builder()
+        if (root == null) {
+            rowItem.setOnClickListener {
                 currentContext.startCarApp(location.toIntent(CarContext.ACTION_NAVIGATE))
             }
-            .setBrowsable(true)
+                .setBrowsable(true)
+        }
+        return rowItem
+            .setTitle(currentPlace.name)
+            .addText(statusWithDesc)
             .setMetadata(createPlaceMetadata(location, carColor))
             .build()
     }
