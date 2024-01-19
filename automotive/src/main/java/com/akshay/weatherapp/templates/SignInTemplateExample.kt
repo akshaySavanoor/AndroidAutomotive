@@ -7,6 +7,7 @@ import androidx.car.app.model.Action
 import androidx.car.app.model.Action.BACK
 import androidx.car.app.model.Action.FLAG_PRIMARY
 import androidx.car.app.model.ActionStrip
+import androidx.car.app.model.CarColor
 import androidx.car.app.model.CarIcon
 import androidx.car.app.model.InputCallback
 import androidx.car.app.model.MessageTemplate
@@ -20,10 +21,11 @@ import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.app_secrets.ApiKey.DUMMY_LOGIN_URL
 import com.akshay.weatherapp.common.Constants
-import com.akshay.weatherapp.common.Constants.Companion.DUMMY_LOGIN_URL
 import com.akshay.weatherapp.common.Utility.Companion.clickable
 import com.akshay.weatherapp.common.Utility.Companion.generateRandomString
+import com.akshay.weatherapp.common.Utility.Companion.getColoredString
 import com.akshay.weatherapp.common.Utility.Companion.validateEmail
 import com.akshay.weatherapp.common.Utility.Companion.validatePassword
 
@@ -71,7 +73,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
     )
 
     private val mQRCodeSignInAction = Action.Builder()
-        .setTitle(getCarContext().getString(R.string.use_qr_code))
+        .setTitle(carContext.getString(R.string.use_qr_code))
         .setOnClickListener(ParkedOnlyOnClickListener.create {
             currentState = Constants.Companion.SignInState.OR_CODE
             invalidate()
@@ -79,7 +81,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         .build()
 
     private val mPinSignInAction = Action.Builder()
-        .setTitle(getCarContext().getString(R.string.use_pin))
+        .setTitle(carContext.getString(R.string.use_pin))
         .setOnClickListener(ParkedOnlyOnClickListener.create {
             currentState = Constants.Companion.SignInState.PIN
             invalidate()
@@ -87,7 +89,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         .build()
 
     private val mInputSignIn = Action.Builder()
-        .setTitle(getCarContext().getString(R.string.use_email))
+        .setTitle(carContext.getString(R.string.use_email))
         .setOnClickListener(ParkedOnlyOnClickListener.create {
             currentState = Constants.Companion.SignInState.EMAIL
             invalidate()
@@ -99,6 +101,9 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         .setOnClickListener { screenManager.pop() }
         .build()
 
+    /**
+     * Note: spans are allowed in the hint field , However host can override.
+     */
     private fun getInputSignInMethod(
         hint: String,
         keyboardType: Int,
@@ -106,7 +111,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
     ): InputSignInMethod.Builder {
         return InputSignInMethod.Builder(callback)
             .setInputType(InputSignInMethod.INPUT_TYPE_DEFAULT)
-            .setHint(hint)
+            .setHint(getColoredString(hint, 0, hint.length, CarColor.RED))
             .setKeyboardType(keyboardType)
             .apply {
                 error?.let { setErrorMessage(it) }
@@ -185,7 +190,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
     private fun getPinSignInTemplate(): Template {
         val pinSignInMethod = PinSignInMethod(generateRandomString(12))
         return SignInTemplate.Builder(pinSignInMethod)
-            .setTitle(carContext.getString(R.string.sign_in))
+            .setTitle(getColoredString(carContext.getString(R.string.sign_in), 1, 3, CarColor.RED))
             .setInstructions(carContext.getString(R.string.pin_sign_in_instruction))
             .setHeaderAction(BACK)
             .setActionStrip(
@@ -205,7 +210,8 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         val qrCodeSignInMethod =
             QRCodeSignInMethod(Uri.parse(DUMMY_LOGIN_URL))
         return SignInTemplate.Builder(qrCodeSignInMethod)
-            .setTitle(carContext.getString(R.string.qr_code_sign_in_title))
+            .setTitle(carContext.getString(R.string.sign_in))
+            .setInstructions(carContext.getString(R.string.qr_code_sign_in_title))
             .setHeaderAction(BACK)
             .setActionStrip(
                 ActionStrip.Builder()

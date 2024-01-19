@@ -14,9 +14,9 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.FAVOURITE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH
 import com.akshay.weatherapp.common.Constants.Companion.SETTINGS
-import com.akshay.weatherapp.ui.SamplePlaces
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.ui.SamplePlaces
 
 /**
  * The **Place List template** is designed to present an ordered list of locations, augmented by a map
@@ -56,11 +56,17 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
     private var favouriteFlag = false
 
     override fun onGetTemplate(): Template {
+        // Use icons (filled and unfilled) to ensure compatibility with color restrictions on the host.
+        val starIcon = if (favouriteFlag) {
+            R.drawable.ic_favorite_filled_white_24dp
+        } else {
+            R.drawable.ic_favorite_white_24dp
+        }
         val actionStrip = ActionStrip.Builder()
             .addAction(createActionWithTitle(carContext.getString(R.string.locations)))
             .addAction(createActionWithIcon(carContext, R.drawable.ic_search, SEARCH))
             .addAction(createActionWithIcon(carContext, R.drawable.ic_settings, SETTINGS))
-            .addAction(createActionWithIcon(carContext, R.drawable.ic_star, FAVOURITE))
+            .addAction(createActionWithIcon(carContext, starIcon, FAVOURITE))
             .build()
 
         /**
@@ -114,6 +120,7 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
                             carContext.getString(R.string.removed_from_favourites)
                         }
                         showToast(carContext, toastMessage)
+                        invalidate()
                     }
 
                     else -> {

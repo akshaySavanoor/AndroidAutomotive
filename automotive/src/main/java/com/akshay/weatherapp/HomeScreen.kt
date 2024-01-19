@@ -20,8 +20,10 @@ import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.PANE_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.ROUTE_PREVIEW_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SIGN_IN_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.TEMPLATE_RESTRICTION
 import com.akshay.weatherapp.common.Utility.Companion.requestPermission
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.templates.GridTemplateExample
@@ -31,8 +33,10 @@ import com.akshay.weatherapp.templates.MapTemplateExample
 import com.akshay.weatherapp.templates.MessageTemplateExample
 import com.akshay.weatherapp.templates.NavigationTemplateExample
 import com.akshay.weatherapp.templates.PaneTemplateExample
+import com.akshay.weatherapp.templates.RouteTemplateExample
 import com.akshay.weatherapp.templates.SearchTemplateExample
 import com.akshay.weatherapp.templates.SignInTemplateExample
+import com.akshay.weatherapp.ui.TemplateRestrictionUi
 
 class HomeScreen(carContext: CarContext) : Screen(carContext) {
 
@@ -88,6 +92,8 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
             addItem(createWeatherRow(NAVIGATION_TEMPLATE))
             addItem(createWeatherRow(SEARCH_TEMPLATE))
             addItem(createWeatherRow(SIGN_IN_TEMPLATE))
+            addItem(createWeatherRow(ROUTE_PREVIEW_TEMPLATE))
+            addItem(createWeatherRow(TEMPLATE_RESTRICTION))
         }
         return ListTemplate.Builder()
             .setTitle(carContext.getString(R.string.templates))
@@ -117,6 +123,8 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
                     NAVIGATION_TEMPLATE -> screenManager.push(NavigationTemplateExample(carContext))
                     SEARCH_TEMPLATE -> screenManager.push(SearchTemplateExample(carContext))
                     SIGN_IN_TEMPLATE -> screenManager.push(SignInTemplateExample(carContext))
+                    ROUTE_PREVIEW_TEMPLATE -> screenManager.push(RouteTemplateExample(carContext))
+                    TEMPLATE_RESTRICTION -> screenManager.push(TemplateRestrictionUi(carContext))
                 }
             }
             .build()
