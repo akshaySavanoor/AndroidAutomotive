@@ -18,14 +18,16 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
+import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
+import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 
 class PlaceDetailsScreen(carContext: CarContext, private val weatherResponse: WeatherResponse) :
     Screen(carContext) {
     private val placesViewModel = WeatherViewModel()
+    private var mIsFavorite: Boolean = false
 
     override fun onGetTemplate(): Template {
         val place = placesViewModel.getLocationData()
@@ -58,13 +60,21 @@ class PlaceDetailsScreen(carContext: CarContext, private val weatherResponse: We
                         CarIcon.Builder(
                             IconCompat.createWithResource(
                                 carContext,
-                                R.drawable.ic_star
+                                if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
+                                else R.drawable.ic_favorite_white_24dp
                             )
                         ).build()
                     )
                     .setOnClickListener {
-
-                    }.build()
+                        showToast(
+                            carContext,
+                            if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
+                            else carContext.getString(R.string.added_to_favourites),
+                        )
+                        mIsFavorite = !mIsFavorite
+                        invalidate()
+                    }
+                    .build()
             )
             .build()
         val cityName = SpannableString(

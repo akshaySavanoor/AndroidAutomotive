@@ -2,6 +2,9 @@
 <!--    If you are working on the Map template, ensure that you include the following permission-->
 <!--    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.MAP_TEMPLATES" />-->
 
+<!--    If you are working on the Navigation template, ensure that you include the following permission-->
+<!--    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -52,20 +55,25 @@
             android:foregroundServiceType="location">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="androidx.car.app.category.POI" />
+                <category android:name="androidx.car.app.category.NAVIGATE" />
             </intent-filter>
         </service>
         <activity
             android:name="androidx.car.app.activity.CarAppActivity"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+            android:launchMode="singleTask">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
+            <intent-filter>
+                <action android:name="androidx.car.app.action.NAVIGATE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="geo" />
+            </intent-filter>
+            <meta-data android:name="distractionOptimized" android:value="true"/>
         </activity>
 
         <meta-data
@@ -74,8 +82,6 @@
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
             android:value="1" />
-        <meta-data android:name="distractionOptimized" android:value="true"/>
-
     </application>
 
 </manifest>

@@ -42,6 +42,7 @@ class Constants {
         const val LONG_MESSAGE_TEMPLATE = "Long Message Template"
         const val SIGN_IN_TEMPLATE = "Sign-In Template"
         const val SEARCH_TEMPLATE = "Search Template"
+        const val NAVIGATION_WITH_ALERT = "Navigation with Alert"
         const val PACKAGE_PREFIX = "androidx.car.app"
         const val ROUTE_PREVIEW_TEMPLATE = "Route Preview Template"
         const val PLACE_LIST = "Place List"

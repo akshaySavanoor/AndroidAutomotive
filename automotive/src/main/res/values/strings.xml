@@ -115,9 +115,9 @@
     <string name="no_action_toast_msg">No button pressed!</string>
     <string name="request_timeout">Request Timeout!</string>
     <string name="cancelled">Cancelled</string>
-    <string name="current_step_cue" translatable="false">Roy st 520</string>
-    <string name="next_step_cue" translatable="false">I5 Aurora Ave N</string>
-    <string name="travel_est_trip_text">Pick Up Alice</string>
+    <string name="current_step_cue">Savanoor 520</string>
+    <string name="next_step_cue" translatable="false">I5  Darbe, Puttur</string>
+    <string name="travel_est_trip_text">Pick Up Joel</string>
     <string name="bug_reported_toast_msg">Bug reported!</string>
     <string name="zoomed_in_toast_msg">Zoomed in</string>
     <string name="zoomed_out_toast_msg">Zoomed out</string>
@@ -139,6 +139,7 @@
     <string name="template_restriction">Template Restrictions</string>
     <string name="move">Move</string>
     <string name="reset">Reset</string>
+    <string name="lon_lat">Lon, Lat</string>
 
 
 </resources>

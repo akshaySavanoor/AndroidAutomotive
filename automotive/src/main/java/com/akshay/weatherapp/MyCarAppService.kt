@@ -10,6 +10,9 @@ import androidx.car.app.validation.HostValidator
 /**
  * The CarAppService validates that a host connection can be trusted and henceforth be used to provide session instances.
  * [Refer](https://medium.com/tribalscale/android-automotive-os-part-2-b7fe6b781be2#:~:text=CarAppService%2C%20Session)
+ *
+ * The platform cannot detect or enforce an app's actual adherence to the restrictions; it can only check an app's declaration in the manifest.
+ * Adherence to these driver distraction guidelines is enforced during the Play Store review process.
  */
 class MyCarAppService : CarAppService() {
     override fun onCreateSession(): Session {
@@ -20,6 +23,8 @@ class MyCarAppService : CarAppService() {
      * Validates that the calling package is authorized to connect to a CarAppService.
      * [reference](https://developer.android.com/reference/androidx/car/app/validation/HostValidator#:~:text=ALLOW_ALL_HOSTS_VALIDATOR-,A%20host%20validator%20that%20doesn%27t%20block%20any%20hosts.,-static%C2%A0final%20String)
      * A host validator that doesn't block any hosts [Reference](https://developer.android.com/reference/androidx/car/app/validation/HostValidator#:~:text=ALLOW_ALL_HOSTS_VALIDATOR-,A%20host%20validator%20that%20doesn%27t%20block%20any%20hosts.,-static%C2%A0final%20String)
+     *
+     *
      */
     override fun createHostValidator(): HostValidator {
         return if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {

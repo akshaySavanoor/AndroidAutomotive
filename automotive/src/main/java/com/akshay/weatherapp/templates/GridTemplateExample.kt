@@ -17,6 +17,7 @@ import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.common.Constants
+import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.model.WeatherResponse
@@ -71,7 +72,12 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      * To retrieve the item limit for a given vehicle refer constraintManager
      */
     private fun createGridItem(title: String, icon: IconCompat): GridItem {
-        return GridItem.Builder()
+        val gridListBuilder = GridItem.Builder()
+        //We can add only one extra text to the grid item even if we add multiple text it will be ignored.
+        if (title == COORDINATES) {
+            gridListBuilder.setText(carContext.getString(R.string.lon_lat))
+        }
+        return gridListBuilder
             .apply {
                 setTitle(title) //set short title to avoid truncation of grid item title
                 setImage(
@@ -179,7 +185,7 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         val cloudIcon = IconCompat.createWithResource(carContext, R.drawable.ic_clouds)
 
         val gridItemCoordinates = createGridItem(
-            Constants.COORDINATES, coordinatesIcon
+            COORDINATES, coordinatesIcon
         )
         val gridItemWeather = createGridItem(
             Constants.WEATHER_CONDITION, weatherIcon

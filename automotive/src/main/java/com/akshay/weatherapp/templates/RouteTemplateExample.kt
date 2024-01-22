@@ -101,9 +101,14 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
             )
             .setTitle(carContext.getString(R.string.navigate))
             .build()
-
+        /**
+         * The template itself does not expose a drawing surface. In order to draw on the canvas, use
+         * androidx.car.app.AppManager.setSurfaceCallback(SurfaceCallback).
+         * Navigation list can only have 3 items if we add more than that it will be ignored (for ex: based on car location we can show 3 places0
+         * App should not use this template to continuously refresh the routes as the car moves.
+         */
         return RoutePreviewNavigationTemplate.Builder()
-            .setItemList(samplePlaces.getPlaceList()) // Navigation list can only have 3 items if we add more than that it will be ignored
+            .setItemList(samplePlaces.getPlaceList())
             .setNavigateAction(
                 Action.Builder()
                     .setTitle(navigateActionText)
