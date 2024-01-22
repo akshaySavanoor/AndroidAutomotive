@@ -190,7 +190,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
     private fun getPinSignInTemplate(): Template {
         val pinSignInMethod = PinSignInMethod(generateRandomString(12))
         return SignInTemplate.Builder(pinSignInMethod)
-            .setTitle(getColoredString(carContext.getString(R.string.sign_in), 1, 3, CarColor.RED))
+            .setTitle(carContext.getString(R.string.sign_in))
             .setInstructions(carContext.getString(R.string.pin_sign_in_instruction))
             .setHeaderAction(BACK)
             .setActionStrip(

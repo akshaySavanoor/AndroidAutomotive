@@ -48,6 +48,7 @@ class Constants {
         const val PLACE_LIST = "Place List"
         const val ROUTE_LIST = "Route List"
         const val TEMPLATE_RESTRICTION = "Template Restrictions"
+        const val LOADING_GRID_ITEM = "Loading Grid"
 
         enum class SignInState {
             EMAIL,

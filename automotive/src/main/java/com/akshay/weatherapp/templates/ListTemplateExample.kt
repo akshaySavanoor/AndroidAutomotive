@@ -96,6 +96,8 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      * Numeric decorations typically represent a quantity of unseen content. For example, a
      * decoration might represent a number of missed notifications, or a number of unread
      * messages in a conversation.(appears before Action view)
+     *
+     * Use a FAB for the most important action on the screen. Be sure that the icon is easy to understand, since there is no text label.
      */
     private fun createWeatherRow(title: String, icon: IconCompat): Row {
         val rowIcon = CarIcon.Builder(icon).build()
@@ -355,10 +357,31 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
         /**
          * Note: You cannot use both a sectioned list and a normal list simultaneously. If attempted, priority will be given to the last declared list.
+         *
+         * FABs are supported by the Grid template and the List template.
+         * Note: FAB and its color can be ignored by the host.
          */
         return weatherListBuilder.apply {
             setTitle(LIST_TEMPLATE)
             setHeaderAction(Action.BACK)
+            addAction(Action.Builder()
+                .setIcon(
+                    CarIcon.Builder(
+                        IconCompat.createWithResource(
+                            carContext,
+                            R.drawable.ic_add
+                        )
+                    ).build()
+
+                )
+                .setOnClickListener {
+                    showToast(
+                        carContext,
+                        carContext.getString(R.string.floating_icon_pressed)
+                    )
+                }
+                .setBackgroundColor(YELLOW)
+                .build())
             setActionStrip(
                 ActionStrip.Builder().addAction(
                     Action.Builder()

@@ -1,0 +1,17 @@
+Available Templates
+
+- GridTemplate
+- ListTemplate
+- MessageTemplate
+- LongMessageTemplate
+- PlaceListMapTemplate
+- NavigationTemplate
+- PaneTemplate
+- RoutePreviewNavigationTemplate
+- SearchTemplate
+- SignInTemplate
+- MapTemplate
+
+- MapWithContentTemplate
+- PlaceListNavigationTemplate
+- TabTemplate (Not supported in AAOS)
