@@ -13,6 +13,13 @@ import androidx.car.app.validation.HostValidator
  *
  * The platform cannot detect or enforce an app's actual adherence to the restrictions; it can only check an app's declaration in the manifest.
  * Adherence to these driver distraction guidelines is enforced during the Play Store review process.
+ *
+ * If app is not listed in the config.xml check their Manifest meta-data to
+ * see if they have any Distraction Optimized(DO) activities.
+ * For non system apps, we check if the app install source was a permittable
+ * source. This prevents side-loaded apps to fake DO.  Bypass the check
+ * for debug builds for development convenience.
+ * [Ref](https://android.googlesource.com/platform/packages/services/Car/+/refs/heads/main/service/src/com/android/car/pm/CarPackageManagerService.java#:~:text=If%20app%20is,for%20development%20convenience.)
  */
 class MyCarAppService : CarAppService() {
     override fun onCreateSession(): Session {
