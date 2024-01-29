@@ -19,11 +19,11 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
-import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_TEMPLATE
 import com.akshay.weatherapp.common.Utility
+import com.akshay.weatherapp.common.Utility.Companion.goToHome
 import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.service.RetrofitInstance
 import com.akshay.weatherapp.ui.MyLocationListener
@@ -184,13 +184,6 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
                 .build()
         }
 
-        val goToHome = Action.Builder()
-            .setTitle(carContext.getString(R.string.home))
-            .setOnClickListener {
-                screenManager.push(HomeScreen(carContext))
-            }
-            .build()
-
         val retryAction = Action.Builder()
             .setTitle(carContext.getString(R.string.retry))
             .setFlags(Action.FLAG_PRIMARY)
@@ -209,7 +202,7 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
                 .setHeaderAction(Action.BACK)
                 .setActionStrip(
                     ActionStrip.Builder()
-                        .addAction(goToHome)
+                        .addAction(goToHome(carContext, this))
                         .build()
                 )
                 .addAction(

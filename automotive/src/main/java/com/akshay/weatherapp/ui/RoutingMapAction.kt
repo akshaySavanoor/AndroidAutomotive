@@ -176,6 +176,9 @@ object RoutingMapAction {
         return builder.build()
     }
 
+    /**
+     * ERROR: java.lang.IllegalStateException: Current step must have a lanes image if the lane information is set
+     */
     fun getCurrentStep(carContext: CarContext): Step {
         val currentStepCue = carContext.getString(R.string.current_step_cue)
         val currentStepCueWithImage = SpannableString(currentStepCue)

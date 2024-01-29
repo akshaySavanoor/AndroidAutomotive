@@ -1,5 +1,6 @@
 package com.akshay.weatherapp.common
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,10 +11,13 @@ import android.text.SpannableString
 import androidx.car.app.CarAppPermission
 import androidx.car.app.CarContext
 import androidx.car.app.CarToast
+import androidx.car.app.Screen
+import androidx.car.app.model.Action
 import androidx.car.app.model.CarColor
 import androidx.car.app.model.ClickableSpan
 import androidx.car.app.model.ForegroundCarColorSpan
 import androidx.core.net.toUri
+import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.model.Location
 
@@ -183,5 +187,28 @@ class Utility {
                 .joinToString("")
         }
 
+        fun goToHome(carContext: CarContext, screen: Screen): Action {
+            return Action.Builder()
+
+                .setTitle(carContext.getString(R.string.home))
+                .setOnClickListener {
+                    screen.screenManager.push(HomeScreen(carContext))
+                }
+                .build()
+        }
+
+        //Only for the development purpose
+        @SuppressLint("PrivateApi")
+        fun printBuildTypeUsingReflection() {
+            try {
+                val systemPropertiesClass = Class.forName("android.os.SystemProperties")
+                val getMethod = systemPropertiesClass.getMethod("get", String::class.java)
+
+                val buildType = getMethod.invoke(null, "ro.build.type") as String
+                println("Build type (reflection): $buildType")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

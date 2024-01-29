@@ -72,6 +72,11 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         }
     )
 
+    /**
+     * NOTE: Don't use Flags for the actions.
+     * ERROR: java.lang.IllegalArgumentException: Action list exceeded max number of 0 primary actions
+     */
+
     private val mQRCodeSignInAction = Action.Builder()
         .setTitle(carContext.getString(R.string.use_qr_code))
         .setOnClickListener(ParkedOnlyOnClickListener.create {

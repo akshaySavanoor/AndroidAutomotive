@@ -12,6 +12,7 @@ import com.akshay.weatherapp.ui.RoutingMapAction
 
 class NavigationTemplateEx(carContext: CarContext) : Screen(carContext) {
     override fun onGetTemplate(): Template {
+
         return NavigationTemplate.Builder()
             .setNavigationInfo(
                 RoutingInfo.Builder()
@@ -25,7 +26,7 @@ class NavigationTemplateEx(carContext: CarContext) : Screen(carContext) {
             .setDestinationTravelEstimate(RoutingMapAction.getTravelEstimate(carContext))
             .setActionStrip(RoutingMapAction.getActionStrip(carContext, this::finish))
             .setMapActionStrip(RoutingMapAction.getMapActionStrip(carContext))
-            .setBackgroundColor(CarColor.SECONDARY)
+            .setBackgroundColor(CarColor.PRIMARY)
             .build()
     }
 }
