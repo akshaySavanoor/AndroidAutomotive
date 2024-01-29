@@ -62,6 +62,10 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
                 .addVariant(carContext.getString(R.string.continue_route))
                 .build()
 
+        /**
+         * NOTE: Header can have maximum of 2 actions
+         * ERROR: java.lang.IllegalArgumentException: Action list exceeded max number of 2 actions
+         */
         val header = Header.Builder()
             .setStartHeaderAction(Action.BACK)
             .addEndHeaderAction(

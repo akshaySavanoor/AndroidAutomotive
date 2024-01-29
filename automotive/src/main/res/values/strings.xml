@@ -141,5 +141,6 @@
     <string name="reset">Reset</string>
     <string name="lon_lat">Lon, Lat</string>
     <string name="floating_icon_pressed">floating icon pressed</string>
+    <string name="optional_text">Optional text</string>
 
 </resources>

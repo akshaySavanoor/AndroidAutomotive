@@ -1,5 +1,7 @@
 package com.akshay.weatherapp.templates
 
+import android.text.SpannableString
+import android.text.Spanned
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
@@ -7,6 +9,7 @@ import androidx.car.app.model.Action.BACK
 import androidx.car.app.model.Action.FLAG_PRIMARY
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
+import androidx.car.app.model.ForegroundCarColorSpan
 import androidx.car.app.model.LongMessageTemplate
 import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.ParkedOnlyOnClickListener
@@ -65,9 +68,14 @@ class LongMessageTemplateExample(
             primaryActionBuilder.setFlags(FLAG_PRIMARY)
         }
 
-        return LongMessageTemplate.Builder(
-            carContext.getString(R.string.long_message)
+        val longMessage = SpannableString(carContext.getString(R.string.long_message))
+        longMessage.setSpan(
+            ForegroundCarColorSpan.create(CarColor.GREEN),
+            2,
+            11,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+        return LongMessageTemplate.Builder(longMessage)
             .setTitle(title)
             .setHeaderAction(BACK)
             .addAction(primaryActionBuilder.build())

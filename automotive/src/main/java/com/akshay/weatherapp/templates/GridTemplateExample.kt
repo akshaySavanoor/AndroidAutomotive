@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.common.Constants
@@ -25,6 +24,9 @@ import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LOADING_GRID_ITEM
 import com.akshay.weatherapp.common.Utility
+import com.akshay.weatherapp.common.Utility.Companion.getColoredString
+import com.akshay.weatherapp.common.Utility.Companion.goToHome
+import com.akshay.weatherapp.common.Utility.Companion.printBuildTypeUsingReflection
 import com.akshay.weatherapp.model.WeatherResponse
 import com.akshay.weatherapp.service.RetrofitInstance
 import com.akshay.weatherapp.ui.MyLocationListener
@@ -41,7 +43,7 @@ import retrofit2.Call
  * - Primary text (mandatory) and optional secondary text for each grid item.
  * - Optional floating action button.
  *
- * Note: There is a limit on the number of grid items (not less than 6). Use ConstraintManager API
+ * Note: There is a limit on the number of grid items (not for less than 6). Use ConstraintManager API
  * to retrieve the specific item limit for a given vehicle.
  *
  * primaryTextLengthLimit Limit for the length of primary text to avoid truncation.
@@ -95,7 +97,7 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         //we can add loader to the grid items.
         if (title == LOADING_GRID_ITEM && !loadingActionFlag) {
             return gridListBuilder.apply {
-                setTitle(title)
+                setTitle(title) //Titles doesn't support colored text
                 setImage(CarIcon.Builder(icon).build())
                     .setOnClickListener {
                         handler.removeCallbacksAndMessages(null)
@@ -110,8 +112,15 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             }.build()
         }
         if (title == COORDINATES) {
-           gridListBuilder
-               .setText(carContext.getString(R.string.lon_lat))
+            gridListBuilder
+                .setText(
+                    getColoredString(
+                        carContext.getString(R.string.lon_lat),
+                        0,
+                        8,
+                        CarColor.GREEN
+                    )
+                )
         }
         return gridListBuilder
             .apply {
@@ -211,6 +220,7 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
+        printBuildTypeUsingReflection()
         setUpObserversAndCallApi()
         handler.postDelayed({
             loadingActionFlag = false
@@ -243,10 +253,11 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         val loadingGridItem = createGridItem(LOADING_GRID_ITEM, loaderRefreshIcon)
 
         val gridBuilder = GridTemplate.Builder()
-                    .setActionStrip(
+            .setActionStrip(
                 ActionStrip.Builder()
                     .addAction(exitAction)
-                    .build()) // Action buttons (up to 2, except for templates with maps, which allow up to 4)
+                    .build()
+            ) // Action buttons (up to 2, except for templates with maps, which allow up to 4)
 
         if (mIsLoading) {
             return gridBuilder
@@ -255,13 +266,6 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 .setTitle(GRID_TEMPLATE)
                 .build()
         }
-
-        val goToHome = Action.Builder()
-            .setTitle(carContext.getString(R.string.home))
-            .setOnClickListener {
-                screenManager.push(HomeScreen(carContext))
-            }
-            .build()
 
         val retryAction = Action.Builder()
             .setTitle(carContext.getString(R.string.retry))
@@ -293,7 +297,7 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 .setHeaderAction(Action.BACK)
                 .setActionStrip(
                     ActionStrip.Builder()
-                        .addAction(goToHome)
+                        .addAction(goToHome(carContext, this))
                         .build()
                 )
                 .addAction(

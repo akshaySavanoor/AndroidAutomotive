@@ -62,7 +62,7 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
      * CAUTION: Row's in the pane template cannot have toggle or onClick listener
      * ERROR: java.lang.IllegalArgumentException: A click listener is not allowed on the row
      *
-     * Note: Text in a line won't wrap; instead, it will be ellipsized at the end.
+     * Note: Text in a line won't wrap; instead, it will be ellipsized at the end.(for 2 additional text)
      */
 
     private fun createRow(index: Int): Row {

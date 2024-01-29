@@ -7,11 +7,12 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
+import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
-import com.akshay.weatherapp.ui.FilterForSearch
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Place
+import com.akshay.weatherapp.ui.FilterForSearch
 import com.akshay.weatherapp.viewmodel.WeatherViewModel
 
 /**
@@ -105,10 +106,21 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
                 )
             }
 
-
+            /**
+             * Note: List cannot contain radio buttons.
+             * Error: java.lang.RuntimeException: java.lang.IllegalArgumentException: Selectable lists are not allowed
+             */
             listBuilder.addItem(
                 Row.Builder()
                     .setTitle(result.name)
+                    .setImage(CarIcon.Builder(
+                        IconCompat.createWithResource(
+                            carContext,
+                            R.drawable.ic_fuel
+                        )
+                    )
+                        .build()
+                    )
                     .addText(statusWithDesc)
                     .setBrowsable(true)
                     .setOnClickListener {

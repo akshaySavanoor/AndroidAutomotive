@@ -11,11 +11,11 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
+import androidx.car.app.model.CarColor.GREEN
 import androidx.car.app.model.CarColor.YELLOW
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
-import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.common.Constants.Companion.CLOUD
@@ -27,6 +27,7 @@ import com.akshay.weatherapp.common.Constants.Companion.WEATHER_CONDITION
 import com.akshay.weatherapp.common.Constants.Companion.WIND
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.colorize
+import com.akshay.weatherapp.common.Utility.Companion.goToHome
 import com.akshay.weatherapp.common.Utility.Companion.requestPermission
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.model.WeatherResponse
@@ -93,6 +94,9 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      * In this case, use setOnClickListener and avoid using Toggle or addAction.
      * ERROR: java.lang.IllegalStateException - A browsable row must have its onClickListener set.
      *
+     * CAUTION: The number of lines of texts for the row cannot be more than 2.
+     * ERROR: java.lang.IllegalArgumentException: The number of lines of texts for the row exceeded the supported max of 2
+     *
      * Numeric decorations typically represent a quantity of unseen content. For example, a
      * decoration might represent a number of missed notifications, or a number of unread
      * messages in a conversation.(appears before Action view)
@@ -137,22 +141,23 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 setOnClickListener(ParkedOnlyOnClickListener.create {
                     onClickListener()
                 }) //Items that belong to selectable lists can't have an onClickListener.
-                setTitle(title)
+                setTitle(title) // Colored spannable cannot be applied to the title
                 addText(
                     getColoredString(
                         carContext.getString(R.string.title_details, title),
                         mIsEnabled
                     )
-                ) // Colored spannable cannot be applied to the title
+                )
+                addText(getColoredString(carContext.getString(R.string.optional_text), mIsEnabled, GREEN))
                 setEnabled(mIsEnabled)
             }
             .build()
     }
 
-    private fun getColoredString(str: String, isEnabled: Boolean): CharSequence {
+    private fun getColoredString(str: String, isEnabled: Boolean, color: CarColor = YELLOW): CharSequence {
         if (isEnabled && str.isNotEmpty()) {
             val ss = SpannableString(str)
-            colorize(ss, YELLOW, 0, str.length)
+            colorize(ss, color, 0, str.length)
             return ss
         }
         return str
@@ -323,13 +328,6 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 .build()
         }
 
-        val goToHome = Action.Builder()
-            .setTitle(carContext.getString(R.string.home))
-            .setOnClickListener {
-                screenManager.push(HomeScreen(carContext))
-            }
-            .build()
-
         val retryAction = Action.Builder()
             .setTitle(carContext.getString(R.string.retry))
             .setFlags(Action.FLAG_PRIMARY)
@@ -348,7 +346,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 .setHeaderAction(Action.BACK)
                 .setActionStrip(
                     ActionStrip.Builder()
-                        .addAction(goToHome)
+                        .addAction(goToHome(carContext, this))
                         .build()
                 )
                 .addAction(retryAction)

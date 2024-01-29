@@ -152,6 +152,10 @@ class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
             }
                 .setBrowsable(true)
         }
+        /**
+         * Note: Number of lines of texts for the row cannot be more than 2
+         * Error: java.lang.IllegalArgumentException: The number of lines of texts for the row exceeded the supported max of 2
+         */
         return rowItem
             .setTitle(currentPlace.name)
             .addText(statusWithDesc)
