@@ -104,6 +104,7 @@ To configure your application, create a directory named `app_secrets` and within
 object ApiKey {
     const val API_KEY = "31xxxxxxxxxxxxxxxxxxxxxxb0"
     const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    const val DUMMY_LOGIN_URL = "https://practicetestautomation.com/practice-test-login/"
 }
 ```
 
