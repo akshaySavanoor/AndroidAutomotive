@@ -84,7 +84,6 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     init {
         lifecycle.addObserver(this)
     }
-
     /**
      * Represents a grid item with an image and an optional title.
      *

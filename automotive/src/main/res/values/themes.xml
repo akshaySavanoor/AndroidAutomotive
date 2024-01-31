@@ -1,4 +1,9 @@
 <resources>
 
-    <style name="Theme.WeatherApp" parent="android:Theme.Material.Light.DarkActionBar" />
+    <style name="Theme.WeatherApp" parent="android:Theme.Material.Light.DarkActionBar" >
+            <item name="carColorPrimary">#ff7f39fb</item>
+            <item name="carColorPrimaryDark">#5904DF</item>
+            <item name="carColorSecondary">#328E10</item>
+            <item name="carColorSecondaryDark">#1A6004</item>
+        </style>
 </resources>

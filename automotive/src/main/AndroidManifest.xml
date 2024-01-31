@@ -5,7 +5,8 @@
 <!--    If you are working on the Navigation template, ensure that you include the following permission-->
 <!--    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />-->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -41,18 +42,22 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+
+    <!-- "android:supportsRtl"="false" indicates that app doesn't support right-to-left (RTL) layouts. -->
+    <!-- "If we set the app category as 'map,' it will appear in the default list of navigation apps." -->
+    <!-- "android:exported='true' indicates that apps can allow other applications to use this." -->
     <application
-        android:allowBackup="true"
         android:appCategory="maps"
         android:icon="@drawable/ic_weather_app_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.WeatherApp">
         <service
             android:name=".MyCarAppService"
             android:exported="true"
-            android:foregroundServiceType="location">
+            android:foregroundServiceType="location"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="androidx.car.app.CarAppService" />
                 <category android:name="androidx.car.app.category.NAVIGATE" />
@@ -63,16 +68,30 @@
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
             android:exported="true"
             android:launchMode="singleTask">
+<!--            A "singleTask" activity allows other activities to be part of its task. -->
+<!--           It's always at the root of its task, but other activities (necessarily "standard" and "singleTop" activities) -->
+<!--           can be launched into that task-->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <!-- Include the category below ONLY for navigation apps -->
+<!--                The additional android.intent.category.APP_MAPS category informs
+                    the system that your app is able to show the user's location.-->
+                <category android:name="android.intent.category.APP_MAPS" />
             </intent-filter>
+            <!-- Include the intent-filter below ONLY for navigation apps -->
             <intent-filter>
                 <action android:name="androidx.car.app.action.NAVIGATE" />
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
+<!--                app can handle Uniform Resource Identifiers (URIs) with the "geo" scheme.-->
                 <data android:scheme="geo" />
             </intent-filter>
+<!--            If app is not listed in the config.xml check their Manifest meta-data to-->
+<!--            see if they have any Distraction Optimized(DO) activities.-->
+<!--            For non system apps, we check if the app install source was a permittable-->
+<!--            source. This prevents side-loaded apps to fake DO.  Bypass the check-->
+<!--            for debug builds for development convenience. -->
             <meta-data android:name="distractionOptimized" android:value="true"/>
         </activity>
 
@@ -82,6 +101,9 @@
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
             android:value="1" />
+        <meta-data
+            android:name="androidx.car.app.theme"
+            android:resource="@style/Theme.WeatherApp" />
     </application>
 
 </manifest>

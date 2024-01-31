@@ -49,6 +49,7 @@ class Constants {
         const val ROUTE_LIST = "Route List"
         const val TEMPLATE_RESTRICTION = "Template Restrictions"
         const val LOADING_GRID_ITEM = "Loading Grid"
+        const val HOME_SCREEN = "HomeScreen"
 
         enum class SignInState {
             EMAIL,

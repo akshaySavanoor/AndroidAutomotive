@@ -14,6 +14,7 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.core.content.ContextCompat
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.HOME_SCREEN
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LONG_MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
@@ -73,10 +74,14 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
         }
     }
 
+    /**
+     * screenManager.popTo(marker): Removes screens from the top of the stack until a Screen which has the given
+     * marker is found, or the root has been reached.
+     */
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
+        this.marker = HOME_SCREEN //Using marker we can remove multiple screens from the stack
         checkPermission()
-
         val exitAction = Action.Builder()
             .setTitle(carContext.getString(R.string.exit))
             .setOnClickListener {
