@@ -14,6 +14,7 @@ import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.viewmodel.VehiclePropertiesViewModel
 
@@ -22,10 +23,13 @@ class VehiclePropertiesScreen(
     carContext: CarContext,
 ) : Screen(carContext) {
 
-    private val itemListBuilder = ItemList.Builder().setNoItemsMessage("No data found")
+    private val itemListBuilder =
+        ItemList.Builder().setNoItemsMessage(carContext.getString(R.string.no_data_found))
     private var _viewModel: VehiclePropertiesViewModel? = null
     private val viewModel get() = _viewModel!!
     private var carPropertyManager: CarPropertyManager? = null
+
+    private val TAG = carContext.getString(R.string.vehiclepropertiesscreen)
 
     private val propertyIds = listOf(
         VehiclePropertyIds.PERF_VEHICLE_SPEED,
@@ -50,7 +54,7 @@ class VehiclePropertiesScreen(
         carPropertyManager =
             Car.createCar(carContext).getCarManager(Car.PROPERTY_SERVICE) as CarPropertyManager
         carPropertyManager?.let {
-            _viewModel = VehiclePropertiesViewModel(it)
+            _viewModel = VehiclePropertiesViewModel(it, carContext)
         }
 
         val speed = viewModel.fetchSpeedInKmph()
@@ -87,7 +91,7 @@ class VehiclePropertiesScreen(
             }
 
             override fun onErrorEvent(p0: Int, p1: Int) {
-                Log.e("ERROR", "Property error")
+                Log.e(TAG, carContext.getString(R.string.property_error))
             }
 
         }
@@ -98,7 +102,7 @@ class VehiclePropertiesScreen(
                     if (result == listOf(Car.PERMISSION_SPEED)) {
                         registerCallbacks(callback, propertyIds)
                     } else {
-                        Log.e("CarPropertiesScreen", "Permission denied")
+                        Log.e(TAG, carContext.getString(R.string.permission_denied))
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -137,40 +141,45 @@ class VehiclePropertiesScreen(
         return when (property) {
             VehiclePropertyIds.PERF_VEHICLE_SPEED -> {
                 Row.Builder()
-                    .setTitle("Current speed")
-                    .addText("$value kmph")
+                    .setTitle(carContext.getString(R.string.current_speed))
+                    .addText(carContext.getString(R.string.value_kmph, value))
                     .build()
             }
 
             VehiclePropertyIds.CURRENT_GEAR -> {
                 Row.Builder()
-                    .setTitle("Current Gear")
+                    .setTitle(carContext.getString(R.string.current_gear))
                     .addText(value.toString())
                     .build()
             }
 
             VehiclePropertyIds.EV_BATTERY_LEVEL -> {
                 Row.Builder()
-                    .setTitle("Current EV Battery level")
+                    .setTitle(carContext.getString(R.string.current_ev_battery_level))
                     .addText("$value")
                     .build()
             }
 
             VehiclePropertyIds.FUEL_LEVEL -> {
                 Row.Builder()
-                    .setTitle("Current Fuel level")
+                    .setTitle(carContext.getString(R.string.current_fuel_level))
                     .addText("$value")
                     .build()
             }
 
             VehiclePropertyIds.IGNITION_STATE -> {
                 Row.Builder()
-                    .setTitle("Ignition State")
+                    .setTitle(carContext.getString(R.string.ignition_state))
                     .addText("$value")
                     .build()
             }
 
-            else -> throw IllegalArgumentException("Invalid property ID: $property")
+            else -> throw IllegalArgumentException(
+                carContext.getString(
+                    R.string.invalid_property_id,
+                    property.toString()
+                )
+            )
         }
     }
 }

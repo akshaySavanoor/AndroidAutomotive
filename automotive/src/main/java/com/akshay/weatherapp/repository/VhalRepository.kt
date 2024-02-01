@@ -4,9 +4,12 @@ import android.car.VehicleGear
 import android.car.VehicleIgnitionState
 import android.car.VehiclePropertyIds
 import android.car.hardware.property.CarPropertyManager
+import androidx.car.app.CarContext
+import com.akshay.weatherapp.R
 
 class VhalRepository(
-    carPropertyManager: CarPropertyManager
+    carPropertyManager: CarPropertyManager,
+    val carContext: CarContext
 ) {
     private var speed: Float = 0.0f
     private var currentGear: Int = 0
@@ -46,15 +49,14 @@ class VhalRepository(
 
     fun fetchIgnitionState(): String {
         return when (ignitionState) {
-            VehicleIgnitionState.ON -> "ON"
-            VehicleIgnitionState.OFF -> "OFF"
-            VehicleIgnitionState.ACC -> "ACC"
-            VehicleIgnitionState.LOCK -> "LOCK"
-            VehicleIgnitionState.START -> "START"
-            VehicleIgnitionState.UNDEFINED -> "UNDEFINED"
-
+            VehicleIgnitionState.ON -> carContext.getString(R.string.on)
+            VehicleIgnitionState.OFF -> carContext.getString(R.string.off)
+            VehicleIgnitionState.ACC -> carContext.getString(R.string.acc)
+            VehicleIgnitionState.LOCK -> carContext.getString(R.string.lock)
+            VehicleIgnitionState.START -> carContext.getString(R.string.start)
+            VehicleIgnitionState.UNDEFINED -> carContext.getString(R.string.undefined)
             else -> {
-                ""
+                carContext.getString(R.string.empty_string)
             }
         }
     }
@@ -73,18 +75,18 @@ class VhalRepository(
 
     fun fetchCurrentGear(): String {
         return when (currentGear) {
-            VehicleGear.GEAR_NEUTRAL -> "N"
-            VehicleGear.GEAR_REVERSE -> "R"
-            VehicleGear.GEAR_PARK -> "P"
-            VehicleGear.GEAR_DRIVE -> "D"
-            VehicleGear.GEAR_SECOND -> "D2"
-            VehicleGear.GEAR_THIRD -> "D3"
-            VehicleGear.GEAR_FOURTH -> "D4"
-            VehicleGear.GEAR_FIFTH -> "D5"
-            VehicleGear.GEAR_SIXTH -> "D6"
-            VehicleGear.GEAR_SEVENTH -> "D7"
+            VehicleGear.GEAR_NEUTRAL -> carContext.getString(R.string.n)
+            VehicleGear.GEAR_REVERSE -> carContext.getString(R.string.r)
+            VehicleGear.GEAR_PARK -> carContext.getString(R.string.p)
+            VehicleGear.GEAR_DRIVE -> carContext.getString(R.string.d)
+            VehicleGear.GEAR_SECOND -> carContext.getString(R.string.d2)
+            VehicleGear.GEAR_THIRD -> carContext.getString(R.string.d3)
+            VehicleGear.GEAR_FOURTH -> carContext.getString(R.string.d4)
+            VehicleGear.GEAR_FIFTH -> carContext.getString(R.string.d5)
+            VehicleGear.GEAR_SIXTH -> carContext.getString(R.string.d6)
+            VehicleGear.GEAR_SEVENTH -> carContext.getString(R.string.d7)
             else -> {
-                "P"
+                carContext.getString(R.string.p)
             }
         }
     }

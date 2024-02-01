@@ -1,15 +1,17 @@
 package com.akshay.weatherapp.viewmodel
 
 import android.car.hardware.property.CarPropertyManager
+import androidx.car.app.CarContext
 import androidx.lifecycle.ViewModel
 import com.akshay.weatherapp.repository.VhalRepository
 
 
 class VehiclePropertiesViewModel(
-    carPropertyManager: CarPropertyManager
+    carPropertyManager: CarPropertyManager,
+    carContext: CarContext
 ) : ViewModel() {
 
-    private val repository = VhalRepository(carPropertyManager)
+    private val repository = VhalRepository(carPropertyManager,carContext)
 
     fun setEvBatteryLevel(value: Float) {
         repository.setEvBatteryLevel(value)
