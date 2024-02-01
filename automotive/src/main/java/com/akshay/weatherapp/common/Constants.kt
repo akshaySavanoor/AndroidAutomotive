@@ -50,7 +50,7 @@ class Constants {
         const val TEMPLATE_RESTRICTION = "Template Restrictions"
         const val LOADING_GRID_ITEM = "Loading Grid"
         const val HOME_SCREEN = "HomeScreen"
-
+        const val HARDWARE_PROPERTIES = "Hardware Properties"
         enum class SignInState {
             EMAIL,
             PASSWORD,

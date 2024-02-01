@@ -7,6 +7,8 @@ android {
     namespace = "com.akshay.weatherapp"
     compileSdk = 34
 
+    useLibrary("android.car")
+
     defaultConfig {
         applicationId = "com.akshay.weatherapp"
         minSdk = 29

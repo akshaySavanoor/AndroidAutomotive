@@ -15,6 +15,7 @@ import androidx.car.app.model.Template
 import androidx.core.content.ContextCompat
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.HOME_SCREEN
+import com.akshay.weatherapp.common.Constants.Companion.HARDWARE_PROPERTIES
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LONG_MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
@@ -39,6 +40,7 @@ import com.akshay.weatherapp.templates.PaneTemplateExample
 import com.akshay.weatherapp.templates.RouteTemplateExample
 import com.akshay.weatherapp.templates.SearchTemplateExample
 import com.akshay.weatherapp.templates.SignInTemplateExample
+import com.akshay.weatherapp.templates.VehiclePropertiesScreen
 import com.akshay.weatherapp.ui.TemplateRestrictionUi
 
 class HomeScreen(carContext: CarContext) : Screen(carContext) {
@@ -102,6 +104,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
             addItem(createWeatherRow(ROUTE_PREVIEW_TEMPLATE))
             addItem(createWeatherRow(NAVIGATION_WITH_ALERT))
             addItem(createWeatherRow(TEMPLATE_RESTRICTION))
+            addItem(createWeatherRow(HARDWARE_PROPERTIES))
         }
         return ListTemplate.Builder()
             .setTitle(carContext.getString(R.string.templates))
@@ -134,6 +137,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
                     ROUTE_PREVIEW_TEMPLATE -> screenManager.push(RouteTemplateExample(carContext))
                     NAVIGATION_WITH_ALERT -> screenManager.push(NavigationTemplateEx(carContext))
                     TEMPLATE_RESTRICTION -> screenManager.push(TemplateRestrictionUi(carContext))
+                    HARDWARE_PROPERTIES -> screenManager.push(VehiclePropertiesScreen(carContext))
                 }
             }
             .build()
