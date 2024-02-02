@@ -142,5 +142,33 @@
     <string name="lon_lat">Lon, Lat</string>
     <string name="floating_icon_pressed">floating icon pressed</string>
     <string name="optional_text">Optional text</string>
+    <string name="current_speed">Current speed</string>
+    <string name="kmph">%d kmph</string>
+    <string name="current_gear">Current Gear</string>
+    <string name="current_ev_battery_level">Current EV Battery level</string>
+    <string name="current_fuel_level">Current Fuel level</string>
+    <string name="ignition_state">Ignition State</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="property_error">Property error</string>
+    <string name="on">ON</string>
+    <string name="off">OFF</string>
+    <string name="acc">ACC</string>
+    <string name="lock">LOCK</string>
+    <string name="start">START</string>
+    <string name="undefined">UNDEFINED</string>
+    <string name="n">N</string>
+    <string name="r">R</string>
+    <string name="d7">D7</string>
+    <string name="p">P</string>
+    <string name="d">D</string>
+    <string name="d2">D2</string>
+    <string name="d3">D3</string>
+    <string name="d4">D4</string>
+    <string name="d5">D5</string>
+    <string name="d6">D6</string>
+    <string name="empty_string" />
+    <string name="value_kmph">%s kmph</string>
+    <string name="invalid_property_id">Invalid property ID: %s</string>
+    <string name="vehiclepropertiesscreen">VehiclePropertiesScreen</string>
 
 </resources>
