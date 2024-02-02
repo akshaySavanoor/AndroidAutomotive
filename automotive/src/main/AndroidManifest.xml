@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--    If you are working on the Map template, ensure that you include the following permission-->
-<!--    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.MAP_TEMPLATES" />-->
+<!--    If you are working on the Map template, ensure that you include the following permission
+    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.MAP_TEMPLATES" />
 
-<!--    If you are working on the Navigation template, ensure that you include the following permission-->
-<!--    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />-->
+    If you are working on the Navigation template, ensure that you include the following permission
+    in your AndroidManifest.xml file: <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />-->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
@@ -43,9 +43,9 @@
         android:required="false" />
 
 
-    <!-- "android:supportsRtl"="false" indicates that app doesn't support right-to-left (RTL) layouts. -->
-    <!-- "If we set the app category as 'map,' it will appear in the default list of navigation apps." -->
-    <!-- "android:exported='true' indicates that apps can allow other applications to use this." -->
+    <!-- "android:supportsRtl"="false" indicates that app doesn't support right-to-left (RTL) layouts.
+         "If we set the app category as 'map,' it will appear in the default list of navigation apps."
+         "android:exported='true' indicates that apps can allow other applications to use this." -->
     <application
         android:appCategory="maps"
         android:icon="@drawable/ic_weather_app_icon"
@@ -68,15 +68,15 @@
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
             android:exported="true"
             android:launchMode="singleTask">
-<!--            A "singleTask" activity allows other activities to be part of its task. -->
-<!--           It's always at the root of its task, but other activities (necessarily "standard" and "singleTop" activities) -->
-<!--           can be launched into that task-->
+<!--            A "singleTask" activity allows other activities to be part of its task.
+               It's always at the root of its task, but other activities (necessarily "standard" and "singleTop" activities)
+               can be launched into that task-->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <!-- Include the category below ONLY for navigation apps -->
-<!--                The additional android.intent.category.APP_MAPS category informs
+                <!-- Include the category below ONLY for navigation apps
+                    The additional android.intent.category.APP_MAPS category informs
                     the system that your app is able to show the user's location.-->
                 <category android:name="android.intent.category.APP_MAPS" />
             </intent-filter>
@@ -87,20 +87,25 @@
 <!--                app can handle Uniform Resource Identifiers (URIs) with the "geo" scheme.-->
                 <data android:scheme="geo" />
             </intent-filter>
-<!--            If app is not listed in the config.xml check their Manifest meta-data to-->
-<!--            see if they have any Distraction Optimized(DO) activities.-->
-<!--            For non system apps, we check if the app install source was a permittable-->
-<!--            source. This prevents side-loaded apps to fake DO.  Bypass the check-->
-<!--            for debug builds for development convenience. -->
+<!--            If app is not listed in the config.xml check their Manifest meta-data to
+                see if they have any Distraction Optimized(DO) activities.
+                For non system apps, we check if the app install source was a permittable
+                source. This prevents side-loaded apps to fake DO.  Bypass the check
+                for debug builds for development convenience.
+                (To bypass for testing purpose:
+                Go to build.prop file and update ro.build.type to "userdebug" or "eng" (make sure you have necessary permissions)) -->
+
             <meta-data android:name="distractionOptimized" android:value="true"/>
         </activity>
-
+        <!--    Apps using the Android for Cars App Library must declare the template capability in the automotive_app_desc.xml file-->
         <meta-data
             android:name="com.akshay.weatherapp"
             android:resource="@xml/automotive_app_desc" />
+<!--        Minimum car API level is required-->
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
             android:value="1" />
+<!--        Optional theme-->
         <meta-data
             android:name="androidx.car.app.theme"
             android:resource="@style/Theme.WeatherApp" />

@@ -1,5 +1,6 @@
 package com.akshay.weatherapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import androidx.car.app.CarAppService
@@ -29,10 +30,9 @@ class MyCarAppService : CarAppService() {
     /**
      * Validates that the calling package is authorized to connect to a CarAppService.
      * [reference](https://developer.android.com/reference/androidx/car/app/validation/HostValidator#:~:text=ALLOW_ALL_HOSTS_VALIDATOR-,A%20host%20validator%20that%20doesn%27t%20block%20any%20hosts.,-static%C2%A0final%20String)
-     * A host validator that doesn't block any hosts [Reference](https://developer.android.com/reference/androidx/car/app/validation/HostValidator#:~:text=ALLOW_ALL_HOSTS_VALIDATOR-,A%20host%20validator%20that%20doesn%27t%20block%20any%20hosts.,-static%C2%A0final%20String)
-     *
-     *
+     * ALLOW_ALL_HOSTS_VALIDATOR host validator doesn't block any hosts [Reference](https://developer.android.com/reference/androidx/car/app/validation/HostValidator#:~:text=ALLOW_ALL_HOSTS_VALIDATOR-,A%20host%20validator%20that%20doesn%27t%20block%20any%20hosts.,-static%C2%A0final%20String)
      */
+    @SuppressLint("PrivateResource")
     override fun createHostValidator(): HostValidator {
         return if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
 
