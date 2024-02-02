@@ -116,6 +116,15 @@ class Utility {
                 }
             }
 
+            /**
+             * The CarAppTheme style is defined as any other themes in a resource file:
+             * <resources>æ
+             * <style name="CarAppTheme">
+             * <item name="carPermissionActivityLayout">@layout/app_branded_background</item>
+             * </style>
+             * </resources>
+             * The default behavior is to have no background behind the permission request.
+             */
             carContext.requestPermissions(
                 permissions.toTypedArray().toMutableList()
             ) { approved, rejected ->
@@ -165,7 +174,7 @@ class Utility {
 
         fun validatePassword(carContext: CarContext, password: String): String? {
             val digitRegex = Regex(".*\\d.*")
-            val specialCharRegex = Regex(".*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")
+            val specialCharRegex = Regex(".*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*")
             val upperCaseRegex = Regex(".*[A-Z].*")
             val lowerCaseRegex = Regex(".*[a-z].*")
 

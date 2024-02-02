@@ -136,7 +136,7 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
                     PackageManager.PERMISSION_GRANTED
 
         if (hasPermissionLocation) {
-            locationManager!!.requestLocationUpdates(
+            locationManager?.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 1000L,
                 0f,
