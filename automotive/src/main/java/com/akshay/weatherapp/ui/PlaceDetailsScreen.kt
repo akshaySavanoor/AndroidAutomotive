@@ -21,16 +21,16 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
-import com.akshay.weatherapp.model.WeatherResponse
-import com.akshay.weatherapp.viewmodel.WeatherViewModel
+import com.akshay.weatherapp.model.WeatherResponseModel
+import com.akshay.weatherapp.viewmodel.LocationViewModel
 
-class PlaceDetailsScreen(carContext: CarContext, private val weatherResponse: WeatherResponse) :
+class PlaceDetailsScreen(carContext: CarContext, private val weatherResponseModel: WeatherResponseModel) :
     Screen(carContext) {
-    private val placesViewModel = WeatherViewModel()
+    private val placesViewModel = LocationViewModel()
     private var mIsFavorite: Boolean = false
+    val place = placesViewModel.getLocationData()
 
     override fun onGetTemplate(): Template {
-        val place = placesViewModel.getLocationData()
 
         val navigateAction = Action.Builder()
             .setTitle(carContext.getString(R.string.navigate))
@@ -80,8 +80,8 @@ class PlaceDetailsScreen(carContext: CarContext, private val weatherResponse: We
         val cityName = SpannableString(
             carContext.getString(
                 R.string.city_with_country,
-                weatherResponse.name,
-                weatherResponse.sys.country
+                weatherResponseModel.name,
+                weatherResponseModel.sys.country
             )
         )
         cityName.setSpan(
@@ -125,13 +125,13 @@ class PlaceDetailsScreen(carContext: CarContext, private val weatherResponse: We
                         .addText(
                             carContext.getString(
                                 R.string.common_city_desc,
-                                weatherResponse.name
+                                weatherResponseModel.name
                             )
                         )
                         .build()
                 ).build()
         )
-            .setTitle(weatherResponse.name)
+            .setTitle(weatherResponseModel.name)
             .setHeaderAction(Action.BACK)
             .setActionStrip(actionStrip)
             .build()

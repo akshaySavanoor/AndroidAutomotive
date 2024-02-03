@@ -9,7 +9,7 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.model.Coordinates
-import com.akshay.weatherapp.model.WeatherResponse
+import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.common.Constants.Companion.CITY_NAME
 import com.akshay.weatherapp.common.Constants.Companion.CLOUD
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
@@ -36,7 +36,7 @@ import com.akshay.weatherapp.common.Utility.Companion.kelvinToCelsius
 
 class WeatherDetailsScreen(
     carContext: CarContext,
-    private val weatherResponse: WeatherResponse,
+    private val weatherResponseModel: WeatherResponseModel,
     private val weatherDataType: String
 ) : Screen(carContext) {
 
@@ -61,11 +61,11 @@ class WeatherDetailsScreen(
     }
 
     private fun addCoordinateTemplate() {
-        itemListBuilder.addItem(createCoordinateRow(weatherResponse.coord))
+        itemListBuilder.addItem(createCoordinateRow(weatherResponseModel.coord))
     }
 
     private fun addWeatherConditionTemplate() {
-        val weatherList = weatherResponse.weather[0]
+        val weatherList = weatherResponseModel.weather[0]
         itemListBuilder.addItem(createWeatherRow(weatherList.main, weatherList.description))
     }
 
@@ -74,31 +74,31 @@ class WeatherDetailsScreen(
             addItem(
                 createWeatherRow(
                     TEMPERATURE,
-                    formatTemperature(weatherResponse.main?.temp)
+                    formatTemperature(weatherResponseModel.main?.temp)
                 )
             )
             addItem(
                 createWeatherRow(
                     FEELS_LIKE,
-                    formatTemperature(weatherResponse.main?.feelsLike)
+                    formatTemperature(weatherResponseModel.main?.feelsLike)
                 )
             )
-            addItem(createWeatherRow(PRESSURE, "${weatherResponse.main?.pressure}hPA"))
-            addItem(createWeatherRow(HUMIDITY, "${weatherResponse.main?.humidity}%"))
+            addItem(createWeatherRow(PRESSURE, "${weatherResponseModel.main?.pressure}hPA"))
+            addItem(createWeatherRow(HUMIDITY, "${weatherResponseModel.main?.humidity}%"))
             addItem(
                 createWeatherRow(
                     MINIMUM_TEMPERATURE,
-                    formatTemperature(weatherResponse.main?.tempMin)
+                    formatTemperature(weatherResponseModel.main?.tempMin)
                 )
             )
             addItem(
                 createWeatherRow(
                     MAXIMUM_TEMPERATURE,
-                    formatTemperature(weatherResponse.main?.tempMax)
+                    formatTemperature(weatherResponseModel.main?.tempMax)
                 )
             )
-            addItem(createWeatherRow(SEA_LEVEL, "${weatherResponse.main?.seaLevel ?: "_ "}hPa"))
-            addItem(createWeatherRow(GROUND_LEVEL, "${weatherResponse.main?.grndLevel ?: "_ "}hPa"))
+            addItem(createWeatherRow(SEA_LEVEL, "${weatherResponseModel.main?.seaLevel ?: "_ "}hPa"))
+            addItem(createWeatherRow(GROUND_LEVEL, "${weatherResponseModel.main?.grndLevel ?: "_ "}hPa"))
         }
     }
 
@@ -108,23 +108,23 @@ class WeatherDetailsScreen(
 
     private fun addWindTemplate() {
         itemListBuilder.apply {
-            addItem(createWeatherRow(WIND_SPEED, "${weatherResponse.wind?.speed} m/s"))
-            addItem(createWeatherRow(WIND_DIRECTION, "${weatherResponse.wind?.deg} degrees"))
+            addItem(createWeatherRow(WIND_SPEED, "${weatherResponseModel.wind?.speed} m/s"))
+            addItem(createWeatherRow(WIND_DIRECTION, "${weatherResponseModel.wind?.deg} degrees"))
         }
     }
 
     private fun addCloudTemplate() {
         itemListBuilder.apply {
-            addItem(createWeatherRow(CLOUD, "${weatherResponse.clouds?.all}%"))
+            addItem(createWeatherRow(CLOUD, "${weatherResponseModel.clouds?.all}%"))
         }
     }
 
     private fun addSystemInformationTemplate() {
         itemListBuilder.apply {
-            addItem(createWeatherRow(COUNTRY_CODE, weatherResponse.sys.country))
-            addItem(createWeatherRow(CITY_NAME, weatherResponse.name))
-            addItem(createWeatherRow(SUN_RISE_TIME, "${weatherResponse.sys.sunrise} UTC"))
-            addItem(createWeatherRow(SUN_SET_TIME, "${weatherResponse.sys.sunset} UTC"))
+            addItem(createWeatherRow(COUNTRY_CODE, weatherResponseModel.sys.country))
+            addItem(createWeatherRow(CITY_NAME, weatherResponseModel.name))
+            addItem(createWeatherRow(SUN_RISE_TIME, "${weatherResponseModel.sys.sunrise} UTC"))
+            addItem(createWeatherRow(SUN_SET_TIME, "${weatherResponseModel.sys.sunset} UTC"))
         }
     }
 

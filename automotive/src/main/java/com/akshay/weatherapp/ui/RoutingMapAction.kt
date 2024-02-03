@@ -203,14 +203,16 @@ object RoutingMapAction {
             Lane.Builder().addDirection(LaneDirection.create(SHAPE_NORMAL_RIGHT, true)).build()
 
         return Step.Builder(currentStepCueWithImage)
-            .setManeuver(currentManeuver)
-            .setLanesImage(lanesImage)
-            .addLane(straightNormal)
-            .addLane(straightNormal)
-            .addLane(straightNormal)
-            .addLane(straightNormal)
-            .addLane(rightHighlighted)
-            .build()
+            .run {
+                setManeuver(currentManeuver)
+                setLanesImage(lanesImage)
+                addLane(straightNormal)
+                addLane(straightNormal)
+                addLane(straightNormal)
+                addLane(straightNormal)
+                addLane(rightHighlighted)
+                build()
+            }
     }
 
     /**

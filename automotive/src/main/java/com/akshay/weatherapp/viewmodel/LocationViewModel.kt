@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModel
 import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.model.Location
 import com.akshay.weatherapp.model.Place
-import com.akshay.weatherapp.model.WeatherResponse
-import com.akshay.weatherapp.repository.WeatherRepository
+import com.akshay.weatherapp.model.WeatherResponseModel
+import com.akshay.weatherapp.repository.LocationRepository
 import com.akshay.weatherapp.service.RetrofitInstance
 import retrofit2.Call
 
-class WeatherViewModel : ViewModel() {
-    private val repository = WeatherRepository()
+class LocationViewModel : ViewModel() {
+    private val repository = LocationRepository()
 
     private val _weatherData = repository.getWeatherData()
     val weatherData = _weatherData
@@ -22,7 +22,7 @@ class WeatherViewModel : ViewModel() {
     private val _mError = repository.getErrorMessage()
     val mError = _mError
 
-    fun getDefaultCall(): Call<WeatherResponse> {
+    fun getDefaultCall(): Call<WeatherResponseModel> {
         val randomLocation = repository.getRandomLocation()
         return RetrofitInstance.weatherApiService.getCurrentWeather(
             randomLocation.latitude,
@@ -31,7 +31,7 @@ class WeatherViewModel : ViewModel() {
         )
     }
 
-    fun fetchWeatherData(carContext: CarContext, call: Call<WeatherResponse>) {
+    fun fetchWeatherData(carContext: CarContext, call: Call<WeatherResponseModel>) {
         repository.fetchWeatherData(carContext, call)
     }
 

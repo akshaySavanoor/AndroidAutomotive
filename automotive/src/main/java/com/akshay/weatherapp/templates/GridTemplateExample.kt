@@ -1,10 +1,5 @@
 package com.akshay.weatherapp.templates
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.OptIn
@@ -13,26 +8,20 @@ import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
 import androidx.car.app.model.Action.APP_ICON
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LOADING_GRID_ITEM
+import com.akshay.weatherapp.common.RepositoryUtils
+import com.akshay.weatherapp.common.RepositoryUtils.setUpObserversAndCallApi
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
-import com.akshay.weatherapp.common.Utility.Companion.goToHome
-import com.akshay.weatherapp.common.Utility.Companion.printBuildTypeUsingReflection
-import com.akshay.weatherapp.model.WeatherResponse
-import com.akshay.weatherapp.service.RetrofitInstance
-import com.akshay.weatherapp.ui.MyLocationListener
+import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
-import com.akshay.weatherapp.viewmodel.WeatherViewModel
-import retrofit2.Call
 
 /**
  * Displays a grid layout with items suitable for users relying primarily on images for selections.
@@ -59,22 +48,8 @@ import retrofit2.Call
  * [ConstraintManager](https://developer.android.com/training/cars/apps#constraint-manager) API for retrieving specific item limits for a given vehicle.
  */
 class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
-    private val exitAction = Action.Builder()
-        .setTitle(carContext.getString(R.string.exit))
-        .setOnClickListener {
-            carContext.finishCarApp()
-        }
-        .build()
 
-    private val weatherViewModel = WeatherViewModel()
-    private var weatherResponseData: WeatherResponse? = null
-
-    private lateinit var myLocationListener: MyLocationListener
-    private var locationManager: LocationManager? = null
-    private var hasPermissionLocation: Boolean = false
-    private var currentLocation: Location? = null
-    private var call: Call<WeatherResponse>? = null
-
+    private var weatherResponseModelData: WeatherResponseModel? = null
     private var mIsLoading = true
     private var errorMessage: String? = null
     private var loadingActionFlag = true
@@ -84,6 +59,7 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     init {
         lifecycle.addObserver(this)
     }
+
     /**
      * Represents a grid item with an image and an optional title.
      *
@@ -94,32 +70,36 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         val gridListBuilder = GridItem.Builder()
         //We can add only one extra text to the grid item even if we add multiple text it will be ignored.
         //we can add loader to the grid items.
-        if (title == LOADING_GRID_ITEM && !loadingActionFlag) {
-            return gridListBuilder.apply {
-                setTitle(title) //Titles doesn't support colored text
-                setImage(CarIcon.Builder(icon).build())
-                    .setOnClickListener {
-                        handler.removeCallbacksAndMessages(null)
-                        loadingActionFlag = !loadingActionFlag
-                        invalidate()
+        when (title) {
+            LOADING_GRID_ITEM -> {
+                    return gridListBuilder.run {
+                        if (!loadingActionFlag) {
+                            setTitle(title) //Titles don't support colored text
+                            setImage(CarIcon.Builder(icon).build())
+                                .setOnClickListener {
+                                    handler.removeCallbacksAndMessages(null)
+                                    loadingActionFlag = !loadingActionFlag
+                                    invalidate()
+                                }
+                        } else {
+                            setTitle(title)
+                            setLoading(true)
+                        }
+                        build()
                     }
-            }.build()
-        } else if (title == LOADING_GRID_ITEM) {
-            return gridListBuilder.apply {
-                setTitle(title)
-                setLoading(true)
-            }.build()
-        }
-        if (title == COORDINATES) {
-            gridListBuilder
-                .setText(
-                    getColoredString(
-                        carContext.getString(R.string.lon_lat),
-                        0,
-                        8,
-                        CarColor.GREEN
+                }
+
+            COORDINATES -> {
+                gridListBuilder
+                    .setText(
+                        getColoredString(
+                            carContext.getString(R.string.lon_lat),
+                            0,
+                            8,
+                            CarColor.GREEN
+                        )
                     )
-                )
+            }
         }
         return gridListBuilder
             .apply {
@@ -129,7 +109,7 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     GridItem.IMAGE_TYPE_LARGE
                 ) //Keep large image for reducing driver distraction
                 setOnClickListener {
-                    weatherResponseData?.let {
+                    weatherResponseModelData?.let {
                         screenManager.push(WeatherDetailsScreen(carContext, it, title))
 
                     } ?: run {
@@ -143,84 +123,36 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             .build()
     }
 
-    private fun setUpObserversAndCallApi() {
-        weatherViewModel.apply {
-
-            isLoading.observe(this@GridTemplateExample) {
-                mIsLoading = it
-                if (it) {
-                    invalidate()
-                }
-            }
-
-            mError.observe(this@GridTemplateExample) {
-                errorMessage = it
-                invalidate()
-            }
-
-            weatherData.observe(this@GridTemplateExample) { weatherResponse ->
-                weatherResponseData = weatherResponse
-                errorMessage = null
-                mIsLoading = false
-                invalidate()
-            }
-
+    private val exitAction = Action.Builder().run {
+        setTitle(carContext.getString(R.string.exit))
+        setOnClickListener {
+            carContext.finishCarApp()
         }
+        build()
+    }
 
-        myLocationListener = MyLocationListener { location ->
-            if (location.latitude != currentLocation?.latitude && location.longitude != currentLocation?.longitude) {
-                currentLocation = location
-                call =
-                    RetrofitInstance.weatherApiService.getCurrentWeather(
-                        location.latitude,
-                        location.longitude,
-                        ApiKey.API_KEY
-                    )
-                weatherViewModel.fetchWeatherData(
-                    carContext,
-                    call ?: weatherViewModel.getDefaultCall()
-                )
-            }
+    private val loadingCallback: (Boolean) -> Unit = { isLoading ->
+        mIsLoading = isLoading
+        if (isLoading) {
+            invalidate()
         }
+    }
 
-        locationManager = carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        hasPermissionLocation =
-            ContextCompat.checkSelfPermission(
-                carContext,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) ==
-                    PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        carContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) ==
-                    PackageManager.PERMISSION_GRANTED
+    private val errorCallback: (String?) -> Unit = { errorData ->
+        errorMessage = errorData
+        invalidate()
+    }
 
-        if (hasPermissionLocation) {
-            locationManager?.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                1000L,
-                0f,
-                myLocationListener
-            )
-        } else {
-            Utility.requestPermission(carContext) { approved, rejected ->
-                if (approved.isNotEmpty()) {
-                    Utility.showToast(carContext, carContext.getString(R.string.approved))
-                    invalidate()
-
-                } else if (rejected.isNotEmpty()) {
-                    Utility.showToast(carContext, carContext.getString(R.string.rejected))
-                    screenManager.pop()
-                }
-            }
-        }
+    private val weatherDataCallback: (WeatherResponseModel?) -> Unit = { weatherResponse ->
+        weatherResponseModelData = weatherResponse
+        mIsLoading = false
+        errorMessage = null
+        invalidate()
     }
 
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
-        printBuildTypeUsingReflection()
-        setUpObserversAndCallApi()
+        setUpObserversAndCallApi(carContext, this, loadingCallback, errorCallback, weatherDataCallback)
         handler.postDelayed({
             loadingActionFlag = false
             invalidate()
@@ -252,30 +184,23 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         val loadingGridItem = createGridItem(LOADING_GRID_ITEM, loaderRefreshIcon)
 
         val gridBuilder = GridTemplate.Builder()
-            .setActionStrip(
+            .run {
+                setActionStrip(
                 ActionStrip.Builder()
                     .addAction(exitAction)
                     .build()
-            ) // Action buttons (up to 2, except for templates with maps, which allow up to 4)
+            )
+            }// Action buttons (up to 2, except for templates with maps, which allow up to 4)
 
         if (mIsLoading) {
             return gridBuilder
-                .setLoading(true)
-                .setHeaderAction(Action.BACK)
-                .setTitle(GRID_TEMPLATE)
-                .build()
+                .run {
+                    setLoading(true)
+                    setHeaderAction(Action.BACK)
+                    setTitle(GRID_TEMPLATE)
+                    build()
+                }
         }
-
-        val retryAction = Action.Builder()
-            .setTitle(carContext.getString(R.string.retry))
-            .setFlags(Action.FLAG_PRIMARY)
-            .setOnClickListener {
-                weatherViewModel.fetchWeatherData(
-                    carContext,
-                    call ?: weatherViewModel.getDefaultCall()
-                )
-                invalidate()
-            }.build()
 
         val gridList = ItemList.Builder()
             .apply {
@@ -291,18 +216,14 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
         errorMessage?.let {
             return MessageTemplate.Builder(it)
-                .setTitle(GRID_TEMPLATE)
-                .setIcon(CarIcon.ERROR)
-                .setHeaderAction(Action.BACK)
-                .setActionStrip(
-                    ActionStrip.Builder()
-                        .addAction(goToHome(carContext, this))
-                        .build()
-                )
-                .addAction(
-                    retryAction
-                )
-                .build()
+                .run {
+                    setTitle(GRID_TEMPLATE)
+                    setIcon(CarIcon.ERROR)
+                    setHeaderAction(Action.BACK)
+                    setActionStrip(Utility.goToHome(carContext, this@GridTemplateExample))
+                    addAction(RepositoryUtils.getRetryAction(carContext, this@GridTemplateExample))
+                    build()
+                }
         }
 
         return gridBuilder
@@ -311,12 +232,19 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
              * Should contain supported Action types, or valid CarIcon and background CarColor,
              * should not exceed the maximum number of allowed actions for the template.
              */
-            .setHeaderAction(APP_ICON)
-            .setSingleList(gridList)
-            .setTitle(GRID_TEMPLATE)
-            .setHeaderAction(Action.BACK) // Optional header action
-            // Action strip with an action button
-            .build()
+            .run {
+                setHeaderAction(APP_ICON)
+                setSingleList(gridList)
+                setTitle(GRID_TEMPLATE)
+                setHeaderAction(Action.BACK) // Optional header action
+                // Action strip with an action button
+                build()
+            }
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun onStop(owner: LifecycleOwner) {

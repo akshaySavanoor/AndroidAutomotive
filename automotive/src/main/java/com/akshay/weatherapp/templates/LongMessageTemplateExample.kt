@@ -76,24 +76,31 @@ class LongMessageTemplateExample(
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         return LongMessageTemplate.Builder(longMessage)
-            .setTitle(title)
-            .setHeaderAction(BACK)
-            .addAction(primaryActionBuilder.build())
-            .addAction(
-                Action.Builder()
-                    .setBackgroundColor(CarColor.RED) //Displaying background colors may depends on the host
-                    .setOnClickListener(ParkedOnlyOnClickListener.create { screenManager.pop() })
-                    .setTitle(carContext.getString(R.string.no_thanks))
-                    .build()
-            )
-            .setActionStrip(ActionStrip.Builder()
-                .addAction(Action.Builder()
-                    .setTitle(carContext.getString(R.string.skip))
-                    .setOnClickListener {
-                        screenManager.pop()
-                    }
+            .run {
+                setTitle(title)
+                setHeaderAction(BACK)
+                addAction(primaryActionBuilder.build())
+                addAction(
+                    Action.Builder()
+                        .run {
+                            setBackgroundColor(CarColor.RED) //Displaying background colors may depends on the host
+                            setOnClickListener(ParkedOnlyOnClickListener.create { screenManager.pop() })
+                            setTitle(carContext.getString(R.string.no_thanks))
+                            build()
+                        }
+                )
+                setActionStrip(ActionStrip.Builder()
+                    .addAction(Action.Builder()
+                        .run {
+                            setTitle(carContext.getString(R.string.skip))
+                            setOnClickListener {
+                                screenManager.pop()
+                            }
+                            build()
+                        }
+                    )
                     .build())
-                .build())
-            .build()
+                build()
+            }
     }
 }

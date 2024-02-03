@@ -28,14 +28,14 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Location
-import com.akshay.weatherapp.viewmodel.WeatherViewModel
+import com.akshay.weatherapp.viewmodel.LocationViewModel
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
 class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
 
-    private val placesViewModel = WeatherViewModel()
+    private val placesViewModel = LocationViewModel()
     private val placeCoordinates = placesViewModel.getAllCoordinatesData()
     private val gasStationData = placesViewModel.getGasStations()
     private val currentContext: CarContext = placeDataScreen.carContext

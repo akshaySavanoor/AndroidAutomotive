@@ -13,11 +13,11 @@ import androidx.car.app.CarContext
 import androidx.car.app.CarToast
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
+import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
 import androidx.car.app.model.ClickableSpan
 import androidx.car.app.model.ForegroundCarColorSpan
 import androidx.core.net.toUri
-import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.model.Location
 
@@ -196,13 +196,14 @@ class Utility {
                 .joinToString("")
         }
 
-        fun goToHome(carContext: CarContext, screen: Screen): Action {
-            return Action.Builder()
-
-                .setTitle(carContext.getString(R.string.home))
-                .setOnClickListener {
-                    screen.screenManager.push(HomeScreen(carContext))
-                }
+        fun goToHome(carContext: CarContext, screen: Screen): ActionStrip {
+            return  ActionStrip.Builder()
+                .addAction(Action.Builder()
+                    .setTitle(carContext.getString(R.string.home))
+                    .setOnClickListener {
+                        screen.screenManager.popToRoot()
+                    }
+                    .build())
                 .build()
         }
 

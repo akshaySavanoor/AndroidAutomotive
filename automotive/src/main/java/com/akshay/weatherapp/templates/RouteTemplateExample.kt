@@ -62,49 +62,62 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
                 .addVariant(carContext.getString(R.string.continue_route))
                 .build()
 
+        val secondEndHeaderAction = Action.Builder()
+            .apply {
+                setOnClickListener { finish() }
+                setIcon(
+                    CarIcon.Builder(
+                        IconCompat.createWithResource(
+                            carContext,
+                            R.drawable.ic_close_white_24dp
+                        )
+                    ).build()
+                )
+            }
+
+        val favouriteIcon = IconCompat.createWithResource(
+            carContext,
+            if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
+            else R.drawable.ic_favorite_white_24dp
+        )
+
+        val firstEndHeaderAction = Action.Builder()
+            .apply {
+                setIcon(CarIcon.Builder(favouriteIcon).build())
+                setOnClickListener {
+                    showToast(
+                        carContext,
+                        if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
+                        else carContext.getString(R.string.added_to_favourites),
+                    )
+                    mIsFavorite = !mIsFavorite
+                    invalidate()
+                }
+            }
+
+        val navigationAction = Action.Builder()
+            .apply {
+                setTitle(navigateActionText)
+                setOnClickListener {
+                    showToast(
+                        carContext,
+                        carContext.getString(R.string.nav_requested_toast_msg)
+                    )
+                }
+            }
+
         /**
          * NOTE: Header can have maximum of 2 actions
          * ERROR: java.lang.IllegalArgumentException: Action list exceeded max number of 2 actions
          */
         val header = Header.Builder()
-            .setStartHeaderAction(Action.BACK)
-            .addEndHeaderAction(
-                Action.Builder()
-                    .setIcon(
-                        CarIcon.Builder(
-                            IconCompat.createWithResource(
-                                carContext,
-                                if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
-                                else R.drawable.ic_favorite_white_24dp
-                            )
-                        ).build()
-                    )
-                    .setOnClickListener {
-                        showToast(
-                            carContext,
-                            if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
-                            else carContext.getString(R.string.added_to_favourites),
-                        )
-                        mIsFavorite = !mIsFavorite
-                        invalidate()
-                    }
-                    .build()
-            )
-            .addEndHeaderAction(
-                Action.Builder()
-                    .setOnClickListener { finish() }
-                    .setIcon(
-                        CarIcon.Builder(
-                            IconCompat.createWithResource(
-                                carContext,
-                                R.drawable.ic_close_white_24dp
-                            )
-                        ).build()
-                    )
-                    .build()
-            )
-            .setTitle(carContext.getString(R.string.navigate))
-            .build()
+            .run {
+                setStartHeaderAction(Action.BACK)
+                addEndHeaderAction(firstEndHeaderAction.build())
+                addEndHeaderAction(secondEndHeaderAction.build())
+                setTitle(carContext.getString(R.string.navigate))
+                build()
+            }
         /**
          * The template itself does not expose a drawing surface. In order to draw on the canvas, use
          * androidx.car.app.AppManager.setSurfaceCallback(SurfaceCallback).
@@ -112,20 +125,12 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
          * App should not use this template to continuously refresh the routes as the car moves.
          */
         return RoutePreviewNavigationTemplate.Builder()
-            .setItemList(samplePlaces.getPlaceList())
-            .setNavigateAction(
-                Action.Builder()
-                    .setTitle(navigateActionText)
-                    .setOnClickListener {
-                        showToast(
-                            carContext,
-                            carContext.getString(R.string.nav_requested_toast_msg)
-                        )
-                    }
-                    .build()
-            )
-            .setMapActionStrip(RoutingMapAction.getMapActionStrip(carContext))
-            .setHeader(header)
-            .build()
+            .run {
+                setItemList(samplePlaces.getPlaceList())
+                setNavigateAction(navigationAction.build())
+                setMapActionStrip(RoutingMapAction.getMapActionStrip(carContext))
+                setHeader(header)
+                build()
+            }
     }
 }

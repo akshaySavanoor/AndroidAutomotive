@@ -43,25 +43,29 @@ class MessageTemplateExample(carContext: CarContext) : Screen(carContext) {
     private var mIsConfirmed = false
     override fun onGetTemplate(): Template {
         val settings = Action.Builder()
-            .setTitle(carContext.getString(R.string.skip))
-            .setOnClickListener {
-                if (!mIsConfirmed) {
-                    screenManager.pop()
+            .run {
+                setTitle(carContext.getString(R.string.skip))
+                setOnClickListener {
+                    if (!mIsConfirmed) {
+                        screenManager.pop()
+                    }
+                    mIsConfirmed = false
+                    invalidate()
                 }
-                mIsConfirmed = false
-                invalidate()
+                build()
             }
-            .build()
 
         if (mIsConfirmed) {
             return MessageTemplate.Builder(carContext.getString(R.string.no_routes_found))
-                .setIcon(CarIcon.ALERT)
-                .setActionStrip(
-                    ActionStrip.Builder()
-                        .addAction(settings)
-                        .build()
-                )
-                .build()
+                .run {
+                    setIcon(CarIcon.ALERT)
+                    setActionStrip(
+                        ActionStrip.Builder()
+                            .addAction(settings)
+                            .build()
+                    )
+                    build()
+                }
         }
         val primaryActionBuilder = Action.Builder()
             .setOnClickListener {
@@ -75,33 +79,39 @@ class MessageTemplateExample(carContext: CarContext) : Screen(carContext) {
         }
 
         return MessageTemplate.Builder(carContext.getString(R.string.would_you_like_to_start_new_route))
-            .setTitle(carContext.getString(R.string.route_option))
-            .setIcon(
-                CarIcon.Builder(
-                    IconCompat.createWithResource(
-                        carContext,
-                        R.drawable.ic_route
+            .run {
+                setTitle(carContext.getString(R.string.route_option))
+                setIcon(
+                    CarIcon.Builder(
+                        IconCompat.createWithResource(
+                            carContext,
+                            R.drawable.ic_route
+                        )
                     )
-                )
 //                    .setTint(CarColor.GREEN) //we can add optional tint color
-                    .build()
-            )
-            .setHeaderAction(BACK)
-            .addAction(primaryActionBuilder.build())
-            .addAction(
-                Action.Builder()
-                    .setBackgroundColor(CarColor.RED)
-                    .setTitle(carContext.getString(R.string.cancel))
-                    .setOnClickListener {
-                        screenManager.pop()
-                    }
-                    .build()
-            )
-            .setActionStrip(
-                ActionStrip.Builder()
-                    .addAction(settings)
-                    .build()
-            )
-            .build()
+                        .build()
+                )
+                setHeaderAction(BACK)
+                addAction(primaryActionBuilder.build())
+                addAction(
+                    Action.Builder()
+                        .run {
+                            setBackgroundColor(CarColor.RED)
+                            setTitle(carContext.getString(R.string.cancel))
+                            setOnClickListener {
+                                screenManager.pop()
+                            }
+                            build()
+                        }
+                )
+                setActionStrip(
+                    ActionStrip.Builder()
+                        .run {
+                            addAction(settings)
+                            build()
+                        }
+                )
+                build()
+            }
     }
 }

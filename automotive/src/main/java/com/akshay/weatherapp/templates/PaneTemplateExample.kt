@@ -22,7 +22,7 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
-import com.akshay.weatherapp.viewmodel.WeatherViewModel
+import com.akshay.weatherapp.viewmodel.LocationViewModel
 
 /**
  * Pane Template:
@@ -51,8 +51,8 @@ import com.akshay.weatherapp.viewmodel.WeatherViewModel
  */
 
 class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
-    private val weatherViewModel = WeatherViewModel()
-    private val randomPlace = weatherViewModel.getLocationData()
+    private val locationViewModel = LocationViewModel()
+    private val randomPlace = locationViewModel.getLocationData()
 
     /**
      * CAUTION: Rows cannot have more than 2 addText lines.
@@ -73,51 +73,57 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
 
         return when (index) {
             0 -> Row.Builder()
-                .setTitle(opensCloses)
-                .addText(
-                    getColoredString(
-                        carContext.getString(R.string.available_with_distance),
-                        0,
-                        9,
-                        CarColor.GREEN
+                .run {
+                    setTitle(opensCloses)
+                    addText(
+                        getColoredString(
+                            carContext.getString(R.string.available_with_distance),
+                            0,
+                            9,
+                            CarColor.GREEN
+                        )
                     )
-                )
-                .addText(SpannableString(" ").apply {
-                    setSpan(
-                        DistanceSpan.create(
-                            Distance.create(Math.random() * 100, Distance.UNIT_KILOMETERS)
-                        ), 0, 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
-                    )
-                })
-                .setImage(fuelIcon)
-                .build()
+                    addText(SpannableString(" ").apply {
+                        setSpan(
+                            DistanceSpan.create(
+                                Distance.create(Math.random() * 100, Distance.UNIT_KILOMETERS)
+                            ), 0, 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        )
+                    })
+                    setImage(fuelIcon)
+                    build()
+
+                }
 
             1 -> Row.Builder()
-                .setTitle(opensCloses)
-                .addText(
-                    getColoredString(
-                        carContext.getString(R.string.closed_with_distance),
-                        0,
-                        6,
-                        CarColor.RED
+                .run {
+                    setTitle(opensCloses)
+                    addText(
+                        getColoredString(
+                            carContext.getString(R.string.closed_with_distance),
+                            0,
+                            6,
+                            CarColor.RED
+                        )
                     )
-                )
-                .addText(
-                    getColoredString(
-                        noPetrol,
-                        0,
-                        noPetrol.length,
-                        CarColor.SECONDARY
+                    addText(
+                        getColoredString(
+                            noPetrol,
+                            0,
+                            noPetrol.length,
+                            CarColor.SECONDARY
+                        )
                     )
-                )
-                .setImage(fuelIcon)
-                .build()
-
+                    setImage(fuelIcon)
+                    build()
+                }
 
             else -> Row.Builder()
-                .setTitle(carContext.getString(R.string.gas_station, index + 1))
-                .addText(carContext.getString(R.string.optional_desc_1, index + 1))
-                .build()
+                .run {
+                    setTitle(carContext.getString(R.string.gas_station, index + 1))
+                    addText(carContext.getString(R.string.optional_desc_1, index + 1))
+                    build()
+                }
         }
     }
 
@@ -149,7 +155,8 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
         }
 
         val primaryActionBuilder = Action.Builder()
-            .setIcon(
+            .apply {
+                setIcon(
                 CarIcon.Builder(
                     IconCompat.createWithResource(
                         carContext,
@@ -157,9 +164,10 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
                     )
                 ).build()
             )
-            .setTitle(carContext.getString(R.string.navigate))
-            .setOnClickListener {
-                carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
+                setTitle(carContext.getString(R.string.navigate))
+                setOnClickListener {
+                    carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
+                }
             }
 
         if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) {
@@ -170,42 +178,45 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
          * CAUTION: The number of addAction calls on the pane should not exceed the supported maximum of 2.
          * ERROR: java.lang.IllegalArgumentException - The number of actions on the pane exceeded the supported max of 2.
          */
-        paneBuilder
-            .addAction(primaryActionBuilder.build())
-            .addAction(
+        paneBuilder.apply {
+            addAction(primaryActionBuilder.build())
+            addAction(
                 Action.Builder()
                     .setTitle(carContext.getString(R.string.browse_place_details))
-                    .setOnClickListener {
-                        screenManager.push(MapTemplateExample(carContext))
-                    }
+                    .setOnClickListener { screenManager.push(MapTemplateExample(carContext)) }
                     .build()
             )
+        }
+
+        val callAction = Action.Builder()
+            .run {
+                setTitle(carContext.getString(R.string.call))
+                setIcon(
+                    CarIcon.Builder(
+                        IconCompat.createWithResource(carContext, R.drawable.ic_call)
+                    ).run {
+                        setTint(CarColor.BLUE) //Tint can be skipped by the host
+                        build()
+                    }
+                )
+                setOnClickListener {
+                    showToast(carContext, carContext.getString(R.string.unable_to_call))
+                }
+                build()
+            }
 
         return PaneTemplate.Builder(paneBuilder.build())
-            .setHeaderAction(Action.BACK)
-            .setActionStrip(
-                ActionStrip.Builder()
-                    .addAction(
-                        Action.Builder()
-                            .setTitle(carContext.getString(R.string.call))
-                            .setIcon(
-                                CarIcon.Builder(
-                                    IconCompat.createWithResource(
-                                        carContext,
-                                        R.drawable.ic_call
-                                    )
-                                )
-                                    .setTint(CarColor.BLUE) //Tint can be skipped by the host
-                                    .build()
-                            )
-                            .setOnClickListener {
-                                showToast(carContext, carContext.getString(R.string.unable_to_call))
-                            }
-                            .build()
-                    )
-                    .build()
-            )
-            .setTitle(carContext.getString(R.string.pane_template))
-            .build()
+            .run {
+                setHeaderAction(Action.BACK)
+                setActionStrip(
+                    ActionStrip.Builder()
+                        .run {
+                            addAction(callAction)
+                            build()
+                        }
+                )
+                setTitle(carContext.getString(R.string.pane_template))
+                build()
+            }
     }
 }

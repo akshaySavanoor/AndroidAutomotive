@@ -13,7 +13,7 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Place
 import com.akshay.weatherapp.ui.FilterForSearch
-import com.akshay.weatherapp.viewmodel.WeatherViewModel
+import com.akshay.weatherapp.viewmodel.LocationViewModel
 
 /**
  * Kotlin comment for SearchTemplate:
@@ -43,7 +43,7 @@ import com.akshay.weatherapp.viewmodel.WeatherViewModel
 
 class SearchTemplateExample(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
 
-    private val locationViewModel = WeatherViewModel()
+    private val locationViewModel = LocationViewModel()
     private var searchResults: MutableSet<Place> = mutableSetOf()
     private var previousSearchResults: MutableSet<Place> = mutableSetOf()
     val randomPlace = locationViewModel.getLocationData()
@@ -112,8 +112,9 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
              */
             listBuilder.addItem(
                 Row.Builder()
-                    .setTitle(result.name)
-                    .setImage(CarIcon.Builder(
+                    .run {
+                    setTitle(result.name)
+                    setImage(CarIcon.Builder(
                         IconCompat.createWithResource(
                             carContext,
                             R.drawable.ic_fuel
@@ -121,13 +122,14 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
                     )
                         .build()
                     )
-                    .addText(statusWithDesc)
-                    .setBrowsable(true)
-                    .setOnClickListener {
+                    addText(statusWithDesc)
+                    setBrowsable(true)
+                    setOnClickListener {
                         previousSearchResults.add(result)
                         carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
                     }
-                    .build()
+                    build()
+                    }
             )
         }
 
@@ -163,13 +165,15 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
             .build()
 
         return SearchTemplate.Builder(searchListener)
-            .setSearchHint(carContext.getString(R.string.search_hint))
-            .setHeaderAction(Action.BACK)
+            .run {
+                setSearchHint(carContext.getString(R.string.search_hint))
+                setHeaderAction(Action.BACK)
 //           .setInitialSearchText("puttur") //We can add optional initial search text instead of using hint
-            .setShowKeyboardByDefault(false) // By default, setShowKeyboardByDefault is true, causing the keyboard to appear even if the user doesn't focus on the search.
-            .setItemList(listBuilder.build())
-            .setActionStrip(actionStrip)
-            .build()
+                setShowKeyboardByDefault(false) // By default, setShowKeyboardByDefault is true, causing the keyboard to appear even if the user doesn't focus on the search.
+                setItemList(listBuilder.build())
+                setActionStrip(actionStrip)
+                build()
+            }
 
     }
 

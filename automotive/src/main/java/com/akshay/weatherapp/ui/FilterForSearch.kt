@@ -102,7 +102,7 @@ class FilterForSearch(carContext: CarContext) : Screen(carContext) {
             carContext.getString(R.string.payment_options)
         )
 
-        return ListTemplate.Builder().apply {
+        return ListTemplate.Builder().run {
             clearSectionedLists()
             setTitle(carContext.getString(R.string.filter_gas_stations))
             setHeaderAction(Action.BACK)
@@ -119,6 +119,7 @@ class FilterForSearch(carContext: CarContext) : Screen(carContext) {
                 ).build())
             addSectionedList(distanceSectionedList)
             addSectionedList(paymentSectionedList)
-        }.build()
+            build()
+        }
     }
 }

@@ -1,10 +1,5 @@
 package com.akshay.weatherapp.templates
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
 import android.text.SpannableString
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
@@ -13,11 +8,9 @@ import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
 import androidx.car.app.model.CarColor.GREEN
 import androidx.car.app.model.CarColor.YELLOW
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.app_secrets.ApiKey
 import com.akshay.weatherapp.common.Constants.Companion.CLOUD
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
@@ -25,17 +18,13 @@ import com.akshay.weatherapp.common.Constants.Companion.SYSTEM_INFORMATION
 import com.akshay.weatherapp.common.Constants.Companion.TEMPERATURE
 import com.akshay.weatherapp.common.Constants.Companion.WEATHER_CONDITION
 import com.akshay.weatherapp.common.Constants.Companion.WIND
+import com.akshay.weatherapp.common.RepositoryUtils
+import com.akshay.weatherapp.common.RepositoryUtils.getRetryAction
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.colorize
-import com.akshay.weatherapp.common.Utility.Companion.goToHome
-import com.akshay.weatherapp.common.Utility.Companion.requestPermission
 import com.akshay.weatherapp.common.Utility.Companion.showToast
-import com.akshay.weatherapp.model.WeatherResponse
-import com.akshay.weatherapp.service.RetrofitInstance
-import com.akshay.weatherapp.ui.MyLocationListener
+import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
-import com.akshay.weatherapp.viewmodel.WeatherViewModel
-import retrofit2.Call
 
 
 /**
@@ -70,15 +59,7 @@ import retrofit2.Call
  */
 class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
 
-    private val weatherViewModel = WeatherViewModel()
-    private var weatherResponseData: WeatherResponse? = null
-
-    private lateinit var myLocationListener: MyLocationListener
-    private var locationManager: LocationManager? = null
-    private var hasPermissionLocation: Boolean = false
-    private var currentLocation: Location? = null
-    private var call: Call<WeatherResponse>? = null
-
+    private var weatherResponseModelData: WeatherResponseModel? = null
     private var mIsLoading = true
     private var errorMessage: String? = null
     private var mIsEnabled = true
@@ -106,7 +87,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private fun createWeatherRow(title: String, icon: IconCompat): Row {
         val rowIcon = CarIcon.Builder(icon).build()
         val onClickListener: () -> Unit = {
-            weatherResponseData?.let {
+            weatherResponseModelData?.let {
                 screenManager.push(WeatherDetailsScreen(carContext, it, title))
             } ?: run {
                 Utility.showErrorMessage(
@@ -148,13 +129,23 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                         mIsEnabled
                     )
                 )
-                addText(getColoredString(carContext.getString(R.string.optional_text), mIsEnabled, GREEN))
+                addText(
+                    getColoredString(
+                        carContext.getString(R.string.optional_text),
+                        mIsEnabled,
+                        GREEN
+                    )
+                )
                 setEnabled(mIsEnabled)
             }
             .build()
     }
 
-    private fun getColoredString(str: String, isEnabled: Boolean, color: CarColor = YELLOW): CharSequence {
+    private fun getColoredString(
+        str: String,
+        isEnabled: Boolean,
+        color: CarColor = YELLOW
+    ): CharSequence {
         if (isEnabled && str.isNotEmpty()) {
             val ss = SpannableString(str)
             colorize(ss, color, 0, str.length)
@@ -163,74 +154,23 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         return str
     }
 
-    private fun setUpObserversAndCallApi() {
-        weatherViewModel.apply {
-            isLoading.observe(this@ListTemplateExample) {
-                mIsLoading = it
-                if (it) {
-                    invalidate()
-                }
-            }
-            mError.observe(this@ListTemplateExample) {
-                errorMessage = it
-                invalidate()
-            }
-            weatherData.observe(this@ListTemplateExample) { weatherResponse ->
-                weatherResponseData = weatherResponse
-                mIsLoading = false
-                errorMessage = null
-                invalidate()
-            }
+    private val loadingCallback: (Boolean) -> Unit = { isLoading ->
+        mIsLoading = isLoading
+        if (isLoading) {
+            invalidate()
         }
+    }
 
-        myLocationListener = MyLocationListener { location ->
-            if (location.latitude != currentLocation?.latitude && location.longitude != currentLocation?.longitude) {
-                currentLocation = location
-                call =
-                    RetrofitInstance.weatherApiService.getCurrentWeather(
-                        location.latitude,
-                        location.longitude,
-                        ApiKey.API_KEY
-                    )
-                weatherViewModel.fetchWeatherData(
-                    carContext,
-                    call ?: weatherViewModel.getDefaultCall()
-                )
-            }
-        }
+    private val errorCallback: (String?) -> Unit = { errorData ->
+        errorMessage = errorData
+        invalidate()
+    }
 
-        locationManager = carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        hasPermissionLocation =
-            ContextCompat.checkSelfPermission(
-                carContext,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) ==
-                    PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        carContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) ==
-                    PackageManager.PERMISSION_GRANTED
-
-        if (hasPermissionLocation) {
-            locationManager?.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                1000L,
-                0f,
-                myLocationListener
-            )
-        } else {
-            requestPermission(carContext) { approved, rejected ->
-                if (approved.isNotEmpty()) {
-                    showToast(carContext, carContext.getString(R.string.approved))
-                    invalidate()
-
-                } else if (rejected.isNotEmpty()) {
-                    showToast(carContext, carContext.getString(R.string.rejected))
-                    screenManager.pop()
-                }
-            }
-        }
+    private val weatherDataCallback: (WeatherResponseModel?) -> Unit = { weatherResponse ->
+        weatherResponseModelData = weatherResponse
+        mIsLoading = false
+        errorMessage = null
+        invalidate()
     }
 
     /**
@@ -240,7 +180,13 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      */
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
-        setUpObserversAndCallApi()
+        RepositoryUtils.setUpObserversAndCallApi(
+            carContext,
+            this,
+            loadingCallback,
+            errorCallback,
+            weatherDataCallback
+        )
 //        if (carContext.carAppApiLevel > CarAppApiLevels.LEVEL_1) {
 //            val listLimit = Integer.min(
 //                Constants.MAX_LIST_ITEMS,
@@ -328,28 +274,13 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 .build()
         }
 
-        val retryAction = Action.Builder()
-            .setTitle(carContext.getString(R.string.retry))
-            .setFlags(Action.FLAG_PRIMARY)
-            .setOnClickListener {
-                weatherViewModel.fetchWeatherData(
-                    carContext,
-                    call ?: weatherViewModel.getDefaultCall()
-                )
-                invalidate()
-            }.build()
-
         errorMessage?.let {
             return MessageTemplate.Builder(it)
                 .setTitle(LIST_TEMPLATE)
                 .setIcon(CarIcon.ERROR)
                 .setHeaderAction(Action.BACK)
-                .setActionStrip(
-                    ActionStrip.Builder()
-                        .addAction(goToHome(carContext, this))
-                        .build()
-                )
-                .addAction(retryAction)
+                .setActionStrip(Utility.goToHome(carContext, this))
+                .addAction(getRetryAction(carContext, this))
                 .build()
         }
 

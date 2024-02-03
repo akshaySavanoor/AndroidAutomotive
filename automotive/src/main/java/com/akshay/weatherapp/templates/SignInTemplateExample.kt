@@ -115,10 +115,10 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         callback: InputCallback
     ): InputSignInMethod.Builder {
         return InputSignInMethod.Builder(callback)
-            .setInputType(InputSignInMethod.INPUT_TYPE_DEFAULT)
-            .setHint(getColoredString(hint, 0, hint.length, CarColor.RED))
-            .setKeyboardType(keyboardType)
             .apply {
+                setInputType(InputSignInMethod.INPUT_TYPE_DEFAULT)
+                setHint(getColoredString(hint, 0, hint.length, CarColor.RED))
+                setKeyboardType(keyboardType)
                 error?.let { setErrorMessage(it) }
             }
     }
@@ -174,17 +174,19 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         val inputSignInMethod = getInputSignInMethod(hint, keyboardType, callback)
 
         return SignInTemplate.Builder(inputSignInMethod.build())
-            .setTitle(carContext.getString(R.string.sign_in))
-            .setHeaderAction(BACK)
-            .setAdditionalText(additionalText)
-            .setInstructions(carContext.getString(R.string.sign_in_instruction))
-            .setActionStrip(
-                ActionStrip.Builder()
-                    .addAction(skipAction)
-                    .build()
-            )
-            .addAction(if (carContext.carAppApiLevel > CarAppApiLevels.LEVEL_3) mQRCodeSignInAction else mPinSignInAction)
-            .build()
+            .run {
+                setTitle(carContext.getString(R.string.sign_in))
+                setHeaderAction(BACK)
+                setAdditionalText(additionalText)
+                setInstructions(carContext.getString(R.string.sign_in_instruction))
+                setActionStrip(
+                    ActionStrip.Builder()
+                        .addAction(skipAction)
+                        .build()
+                )
+                addAction(if (carContext.carAppApiLevel > CarAppApiLevels.LEVEL_3) mQRCodeSignInAction else mPinSignInAction)
+                build()
+            }
     }
 
     /**
@@ -195,17 +197,19 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
     private fun getPinSignInTemplate(): Template {
         val pinSignInMethod = PinSignInMethod(generateRandomString(12))
         return SignInTemplate.Builder(pinSignInMethod)
-            .setTitle(carContext.getString(R.string.sign_in))
-            .setInstructions(carContext.getString(R.string.pin_sign_in_instruction))
-            .setHeaderAction(BACK)
-            .setActionStrip(
-                ActionStrip.Builder()
-                    .addAction(skipAction)
-                    .build()
-            )
-            .addAction(mInputSignIn)
-            .setAdditionalText(additionalText)
-            .build()
+            .run {
+                setTitle(carContext.getString(R.string.sign_in))
+                setInstructions(carContext.getString(R.string.pin_sign_in_instruction))
+                setHeaderAction(BACK)
+                setActionStrip(
+                    ActionStrip.Builder()
+                        .addAction(skipAction)
+                        .build()
+                )
+                addAction(mInputSignIn)
+                setAdditionalText(additionalText)
+                build()
+            }
     }
 
     /**
@@ -215,18 +219,20 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
         val qrCodeSignInMethod =
             QRCodeSignInMethod(Uri.parse(DUMMY_LOGIN_URL))
         return SignInTemplate.Builder(qrCodeSignInMethod)
-            .setTitle(carContext.getString(R.string.sign_in))
-            .setInstructions(carContext.getString(R.string.qr_code_sign_in_title))
-            .setHeaderAction(BACK)
-            .setActionStrip(
-                ActionStrip.Builder()
-                    .addAction(skipAction)
-                    .build()
-            )
-            .addAction(mInputSignIn)
-            .addAction(mPinSignInAction)
-            .setAdditionalText(additionalText)
-            .build()
+            .run {
+                setTitle(carContext.getString(R.string.sign_in))
+                setInstructions(carContext.getString(R.string.qr_code_sign_in_title))
+                setHeaderAction(BACK)
+                setActionStrip(
+                    ActionStrip.Builder()
+                        .addAction(skipAction)
+                        .build()
+                )
+                addAction(mInputSignIn)
+                addAction(mPinSignInAction)
+                setAdditionalText(additionalText)
+                build()
+            }
     }
 
     private fun successPage(): Template {

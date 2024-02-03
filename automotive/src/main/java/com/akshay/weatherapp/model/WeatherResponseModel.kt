@@ -2,7 +2,7 @@ package com.akshay.weatherapp.model
 
 import com.google.gson.annotations.SerializedName
 
-data class WeatherResponse(
+data class WeatherResponseModel(
 
     @SerializedName("coord") var coord: Coordinates,
     @SerializedName("weather") var weather: List<Weather> = listOf(),

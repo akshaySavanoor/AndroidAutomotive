@@ -63,11 +63,13 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
             R.drawable.ic_favorite_white_24dp
         }
         val actionStrip = ActionStrip.Builder()
-            .addAction(createActionWithTitle(carContext.getString(R.string.locations)))
-            .addAction(createActionWithIcon(carContext, R.drawable.ic_search, SEARCH))
-            .addAction(createActionWithIcon(carContext, R.drawable.ic_settings, SETTINGS))
-            .addAction(createActionWithIcon(carContext, starIcon, FAVOURITE))
-            .build()
+            .run {
+                addAction(createActionWithTitle(carContext.getString(R.string.locations)))
+                addAction(createActionWithIcon(carContext, R.drawable.ic_search, SEARCH))
+                addAction(createActionWithIcon(carContext, R.drawable.ic_settings, SETTINGS))
+                addAction(createActionWithIcon(carContext, starIcon, FAVOURITE))
+                build()
+            }
 
         /**
          * - If you set `setCurrentLocationEnabled` to true, the app must have either the
@@ -81,16 +83,18 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
          *
          */
         return PlaceListMapTemplate.Builder()
-            .setActionStrip(actionStrip)
+            .run {
+                setActionStrip(actionStrip)
 //            .setCurrentLocationEnabled(true)
-            .setItemList(samplePlaces.getPlaceList())
-            .setOnContentRefreshListener {
-                showToast(carContext, carContext.getString(R.string.gas_station_info_updated))
-                invalidate()
+                setItemList(samplePlaces.getPlaceList())
+                setOnContentRefreshListener {
+                    showToast(carContext, carContext.getString(R.string.gas_station_info_updated))
+                    invalidate()
+                }
+                setTitle(carContext.getString(R.string.gas_stations))
+                setHeaderAction(Action.BACK)
+                build()
             }
-            .setTitle(carContext.getString(R.string.gas_stations))
-            .setHeaderAction(Action.BACK)
-            .build()
     }
 
     private fun createActionWithTitle(title: String): Action {
