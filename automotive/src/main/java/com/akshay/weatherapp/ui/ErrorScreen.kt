@@ -10,24 +10,24 @@ import androidx.car.app.model.MessageTemplate
 import androidx.car.app.model.Template
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.templates.GridTemplateExample
-import com.akshay.weatherapp.templates.ListTemplateExample
-import com.akshay.weatherapp.templates.LongMessageTemplateExample
-import com.akshay.weatherapp.templates.MapTemplateExample
-import com.akshay.weatherapp.templates.MessageTemplateExample
-import com.akshay.weatherapp.templates.NavigationTemplateExample
-import com.akshay.weatherapp.templates.PaneTemplateExample
-import com.akshay.weatherapp.templates.SearchTemplateExample
-import com.akshay.weatherapp.templates.SignInTemplateExample
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LONG_MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MESSAGE_TEMPLATE
-import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.PANE_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.PLACE_LIST_MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH
 import com.akshay.weatherapp.common.Constants.Companion.SIGN_IN_TEMPLATE
+import com.akshay.weatherapp.templates.GridTemplateExample
+import com.akshay.weatherapp.templates.ListTemplateExample
+import com.akshay.weatherapp.templates.LongMessageTemplateExample
+import com.akshay.weatherapp.templates.MapTemplateExample
+import com.akshay.weatherapp.templates.MessageTemplateExample
+import com.akshay.weatherapp.templates.PaneTemplateExample
+import com.akshay.weatherapp.templates.PlaceListMapExample
+import com.akshay.weatherapp.templates.SearchTemplateExample
+import com.akshay.weatherapp.templates.SignInTemplateExample
 
 class ErrorScreen(carContext: CarContext, private val title: String) : Screen(carContext) {
     override fun onGetTemplate(): Template {
@@ -53,7 +53,7 @@ class ErrorScreen(carContext: CarContext, private val title: String) : Screen(ca
 
                     PANE_TEMPLATE -> screenManager.push(PaneTemplateExample(carContext))
                     MAP_TEMPLATE -> screenManager.push(MapTemplateExample(carContext))
-                    NAVIGATION_TEMPLATE -> screenManager.push(NavigationTemplateExample(carContext))
+                    PLACE_LIST_MAP_TEMPLATE -> screenManager.push(PlaceListMapExample(carContext))
                     SEARCH -> screenManager.push(SearchTemplateExample(carContext))
                     SIGN_IN_TEMPLATE -> screenManager.push(SignInTemplateExample(carContext))
                 }

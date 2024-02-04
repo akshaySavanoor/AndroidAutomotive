@@ -11,7 +11,7 @@
     <string name="accept">Accept</string>
     <string name="no_thanks">No thanks</string>
     <string name="long_message">When the car is parked, this template can show a detailed message, such as a privacy policy, or terms of service for the user to accept when signing in to the app (Android Auto example)When the user is driving, the long message is not shown, to prevent driver distraction.
-        For these situations, it’s helpful to provide a button with an alternative option, such as skipping sign-in and using the app in guest mode.</string>
+        For these situations, it’s helpful to provide a button with an alternative option, such as skipping sign-in and using the app in guest mode.\n.\n.\n.\n.\n.\n.\n.\nscroll\n.\n.\n.\n.\n.\n.\nscroll\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n</string>
 
     <string name="ok">OK</string>
     <string name="would_you_like_to_start_new_route">Would you like to start a new route?</string>
@@ -98,7 +98,7 @@
     <string name="use_email">Sign in using email</string>
     <string name="login_successful">Login successful</string>
     <string name="go_to_home">Go to home</string>
-    <string name="navigation_alert_title">Still a speed trap?</string>
+    <string name="navigation_alert_title">Speed check still in place?</string>
     <string name="navigation_alert_subtitle">Reported 10m ago</string>
     <string name="yes">YES</string>
     <string name="yes_action_toast_msg">Yes button pressed!</string>

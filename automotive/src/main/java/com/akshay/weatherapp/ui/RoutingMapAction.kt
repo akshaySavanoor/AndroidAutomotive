@@ -230,12 +230,12 @@ object RoutingMapAction {
                 nowUtcMillis + timeToDestinationMillis,
                 TimeZone.getTimeZone("Asia/Kolkata")
             )
-        )
-            .setRemainingTimeSeconds(TimeUnit.MILLISECONDS.toSeconds(timeToDestinationMillis))
-            .setRemainingTimeColor(CarColor.YELLOW)
-            .setRemainingDistanceColor(CarColor.RED)
-            .setTripText(CarText.create(carContext.getString(R.string.travel_est_trip_text)))
-            .setTripIcon(
+        ).run {
+            setRemainingTimeSeconds(TimeUnit.MILLISECONDS.toSeconds(timeToDestinationMillis))
+            setRemainingTimeColor(CarColor.YELLOW)
+            setRemainingDistanceColor(CarColor.RED)
+            setTripText(CarText.create(carContext.getString(R.string.travel_est_trip_text)))
+            setTripIcon(
                 CarIcon.Builder(
                     IconCompat.createWithResource(
                         carContext,
@@ -243,7 +243,8 @@ object RoutingMapAction {
                     )
                 ).build()
             )
-            .build()
+            build()
+        }
     }
 
 

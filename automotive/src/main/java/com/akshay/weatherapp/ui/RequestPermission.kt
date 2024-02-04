@@ -28,8 +28,8 @@ import com.akshay.weatherapp.templates.ListTemplateExample
 import com.akshay.weatherapp.templates.LongMessageTemplateExample
 import com.akshay.weatherapp.templates.MapTemplateExample
 import com.akshay.weatherapp.templates.MessageTemplateExample
-import com.akshay.weatherapp.templates.NavigationTemplateExample
 import com.akshay.weatherapp.templates.PaneTemplateExample
+import com.akshay.weatherapp.templates.PlaceListMapExample
 import com.akshay.weatherapp.templates.SearchTemplateExample
 import com.akshay.weatherapp.templates.SignInTemplateExample
 
@@ -147,8 +147,8 @@ class RequestPermissionScreen(
                                 )
                             )
 
-                            Constants.NAVIGATION_TEMPLATE -> screenManager.push(
-                                NavigationTemplateExample(carContext)
+                            Constants.PLACE_LIST_MAP_TEMPLATE -> screenManager.push(
+                                PlaceListMapExample(carContext)
                             )
 
                             Constants.SEARCH -> screenManager.push(SearchTemplateExample(carContext))

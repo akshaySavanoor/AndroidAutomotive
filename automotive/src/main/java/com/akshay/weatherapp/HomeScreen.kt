@@ -20,7 +20,7 @@ import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LONG_MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MESSAGE_TEMPLATE
-import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.PLACE_LIST_MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_WITH_ALERT
 import com.akshay.weatherapp.common.Constants.Companion.PANE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.ROUTE_PREVIEW_TEMPLATE
@@ -35,7 +35,7 @@ import com.akshay.weatherapp.templates.LongMessageTemplateExample
 import com.akshay.weatherapp.templates.MapTemplateExample
 import com.akshay.weatherapp.templates.MessageTemplateExample
 import com.akshay.weatherapp.templates.NavigationTemplateEx
-import com.akshay.weatherapp.templates.NavigationTemplateExample
+import com.akshay.weatherapp.templates.PlaceListMapExample
 import com.akshay.weatherapp.templates.PaneTemplateExample
 import com.akshay.weatherapp.templates.RouteTemplateExample
 import com.akshay.weatherapp.templates.SearchTemplateExample
@@ -98,7 +98,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
             addItem(createWeatherRow(LONG_MESSAGE_TEMPLATE))
             addItem(createWeatherRow(PANE_TEMPLATE))
             addItem(createWeatherRow(MAP_TEMPLATE))
-            addItem(createWeatherRow(NAVIGATION_TEMPLATE))
+            addItem(createWeatherRow(PLACE_LIST_MAP_TEMPLATE))
             addItem(createWeatherRow(SEARCH_TEMPLATE))
             addItem(createWeatherRow(SIGN_IN_TEMPLATE))
             addItem(createWeatherRow(ROUTE_PREVIEW_TEMPLATE))
@@ -131,7 +131,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
 
                     PANE_TEMPLATE -> screenManager.push(PaneTemplateExample(carContext))
                     MAP_TEMPLATE -> screenManager.push(MapTemplateExample(carContext))
-                    NAVIGATION_TEMPLATE -> screenManager.push(NavigationTemplateExample(carContext))
+                    PLACE_LIST_MAP_TEMPLATE -> screenManager.push(PlaceListMapExample(carContext))
                     SEARCH_TEMPLATE -> screenManager.push(SearchTemplateExample(carContext))
                     SIGN_IN_TEMPLATE -> screenManager.push(SignInTemplateExample(carContext))
                     ROUTE_PREVIEW_TEMPLATE -> screenManager.push(RouteTemplateExample(carContext))

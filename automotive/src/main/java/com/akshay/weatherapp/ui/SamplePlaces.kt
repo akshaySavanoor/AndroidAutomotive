@@ -156,34 +156,35 @@ class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
          * Note: Number of lines of texts for the row cannot be more than 2
          * Error: java.lang.IllegalArgumentException: The number of lines of texts for the row exceeded the supported max of 2
          */
-        return rowItem
-            .setTitle(currentPlace.name)
-            .addText(statusWithDesc)
-            .setMetadata(createPlaceMetadata(location, carColor))
-            .build()
+        return rowItem.run {
+            setTitle(currentPlace.name)
+            addText(statusWithDesc)
+            setMetadata(createPlaceMetadata(location, carColor))
+            build()
+        }
     }
 
     private fun createPlaceMetadata(location: Location, carColor: CarColor): Metadata {
-        return Metadata.Builder()
-            .setPlace(
-                Place.Builder(CarLocation.create(location.latitude, location.longitude))
-                    .setMarker(
-                        PlaceMarker.Builder()
-                            .setIcon(
-                                CarIcon.Builder(
-                                    IconCompat.createWithResource(
-                                        currentContext,
-                                        R.drawable.ic_fuel
-                                    )
-                                )
-                                    .setTint(carColor)
-                                    .build(),
-                                PlaceMarker.TYPE_IMAGE
-                            )
-                            .build()
-                    )
-                    .build()
+        val marker = PlaceMarker.Builder().apply {
+            setIcon(
+            CarIcon.Builder(
+                IconCompat.createWithResource(
+                    currentContext,
+                    R.drawable.ic_fuel
+                )
             )
+                .setTint(carColor)
+                .build(),
+            PlaceMarker.TYPE_IMAGE
+        )
+        }
+
+        val place =  Place.Builder(CarLocation.create(location.latitude, location.longitude))
+            .setMarker(marker.build())
+            .build()
+
+        return Metadata.Builder()
+            .setPlace(place)
             .build()
     }
 }

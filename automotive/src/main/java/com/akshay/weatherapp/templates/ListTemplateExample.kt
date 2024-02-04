@@ -6,7 +6,6 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
-import androidx.car.app.model.CarColor.GREEN
 import androidx.car.app.model.CarColor.YELLOW
 import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -14,8 +13,10 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.CLOUD
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.RADIO_VIEW
 import com.akshay.weatherapp.common.Constants.Companion.SYSTEM_INFORMATION
 import com.akshay.weatherapp.common.Constants.Companion.TEMPERATURE
+import com.akshay.weatherapp.common.Constants.Companion.TOGGLE_VIEW
 import com.akshay.weatherapp.common.Constants.Companion.WEATHER_CONDITION
 import com.akshay.weatherapp.common.Constants.Companion.WIND
 import com.akshay.weatherapp.common.RepositoryUtils
@@ -63,6 +64,8 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private var mIsLoading = true
     private var errorMessage: String? = null
     private var mIsEnabled = true
+    private var isRadioViewEnabled = false
+    private var isToggleEnabled = false
 
     /**
      * Adds an extra action to the end of the row using addAction().
@@ -87,20 +90,38 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private fun createWeatherRow(title: String, icon: IconCompat): Row {
         val rowIcon = CarIcon.Builder(icon).build()
         val onClickListener: () -> Unit = {
-            weatherResponseModelData?.let {
-                screenManager.push(WeatherDetailsScreen(carContext, it, title))
-            } ?: run {
-                Utility.showErrorMessage(
-                    carContext,
-                    carContext.getString(R.string.failed_to_fetch_weather_data)
-                )
+            when(title){
+                TOGGLE_VIEW -> {
+                    isToggleEnabled = true
+                    invalidate()
+                }
+                RADIO_VIEW -> {
+                    isRadioViewEnabled = true
+                    invalidate()
+                }
+                else -> weatherResponseModelData?.let {
+                    screenManager.push(WeatherDetailsScreen(carContext, it, title))
+                } ?: run {
+                    Utility.showErrorMessage(
+                        carContext,
+                        carContext.getString(R.string.failed_to_fetch_weather_data)
+                    )
+                }
             }
         }
-        return Row.Builder()
+        val itemRow = Row.Builder()
             .apply {
                 setImage(rowIcon)
-                setBrowsable(true)
-//              setOnClickListener{}
+
+                setTitle(title) // Colored spannable cannot be applied to the title
+                addText(
+                    getColoredString(
+                        carContext.getString(R.string.title_details, title),
+                        mIsEnabled
+                    )
+                )
+                setEnabled(mIsEnabled)
+
 //              setToggle(Toggle.Builder {
 //                if (it) {
 //                    println("On")
@@ -118,27 +139,51 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 //                    .setOnClickListener{}
 //                    .build()
 //            )
-//            setNumericDecoration(4)
-                setOnClickListener(ParkedOnlyOnClickListener.create {
-                    onClickListener()
-                }) //Items that belong to selectable lists can't have an onClickListener.
-                setTitle(title) // Colored spannable cannot be applied to the title
-                addText(
-                    getColoredString(
-                        carContext.getString(R.string.title_details, title),
-                        mIsEnabled
-                    )
-                )
-                addText(
-                    getColoredString(
-                        carContext.getString(R.string.optional_text),
-                        mIsEnabled,
-                        GREEN
-                    )
-                )
-                setEnabled(mIsEnabled)
             }
-            .build()
+        when {
+            !isToggleEnabled && !isRadioViewEnabled -> {
+                itemRow.apply {
+                    setBrowsable(true)
+                    setOnClickListener(ParkedOnlyOnClickListener.create {
+                        onClickListener()
+                    }) //Items that belong to selectable lists can't have an onClickListener.
+                    addText(
+                        getColoredString(
+                            carContext.getString(R.string.optional_text),
+                            mIsEnabled,
+                            CarColor.GREEN
+                        )
+                    )
+                    setNumericDecoration(3) //java.lang.IllegalStateException: If a row contains a toggle, it must not have a numeric decoration set
+                }
+            }
+
+            isToggleEnabled -> {
+                itemRow.setToggle(Toggle.Builder {
+                    if (it) {
+                        when (title) {
+                            RADIO_VIEW -> {
+                                isToggleEnabled = false
+                                isRadioViewEnabled = true
+                                invalidate()
+                            }
+
+                            else -> {
+                                isRadioViewEnabled = false
+                                isToggleEnabled = false
+                                invalidate()
+                            }
+                        }
+                    } else {
+                        println("Off")
+                    }
+                }
+                    .setChecked(title == TOGGLE_VIEW)
+                    .build())
+            }
+        }
+
+       return itemRow.build()
     }
 
     private fun getColoredString(
@@ -225,6 +270,18 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             // Some hosts may allow more items in the list than others, so create more.
             addItem(
                 createWeatherRow(
+                    TOGGLE_VIEW,
+                    IconCompat.createWithResource(carContext, R.drawable.switch_button)
+                )
+            )
+            addItem(
+                createWeatherRow(
+                    RADIO_VIEW,
+                    IconCompat.createWithResource(carContext, R.drawable.ic_radio_button)
+                )
+            )
+            addItem(
+                createWeatherRow(
                     COORDINATES,
                     IconCompat.createWithResource(carContext, R.drawable.ic_coordinate)
                 )
@@ -259,10 +316,23 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     IconCompat.createWithResource(carContext, R.drawable.ic_system)
                 )
             )
-//            setSelectedIndex(3) //Used to select default item in the list
-//            setOnSelectedListener {
-//                println("$it selected")
-//            }
+            if (isRadioViewEnabled){
+            setSelectedIndex(1) //Used to select default item in the list
+            setOnSelectedListener {
+                when(it){
+                    0 -> {
+                        isRadioViewEnabled = false
+                        isToggleEnabled = true
+                        invalidate()
+                    }
+                    else -> {
+                        isRadioViewEnabled = false
+                        isToggleEnabled = false
+                        invalidate()
+                    }
+                }
+            }
+            }
         }
         val weatherListBuilder = ListTemplate.Builder()
         if (mIsLoading) {

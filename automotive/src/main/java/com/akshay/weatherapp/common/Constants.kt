@@ -29,12 +29,12 @@ class Constants {
         const val GRID_TEMPLATE = "Grid Template"
         const val PANE_TEMPLATE = "Pane Template"
         const val MAP_TEMPLATE = "Map Template"
-        const val NAVIGATION_TEMPLATE = "Navigation Template"
+        const val PLACE_LIST_MAP_TEMPLATE = "Place List Map Template"
         const val MESSAGE_TEMPLATE = "Message Template"
         const val LONG_MESSAGE_TEMPLATE = "Long Message Template"
         const val SIGN_IN_TEMPLATE = "Sign-In Template"
         const val SEARCH_TEMPLATE = "Search Template"
-        const val NAVIGATION_WITH_ALERT = "Navigation with Alert"
+        const val NAVIGATION_WITH_ALERT = "Navigation Template"
         const val ROUTE_PREVIEW_TEMPLATE = "Route Preview Template"
 
         const val SEARCH = "Search"
@@ -53,6 +53,8 @@ class Constants {
         const val HOME_SCREEN = "HomeScreen"
         const val SYSTEM_INFORMATION = "System Information"
         const val PACKAGE_PREFIX = "androidx.car.app"
+        const val TOGGLE_VIEW = "Toggle View"
+        const val RADIO_VIEW = "Radio View"
 
         const val HARDWARE_PROPERTIES = "Hardware Properties"
         enum class SignInState {

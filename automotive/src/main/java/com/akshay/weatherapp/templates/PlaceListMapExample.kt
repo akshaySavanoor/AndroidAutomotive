@@ -54,7 +54,7 @@ import com.akshay.weatherapp.ui.PlaceDetailsScreen
  * user-friendly experience within the Place List (navigation) template.
  */
 
-class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
+class PlaceListMapExample(carContext: CarContext) : Screen(carContext),
     DefaultLifecycleObserver {
 
     private var weatherResponseModelData: WeatherResponseModel? = null
@@ -131,11 +131,11 @@ class NavigationTemplateExample(carContext: CarContext) : Screen(carContext),
 
         errorMessage?.let {
             return MessageTemplate.Builder(it).run {
-                setTitle(Constants.NAVIGATION_TEMPLATE)
+                setTitle(Constants.PLACE_LIST_MAP_TEMPLATE)
                 setIcon(CarIcon.ERROR)
                 setHeaderAction(Action.BACK)
-                setActionStrip(Utility.goToHome(carContext, this@NavigationTemplateExample))
-                addAction(RepositoryUtils.getRetryAction(carContext, this@NavigationTemplateExample))
+                setActionStrip(Utility.goToHome(carContext, this@PlaceListMapExample))
+                addAction(RepositoryUtils.getRetryAction(carContext, this@PlaceListMapExample))
                 build()
             }
         }
