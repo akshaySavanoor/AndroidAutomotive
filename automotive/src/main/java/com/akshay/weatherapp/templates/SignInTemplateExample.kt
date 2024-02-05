@@ -44,10 +44,10 @@ import com.akshay.weatherapp.common.Utility.Companion.validatePassword
  *
  * App developers:
  *
- * MUST    Include a sign-in method when using this template.
- * SHOULD  Use input fields only for user sign-in, not for collecting other types of user input.
- * SHOULD  Prioritize the shortest flow (using the fewest clicks).
- * SHOULD  Prioritize the most popular method.
+ * - MUST    Include a sign-in method when using this template.
+ * - SHOULD  Use input fields only for user sign-in, not for collecting other types of user input.
+ * - SHOULD  Prioritize the shortest flow (using the fewest clicks).
+ * - SHOULD  Prioritize the most popular method.
  */
 
 class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {

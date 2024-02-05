@@ -38,10 +38,10 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
     private var mIsFavorite: Boolean = false
 
     /**
-     * CAUTION: All rows must have either a distance or duration span attached to either its title or texts
-     * ERROR: java.lang.IllegalArgumentException: All rows must have either a distance or duration span attached to either its title or texts
+     * - CAUTION: All rows must have either a distance or duration span attached to either its title or texts
+     * - ERROR: java.lang.IllegalArgumentException: All rows must have either a distance or duration span attached to either its title or texts
      *
-     *The number of items in the ItemList should be smaller or equal than the limit provided by ConstraintManager.CONTENT_LIMIT_TYPE_ROUTE_LIST
+     * The number of items in the ItemList should be smaller or equal than the limit provided by ConstraintManager.CONTENT_LIMIT_TYPE_ROUTE_LIST
      * Host will ignore any items over that limit also it must contain onClick listener set.
      */
     override fun onGetTemplate(): Template {

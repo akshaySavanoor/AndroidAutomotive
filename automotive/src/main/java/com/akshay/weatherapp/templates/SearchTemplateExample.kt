@@ -56,8 +56,8 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
      * The host may ignore the color specified in the ForegroundCarColorSpan and instead use
      * a default color.
      *
-     * CAUTION: Avoid using ForegroundCarColorSpan for the title, as it may lead to a crash in the app.
-     * ERROR: java.lang.IllegalArgumentException: CarSpan type is not allowed: ForegroundCarColorSpan
+     * - CAUTION: Avoid using ForegroundCarColorSpan for the title, as it may lead to a crash in the app.
+     * - ERROR: java.lang.IllegalArgumentException: CarSpan type is not allowed: ForegroundCarColorSpan
      */
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {

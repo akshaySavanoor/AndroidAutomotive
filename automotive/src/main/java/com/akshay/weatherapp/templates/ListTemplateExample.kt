@@ -51,7 +51,7 @@ import com.akshay.weatherapp.ui.WeatherDetailsScreen
  * - You may divide list content into sections and mix rows with toggle switches as needed.
  * - Update row text, image, or icon asset when the user changes the toggle state.
  *
- * Note: The amount of secondary text allowed in each list row varies depending on driving status.
+ * - Note: The amount of secondary text allowed in each list row varies depending on driving status.
  * For safe driving, text is truncated to 2 lines while driving.
  * Ensure content meant to be read while driving is placed at the beginning of the secondary text.
  *
@@ -71,17 +71,17 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      * Adds an extra action to the end of the row using addAction().
      * The background color of the action may or may not be displayed based on the host.
 
-     * CAUTION: Avoid using both Toggle and addAction simultaneously to prevent app crashes.
-     * ERROR: Caused by: java.lang.IllegalStateException - If a row contains a toggle, it must not have a secondary action set.
+     * - CAUTION: Avoid using both Toggle and addAction simultaneously to prevent app crashes.
+     * - ERROR: Caused by: java.lang.IllegalStateException - If a row contains a toggle, it must not have a secondary action set.
 
-     * CAUTION: If setBrowsable is true, a ">" symbol will appear at the end of the row.
-     * In this case, use setOnClickListener and avoid using Toggle or addAction.
-     * ERROR: java.lang.IllegalStateException - A browsable row must have its onClickListener set.
+     * - CAUTION: If setBrowsable is true, a ">" symbol will appear at the end of the row.
+     * - In this case, use setOnClickListener and avoid using Toggle or addAction.
+     * - ERROR: java.lang.IllegalStateException - A browsable row must have its onClickListener set.
      *
-     * CAUTION: The number of lines of texts for the row cannot be more than 2.
-     * ERROR: java.lang.IllegalArgumentException: The number of lines of texts for the row exceeded the supported max of 2
+     * - CAUTION: The number of lines of texts for the row cannot be more than 2.
+     * - ERROR: java.lang.IllegalArgumentException: The number of lines of texts for the row exceeded the supported max of 2
      *
-     * Numeric decorations typically represent a quantity of unseen content. For example, a
+     * - Numeric decorations typically represent a quantity of unseen content. For example, a
      * decoration might represent a number of missed notifications, or a number of unread
      * messages in a conversation.(appears before Action view)
      *
@@ -90,15 +90,17 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private fun createWeatherRow(title: String, icon: IconCompat): Row {
         val rowIcon = CarIcon.Builder(icon).build()
         val onClickListener: () -> Unit = {
-            when(title){
+            when (title) {
                 TOGGLE_VIEW -> {
                     isToggleEnabled = true
                     invalidate()
                 }
+
                 RADIO_VIEW -> {
                     isRadioViewEnabled = true
                     invalidate()
                 }
+
                 else -> weatherResponseModelData?.let {
                     screenManager.push(WeatherDetailsScreen(carContext, it, title))
                 } ?: run {
@@ -183,7 +185,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             }
         }
 
-       return itemRow.build()
+        return itemRow.build()
     }
 
     private fun getColoredString(
@@ -220,8 +222,8 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
     /**
      * setOnSelectedListener{} adds a radio button to each list item.
-     * CAUTION: When using setOnSelectedListener{}, toggling is not allowed.
-     * ERROR: java.lang.IllegalStateException: Items in selectable lists cannot have a toggle.
+     * - CAUTION: When using setOnSelectedListener{}, toggling is not allowed.
+     * - ERROR: java.lang.IllegalStateException: Items in selectable lists cannot have a toggle.
      */
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
@@ -316,22 +318,23 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     IconCompat.createWithResource(carContext, R.drawable.ic_system)
                 )
             )
-            if (isRadioViewEnabled){
-            setSelectedIndex(1) //Used to select default item in the list
-            setOnSelectedListener {
-                when(it){
-                    0 -> {
-                        isRadioViewEnabled = false
-                        isToggleEnabled = true
-                        invalidate()
-                    }
-                    else -> {
-                        isRadioViewEnabled = false
-                        isToggleEnabled = false
-                        invalidate()
+            if (isRadioViewEnabled) {
+                setSelectedIndex(1) //Used to select default item in the list
+                setOnSelectedListener {
+                    when (it) {
+                        0 -> {
+                            isRadioViewEnabled = false
+                            isToggleEnabled = true
+                            invalidate()
+                        }
+
+                        else -> {
+                            isRadioViewEnabled = false
+                            isToggleEnabled = false
+                            invalidate()
+                        }
                     }
                 }
-            }
             }
         }
         val weatherListBuilder = ListTemplate.Builder()
@@ -355,10 +358,10 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         }
 
         /**
-         * Note: You cannot use both a sectioned list and a normal list simultaneously. If attempted, priority will be given to the last declared list.
+         * - Note: You cannot use both a sectioned list and a normal list simultaneously. If attempted, priority will be given to the last declared list.
          *
-         * FABs are supported by the Grid template and the List template.
-         * Note: FAB and its color can be ignored by the host.
+         * - FABs are supported by the Grid template and the List template.
+         * - Note: FAB and its color can be ignored by the host.
          */
         return weatherListBuilder.apply {
             setTitle(LIST_TEMPLATE)
