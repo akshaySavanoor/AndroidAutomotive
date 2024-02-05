@@ -210,6 +210,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
     private val errorCallback: (String?) -> Unit = { errorData ->
         errorMessage = errorData
+        mIsLoading = false
         invalidate()
     }
 

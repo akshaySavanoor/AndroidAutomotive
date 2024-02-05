@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+automotive/src/main/java/com/akshay/weatherapp/app_secrets/ApiKey.kt
