@@ -11,6 +11,7 @@ import androidx.car.app.model.Action
 import androidx.core.content.ContextCompat
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.service.RetrofitInstance
 import com.akshay.weatherapp.ui.MyLocationListener
@@ -39,12 +40,12 @@ object RepositoryUtils {
     ) {
         when {
             approved.isNotEmpty() -> {
-                Utility.showToast(carContext, carContext.getString(R.string.approved))
+                showErrorMessage(carContext, carContext.getString(R.string.approved))
                 currentScreen.invalidate()
             }
 
             rejected.isNotEmpty() -> {
-                Utility.showToast(carContext, carContext.getString(R.string.rejected))
+                showErrorMessage(carContext, carContext.getString(R.string.rejected))
                 currentScreen.screenManager.pop()
             }
         }

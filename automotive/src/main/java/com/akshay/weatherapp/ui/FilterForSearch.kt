@@ -19,7 +19,7 @@ import com.akshay.weatherapp.common.Constants.Companion.MOBILE_PAYMENT
 import com.akshay.weatherapp.common.Constants.Companion.WITHIN_FIVE
 import com.akshay.weatherapp.common.Constants.Companion.WITHIN_TEN
 import com.akshay.weatherapp.common.Constants.Companion.WITHIN_TWENTY
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 
 /**
  * IMPORTANT: Avoid using setOnChangedListener with Radio buttons when dealing with multiple sectioned lists.
@@ -111,7 +111,7 @@ class FilterForSearch(carContext: CarContext) : Screen(carContext) {
                     Action.Builder()
                         .setTitle(carContext.getString(R.string.apply))
                         .setOnClickListener {
-                            showToast(carContext, carContext.getString(R.string.filter_applied))
+                            showErrorMessage(carContext, carContext.getString(R.string.filter_applied))
                             screenManager.pop()
 
                         }

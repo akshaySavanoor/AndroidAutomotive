@@ -12,9 +12,8 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.FAVOURITE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH
 import com.akshay.weatherapp.common.Constants.Companion.SETTINGS
-import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.ui.SamplePlaces
 
 /**
@@ -87,7 +86,7 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
 //            .setCurrentLocationEnabled(true)
                 setItemList(samplePlaces.getPlaceList())
                 setOnContentRefreshListener {
-                    showToast(carContext, carContext.getString(R.string.gas_station_info_updated))
+                    showErrorMessage(carContext, carContext.getString(R.string.gas_station_info_updated))
                     invalidate()
                 }
                 setTitle(carContext.getString(R.string.gas_stations))
@@ -122,12 +121,12 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
                         } else {
                             carContext.getString(R.string.removed_from_favourites)
                         }
-                        showToast(carContext, toastMessage)
+                        showErrorMessage(carContext, toastMessage)
                         invalidate()
                     }
 
                     else -> {
-                        Utility.showErrorMessage(
+                        showErrorMessage(
                             carContext,
                             carContext.getString(R.string.something_went_wrong)
                         )
