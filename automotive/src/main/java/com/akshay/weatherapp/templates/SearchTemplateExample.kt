@@ -7,9 +7,9 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
-import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Place
 import com.akshay.weatherapp.ui.FilterForSearch
@@ -113,22 +113,15 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
             listBuilder.addItem(
                 Row.Builder()
                     .run {
-                    setTitle(result.name)
-                    setImage(CarIcon.Builder(
-                        IconCompat.createWithResource(
-                            carContext,
-                            R.drawable.ic_fuel
-                        )
-                    )
-                        .build()
-                    )
-                    addText(statusWithDesc)
-                    setBrowsable(true)
-                    setOnClickListener {
-                        previousSearchResults.add(result)
-                        carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
-                    }
-                    build()
+                        setTitle(result.name)
+                        setImage(getIconByResource(R.drawable.ic_fuel, carContext))
+                        addText(statusWithDesc)
+                        setBrowsable(true)
+                        setOnClickListener {
+                            previousSearchResults.add(result)
+                            carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
+                        }
+                        build()
                     }
             )
         }

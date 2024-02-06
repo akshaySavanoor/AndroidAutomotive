@@ -17,9 +17,10 @@ import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.car.app.versioning.CarAppApiLevels
-import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
+import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
+import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.viewmodel.LocationViewModel
@@ -68,9 +69,7 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
     private fun createRow(index: Int): Row {
         val opensCloses = carContext.getString(R.string.opens_closes)
         val noPetrol = carContext.getString(R.string.no_petrol)
-        val fuelIcon =
-            CarIcon.Builder(IconCompat.createWithResource(carContext, R.drawable.ic_fuel)).build()
-
+        val fuelIcon = getIconByResource(icon = R.drawable.ic_fuel, carContext = carContext)
         return when (index) {
             0 -> Row.Builder()
                 .run {
@@ -141,14 +140,7 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
          * Note: If two images are set, no errors will occur, but the last image will be displayed.
          */
         val paneBuilder = Pane.Builder()
-            .setImage(
-                CarIcon.Builder(
-                    IconCompat.createWithResource(
-                        carContext,
-                        R.drawable.large_image
-                    )
-                ).build()
-            )
+            .setImage(getIconByResource(icon = R.drawable.large_image, carContext = carContext))
 
         for (i in 0 until adjustedListLimit) {
             paneBuilder.addRow(createRow(i))
@@ -156,14 +148,7 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
 
         val primaryActionBuilder = Action.Builder()
             .apply {
-                setIcon(
-                CarIcon.Builder(
-                    IconCompat.createWithResource(
-                        carContext,
-                        R.drawable.ic_navigation
-                    )
-                ).build()
-            )
+                setIcon(getIconByResource(icon = R.drawable.ic_navigation, carContext = carContext))
                 setTitle(carContext.getString(R.string.navigate))
                 setOnClickListener {
                     carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
@@ -193,7 +178,7 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
                 setTitle(carContext.getString(R.string.call))
                 setIcon(
                     CarIcon.Builder(
-                        IconCompat.createWithResource(carContext, R.drawable.ic_call)
+                       getIconCompatByResource(R.drawable.ic_call, carContext)
                     ).run {
                         setTint(CarColor.BLUE) //Tint can be skipped by the host
                         build()

@@ -23,6 +23,7 @@ import com.akshay.weatherapp.common.RepositoryUtils
 import com.akshay.weatherapp.common.RepositoryUtils.setUpObserversAndCallApi
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
+import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
 
@@ -175,13 +176,13 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             invalidate()
         }, delayForLoader)
 
-        val coordinatesIcon = IconCompat.createWithResource(carContext, R.drawable.ic_coordinate)
-        val weatherIcon = IconCompat.createWithResource(carContext, R.drawable.ic_weather)
-        val temperatureIcon = IconCompat.createWithResource(carContext, R.drawable.ic_temperature)
-        val systemInformationIcon = IconCompat.createWithResource(carContext, R.drawable.ic_system)
-        val windIcon = IconCompat.createWithResource(carContext, R.drawable.ic_wind)
-        val cloudIcon = IconCompat.createWithResource(carContext, R.drawable.ic_clouds)
-        val loaderRefreshIcon = IconCompat.createWithResource(carContext, R.drawable.loader_refresh)
+        val coordinatesIcon = getIconCompatByResource(R.drawable.ic_coordinate, carContext)
+        val weatherIcon = getIconCompatByResource(R.drawable.ic_weather, carContext)
+        val temperatureIcon = getIconCompatByResource(R.drawable.ic_temperature, carContext)
+        val systemInformationIcon = getIconCompatByResource(R.drawable.ic_system, carContext)
+        val windIcon = getIconCompatByResource(R.drawable.ic_wind, carContext)
+        val cloudIcon = getIconCompatByResource(R.drawable.ic_clouds, carContext)
+        val loaderRefreshIcon = getIconCompatByResource(R.drawable.loader_refresh, carContext)
 
         val gridItemCoordinates = createGridItem(
             COORDINATES, coordinatesIcon

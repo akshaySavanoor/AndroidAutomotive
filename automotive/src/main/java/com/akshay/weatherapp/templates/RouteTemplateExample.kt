@@ -3,14 +3,13 @@ package com.akshay.weatherapp.templates
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.CarText
 import androidx.car.app.model.Header
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.RoutePreviewNavigationTemplate
-import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
+import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.ui.RoutingMapAction
 import com.akshay.weatherapp.ui.SamplePlaces
@@ -65,25 +64,13 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
         val secondEndHeaderAction = Action.Builder()
             .apply {
                 setOnClickListener { finish() }
-                setIcon(
-                    CarIcon.Builder(
-                        IconCompat.createWithResource(
-                            carContext,
-                            R.drawable.ic_close_white_24dp
-                        )
-                    ).build()
-                )
+                setIcon(getIconByResource(R.drawable.ic_close_white_24dp, carContext))
             }
-
-        val favouriteIcon = IconCompat.createWithResource(
-            carContext,
-            if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
-            else R.drawable.ic_favorite_white_24dp
-        )
 
         val firstEndHeaderAction = Action.Builder()
             .apply {
-                setIcon(CarIcon.Builder(favouriteIcon).build())
+                setIcon(getIconByResource(if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
+                else R.drawable.ic_favorite_white_24dp,carContext))
                 setOnClickListener {
                     showToast(
                         carContext,

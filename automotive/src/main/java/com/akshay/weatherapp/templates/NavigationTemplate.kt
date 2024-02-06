@@ -18,19 +18,24 @@ import com.akshay.weatherapp.ui.RoutingMapAction
  */
 class NavigationTemplateEx(carContext: CarContext) : Screen(carContext) {
     override fun onGetTemplate(): Template {
-        val navigationInfo = RoutingInfo.Builder()
-            .setCurrentStep(
+        val navigationInfo = RoutingInfo.Builder().apply {
+            setCurrentStep(
                 RoutingMapAction.getCurrentStep(carContext),
                 Distance.create(200.0, Distance.UNIT_METERS)
             )
-            .setNextStep(RoutingMapAction.getNextStep(carContext))
-            .build()
+            setNextStep(RoutingMapAction.getNextStep(carContext))
+        }
 
         return NavigationTemplate.Builder()
             .run {
-                setNavigationInfo(navigationInfo)
+                setNavigationInfo(navigationInfo.build())
                 setDestinationTravelEstimate(RoutingMapAction.getTravelEstimate(carContext))
-                setActionStrip(RoutingMapAction.getActionStrip(carContext, this@NavigationTemplateEx::finish))
+                setActionStrip(
+                    RoutingMapAction.getActionStrip(
+                        carContext,
+                        this@NavigationTemplateEx::finish
+                    )
+                )
                 setMapActionStrip(RoutingMapAction.getMapActionStrip(carContext))
                 setBackgroundColor(CarColor.PRIMARY)
                 build()

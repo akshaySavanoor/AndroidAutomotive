@@ -1,13 +1,13 @@
 package com.akshay.weatherapp.templates
 
 import android.text.SpannableString
+import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
 import androidx.car.app.model.CarColor.YELLOW
-import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.CLOUD
@@ -23,6 +23,7 @@ import com.akshay.weatherapp.common.RepositoryUtils
 import com.akshay.weatherapp.common.RepositoryUtils.getRetryAction
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.colorize
+import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
@@ -87,8 +88,12 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
      *
      * Use a FAB for the most important action on the screen. Be sure that the icon is easy to understand, since there is no text label.
      */
-    private fun createWeatherRow(title: String, icon: IconCompat): Row {
-        val rowIcon = CarIcon.Builder(icon).build()
+    private fun createWeatherRow(title: String, @DrawableRes icon: Int): Row {
+        val rowIcon = getIconByResource(
+            icon = icon,
+            carContext = carContext
+        )
+
         val onClickListener: () -> Unit = {
             when (title) {
                 TOGGLE_VIEW -> {
@@ -274,49 +279,49 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             addItem(
                 createWeatherRow(
                     TOGGLE_VIEW,
-                    IconCompat.createWithResource(carContext, R.drawable.switch_button)
+                    R.drawable.switch_button
                 )
             )
             addItem(
                 createWeatherRow(
                     RADIO_VIEW,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_radio_button)
+                    R.drawable.ic_radio_button
                 )
             )
             addItem(
                 createWeatherRow(
                     COORDINATES,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_coordinate)
+                    R.drawable.ic_coordinate
                 )
             )
             addItem(
                 createWeatherRow(
                     WEATHER_CONDITION,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_weather)
+                    R.drawable.ic_weather
                 )
             )
             addItem(
                 createWeatherRow(
                     TEMPERATURE,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_temperature)
+                    R.drawable.ic_temperature
                 )
             )
             addItem(
                 createWeatherRow(
                     CLOUD,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_clouds)
+                    R.drawable.ic_clouds
                 )
             )
             addItem(
                 createWeatherRow(
                     WIND,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_wind)
+                    R.drawable.ic_wind
                 )
             )
             addItem(
                 createWeatherRow(
                     SYSTEM_INFORMATION,
-                    IconCompat.createWithResource(carContext, R.drawable.ic_system)
+                    R.drawable.ic_system
                 )
             )
             if (isRadioViewEnabled) {
@@ -349,13 +354,14 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         }
 
         errorMessage?.let {
-            return MessageTemplate.Builder(it)
-                .setTitle(LIST_TEMPLATE)
-                .setIcon(CarIcon.ERROR)
-                .setHeaderAction(Action.BACK)
-                .setActionStrip(Utility.goToHome(carContext, this))
-                .addAction(getRetryAction(carContext, this))
-                .build()
+            return MessageTemplate.Builder(it).run {
+                setTitle(LIST_TEMPLATE)
+                setIcon(CarIcon.ERROR)
+                setHeaderAction(Action.BACK)
+                setActionStrip(Utility.goToHome(carContext, this@ListTemplateExample))
+                addAction(getRetryAction(carContext, this@ListTemplateExample))
+                build()
+            }
         }
 
         /**
@@ -368,15 +374,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             setTitle(LIST_TEMPLATE)
             setHeaderAction(Action.BACK)
             addAction(Action.Builder()
-                .setIcon(
-                    CarIcon.Builder(
-                        IconCompat.createWithResource(
-                            carContext,
-                            R.drawable.ic_add
-                        )
-                    ).build()
-
-                )
+                .setIcon(getIconByResource(R.drawable.ic_add, carContext))
                 .setOnClickListener {
                     showToast(
                         carContext,

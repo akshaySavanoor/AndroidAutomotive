@@ -27,11 +27,27 @@ import androidx.car.app.navigation.model.TravelEstimate
 import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 object RoutingMapAction {
+
+    private fun createAction(carContext: CarContext, toastMsg: String, iconImage: Int): Action {
+        return Action.Builder()
+            .setOnClickListener {
+                CarToast.makeText(
+                    carContext,
+                    toastMsg,
+                    CarToast.LENGTH_SHORT
+                ).show()
+            }
+            .setIcon(
+                getIconByResource(iconImage, carContext)
+            )
+            .build()
+    }
 
     /**
      * Note: Ensure that the number of actions does not exceed 4.
@@ -42,42 +58,8 @@ object RoutingMapAction {
      */
     fun getMapActionStrip(carContext: CarContext): ActionStrip {
         return ActionStrip.Builder()
-            .addAction(
-                Action.Builder()
-                    .setOnClickListener {
-                        CarToast.makeText(
-                            carContext,
-                            carContext.getString(R.string.zoomed_in_toast_msg),
-                            CarToast.LENGTH_SHORT
-                        ).show()
-                    }
-                    .setIcon(
-                        CarIcon.Builder(
-                            IconCompat.createWithResource(
-                                carContext,
-                                R.drawable.ic_zoom_in_24
-                            )
-                        ).build()
-                    ).build()
-            )
-            .addAction(
-                Action.Builder()
-                    .setOnClickListener {
-                        CarToast.makeText(
-                            carContext,
-                            carContext.getString(R.string.zoomed_out_toast_msg),
-                            CarToast.LENGTH_SHORT
-                        ).show()
-                    }
-                    .setIcon(
-                        CarIcon.Builder(
-                            IconCompat.createWithResource(
-                                carContext,
-                                R.drawable.ic_zoom_out_24
-                            )
-                        ).build()
-                    ).build()
-            )
+            .addAction(createAction(carContext,carContext.getString(R.string.zoomed_in_toast_msg), R.drawable.ic_zoom_in_24 ))
+            .addAction(createAction(carContext,carContext.getString(R.string.zoomed_out_toast_msg), R.drawable.ic_zoom_out_24 ))
             .addAction(Action.PAN)
             .build()
     }
@@ -116,17 +98,16 @@ object RoutingMapAction {
             0,
             CarText.create(carContext.getString(R.string.navigation_alert_title)),
             10000
-        )
-            .setIcon(CarIcon.ALERT)
-            .setSubtitle(CarText.create(carContext.getString(R.string.navigation_alert_subtitle)))
-            .addAction(yesAction)
-            .addAction(noAction)
-            .setCallback(
+        ).run {
+            setIcon(CarIcon.ALERT)
+            setSubtitle(CarText.create(carContext.getString(R.string.navigation_alert_subtitle)))
+            addAction(yesAction)
+            addAction(noAction)
+            setCallback(
                 alertCallBack
             )
-            .build()
-
-
+            build()
+        }
     }
 
     fun getActionStrip(carContext: CarContext, onStopNavigation: OnClickListener): ActionStrip {

@@ -6,15 +6,14 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.Template
-import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.FAVOURITE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH
 import com.akshay.weatherapp.common.Constants.Companion.SETTINGS
 import com.akshay.weatherapp.common.Utility
+import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showToast
 import com.akshay.weatherapp.ui.SamplePlaces
 
@@ -135,7 +134,7 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
                     }
                 }
             }
-            .setIcon(CarIcon.Builder(IconCompat.createWithResource(carContext, iconResId)).build())
+            .setIcon(getIconByResource(iconResId, carContext))
             .build()
     }
 

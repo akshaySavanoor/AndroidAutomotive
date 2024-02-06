@@ -10,6 +10,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.text.Spannable
 import android.text.SpannableString
+import androidx.annotation.DrawableRes
 import androidx.car.app.CarAppPermission
 import androidx.car.app.CarContext
 import androidx.car.app.CarToast
@@ -17,9 +18,11 @@ import androidx.car.app.Screen
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
+import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ClickableSpan
 import androidx.car.app.model.ForegroundCarColorSpan
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.model.Location
@@ -215,6 +218,14 @@ class Utility {
 
         private fun hasPermission(context: Context, permission: String): Boolean {
             return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        }
+
+        fun getIconCompatByResource(@DrawableRes icon: Int, carContext: CarContext): IconCompat {
+            return IconCompat.createWithResource(carContext, icon)
+        }
+
+        fun getIconByResource(@DrawableRes icon: Int, carContext: CarContext): CarIcon {
+            return CarIcon.Builder(IconCompat.createWithResource(carContext, icon)).build()
         }
 
         fun checkPermission(carContext: CarContext, ) {
