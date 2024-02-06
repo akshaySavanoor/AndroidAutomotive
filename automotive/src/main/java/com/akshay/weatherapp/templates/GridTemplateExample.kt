@@ -1,5 +1,8 @@
 package com.akshay.weatherapp.templates
 
+import android.car.Car
+import android.car.drivingstate.CarUxRestrictions
+import android.car.drivingstate.CarUxRestrictionsManager
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.OptIn
@@ -55,9 +58,23 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private var loadingActionFlag = true
     private val delayForLoader = 3000L
     private val handler = Handler(Looper.getMainLooper())
+    private var mCurrentUxRestrictions: CarUxRestrictions? = null
+    private val mCar: Car = Car.createCar(carContext)
+
+    private val mUxrChangeListener = CarUxRestrictionsManager.OnUxRestrictionsChangedListener { carUxRestrictions ->
+            mCurrentUxRestrictions = carUxRestrictions
+            println(carUxRestrictions.isRequiresDistractionOptimization)
+        }
 
     init {
         lifecycle.addObserver(this)
+    }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+        val mCarUxRestrictionsManager = mCar.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE) as CarUxRestrictionsManager
+        mCarUxRestrictionsManager.registerListener(mUxrChangeListener)
+            mUxrChangeListener.onUxRestrictionsChanged(mCarUxRestrictionsManager.currentCarUxRestrictions)
     }
 
     /**

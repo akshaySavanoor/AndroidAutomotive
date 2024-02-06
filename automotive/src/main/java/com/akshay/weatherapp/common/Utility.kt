@@ -1,6 +1,8 @@
 package com.akshay.weatherapp.common
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.car.Car
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +19,7 @@ import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
 import androidx.car.app.model.ClickableSpan
 import androidx.car.app.model.ForegroundCarColorSpan
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.model.Location
@@ -104,6 +107,7 @@ class Utility {
             }
 
             for (declaredPermission in declaredPermissions) {
+//                println(declaredPermission)
                 // Exclude permissions related to the car app host as they are considered normal
                 // but might appear as ungranted by the system.
                 if (declaredPermission.startsWith(Constants.PACKAGE_PREFIX)) {
@@ -112,6 +116,7 @@ class Utility {
                 try {
                     CarAppPermission.checkHasPermission(carContext, declaredPermission)
                 } catch (e: SecurityException) {
+
                     permissions.add(declaredPermission)
                 }
             }
@@ -125,6 +130,7 @@ class Utility {
              * </resources>
              * The default behavior is to have no background behind the permission request.
              */
+            println(permissions.toTypedArray().toMutableList())
             carContext.requestPermissions(
                 permissions.toTypedArray().toMutableList()
             ) { approved, rejected ->
@@ -205,6 +211,29 @@ class Utility {
                     }
                     .build())
                 .build()
+        }
+
+        private fun hasPermission(context: Context, permission: String): Boolean {
+            return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        }
+
+        fun checkPermission(carContext: CarContext, ) {
+            val hasPermissionLocation =
+                (hasPermission(carContext, Manifest.permission.ACCESS_FINE_LOCATION) ||
+                        hasPermission(carContext, Manifest.permission.ACCESS_COARSE_LOCATION)) &&
+                        hasPermission(carContext, Car.PERMISSION_SPEED) &&
+                        hasPermission(carContext, Car.PERMISSION_ENERGY)
+
+            if (!hasPermissionLocation) {
+                requestPermission(carContext) { approved, rejected ->
+                    if (approved.isNotEmpty()) {
+                        showToast(carContext, carContext.getString(R.string.approved))
+
+                    } else if (rejected.isNotEmpty()) {
+                        showToast(carContext, carContext.getString(R.string.rejected))
+                    }
+                }
+            }
         }
 
         //Only for the development purpose

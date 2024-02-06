@@ -1,7 +1,5 @@
 package com.akshay.weatherapp
 
-import android.Manifest
-import android.content.pm.PackageManager
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
@@ -12,67 +10,52 @@ import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
-import com.akshay.weatherapp.common.Constants.Companion.HOME_SCREEN
 import com.akshay.weatherapp.common.Constants.Companion.HARDWARE_PROPERTIES
+import com.akshay.weatherapp.common.Constants.Companion.HOME_SCREEN
 import com.akshay.weatherapp.common.Constants.Companion.LIST_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LONG_MESSAGE_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.MESSAGE_TEMPLATE
-import com.akshay.weatherapp.common.Constants.Companion.PLACE_LIST_MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.NAVIGATION_WITH_ALERT
 import com.akshay.weatherapp.common.Constants.Companion.PANE_TEMPLATE
+import com.akshay.weatherapp.common.Constants.Companion.PLACE_LIST_MAP_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.ROUTE_PREVIEW_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.SIGN_IN_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.TEMPLATE_RESTRICTION
-import com.akshay.weatherapp.common.Utility.Companion.requestPermission
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.checkPermission
 import com.akshay.weatherapp.templates.GridTemplateExample
 import com.akshay.weatherapp.templates.ListTemplateExample
 import com.akshay.weatherapp.templates.LongMessageTemplateExample
 import com.akshay.weatherapp.templates.MapTemplateExample
 import com.akshay.weatherapp.templates.MessageTemplateExample
 import com.akshay.weatherapp.templates.NavigationTemplateEx
-import com.akshay.weatherapp.templates.PlaceListMapExample
 import com.akshay.weatherapp.templates.PaneTemplateExample
+import com.akshay.weatherapp.templates.PlaceListMapExample
 import com.akshay.weatherapp.templates.RouteTemplateExample
 import com.akshay.weatherapp.templates.SearchTemplateExample
 import com.akshay.weatherapp.templates.SignInTemplateExample
 import com.akshay.weatherapp.templates.VehiclePropertiesScreen
 import com.akshay.weatherapp.ui.TemplateRestrictionUi
 
-class HomeScreen(carContext: CarContext) : Screen(carContext) {
+class HomeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
 
     private var hasPermissionLocation: Boolean = false
-    private var requestedPermission = false
     private val itemListBuilder = ItemList.Builder()
         .setNoItemsMessage(carContext.getString(R.string.no_data_found))
 
-    private fun checkPermission() {
-        hasPermissionLocation =
-            ContextCompat.checkSelfPermission(
-                carContext,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) ==
-                    PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        carContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) ==
-                    PackageManager.PERMISSION_GRANTED
+    init {
+        lifecycle.addObserver(this)
+    }
 
-        if (!hasPermissionLocation && !requestedPermission) {
-            requestedPermission = true
-            requestPermission(carContext) { approved, rejected ->
-                if (approved.isNotEmpty()) {
-                    showToast(carContext, carContext.getString(R.string.approved))
-
-                } else if (rejected.isNotEmpty()) {
-                    showToast(carContext, carContext.getString(R.string.rejected))
-                }
-            }
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+        if (!hasPermissionLocation) {
+            hasPermissionLocation = true
+            checkPermission(carContext)
         }
     }
 
@@ -83,7 +66,6 @@ class HomeScreen(carContext: CarContext) : Screen(carContext) {
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
         this.marker = HOME_SCREEN //Using marker we can remove multiple screens from the stack
-        checkPermission()
         val exitAction = Action.Builder()
             .setTitle(carContext.getString(R.string.exit))
             .setOnClickListener {
