@@ -149,7 +149,6 @@
     <string name="empty_string" />
     <string name="value_kmph">%s kmph</string>
     <string name="invalid_property_id">Invalid property ID: %s</string>
-    <string name="vehiclepropertiesscreen">VehiclePropertiesScreen</string>
 
     <string name="something_went_wrong">Something went wrong</string>
     <string name="failed_to_fetch_weather_data">Unable to retrieve weather information.</string>

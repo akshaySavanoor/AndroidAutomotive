@@ -4,18 +4,19 @@ import android.text.SpannableString
 import android.text.Spanned
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
-import androidx.car.app.model.Action
 import androidx.car.app.model.Action.BACK
 import androidx.car.app.model.Action.FLAG_PRIMARY
-import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
 import androidx.car.app.model.ForegroundCarColorSpan
 import androidx.car.app.model.LongMessageTemplate
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.Template
 import androidx.car.app.versioning.CarAppApiLevels
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
 
 /**
  * The LongMessageTemplate class presents a detailed message to be read while the car is parked,
@@ -57,16 +58,15 @@ class LongMessageTemplateExample(
                 .build()
         }
 
-        val primaryActionBuilder = Action.Builder()
-            .setOnClickListener(ParkedOnlyOnClickListener.create {
-                screenManager.push(ListTemplateExample(carContext))
-            })
-            .setTitle(carContext.getString(R.string.accept))
-
+        val primaryActionBuilder =
+            createGenericAction(
+                title = carContext.getString(R.string.accept),
+                onClickListener = ParkedOnlyOnClickListener.create {
+                    screenManager.push(ListTemplateExample(carContext))
+                },
+                flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null
+            )
         // This flag highlights buttons with higher importance
-        if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) {
-            primaryActionBuilder.setFlags(FLAG_PRIMARY)
-        }
 
         val longMessage = SpannableString(carContext.getString(R.string.long_message))
         longMessage.setSpan(
@@ -79,27 +79,22 @@ class LongMessageTemplateExample(
             .run {
                 setTitle(title)
                 setHeaderAction(BACK)
-                addAction(primaryActionBuilder.build())
+                addAction(primaryActionBuilder)
                 addAction(
-                    Action.Builder()
-                        .run {
-                            setBackgroundColor(CarColor.RED) //Displaying background colors may depends on the host
-                            setOnClickListener(ParkedOnlyOnClickListener.create { screenManager.pop() })
-                            setTitle(carContext.getString(R.string.no_thanks))
-                            build()
-                        }
-                )
-                setActionStrip(ActionStrip.Builder()
-                    .addAction(Action.Builder()
-                        .run {
-                            setTitle(carContext.getString(R.string.skip))
-                            setOnClickListener {
-                                screenManager.pop()
-                            }
-                            build()
-                        }
+                    createGenericAction(
+                        title = carContext.getString(R.string.no_thanks),
+                        backgroundColor = CarColor.RED,
+                        onClickListener = ParkedOnlyOnClickListener.create { screenManager.pop() }
                     )
-                    .build())
+                )
+                setActionStrip(
+                    createGenericActionStrip(
+                        createGenericAction(
+                            title = carContext.getString(R.string.skip),
+                            onClickListener = OnClickListener { screenManager.pop() }
+                        )
+                    )
+                )
                 build()
             }
     }

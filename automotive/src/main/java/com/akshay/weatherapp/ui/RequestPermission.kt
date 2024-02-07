@@ -14,14 +14,17 @@ import androidx.car.app.model.Action.FLAG_PRIMARY
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarIcon
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.Template
+import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.location.LocationManagerCompat
 import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Constants.Companion.PACKAGE_PREFIX
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.templates.GridTemplateExample
 import com.akshay.weatherapp.templates.ListTemplateExample
@@ -45,12 +48,12 @@ class RequestPermissionScreen(
      * This can give the user a chance to revoke the permissions and then refresh will pick up
      * the permissions that need to be granted.
      */
-    private val mRefreshAction: Action = Action.Builder()
-        .setIcon(CarIcon.ALERT)
-        .setTitle(getCarContext().getString(R.string.retry))
-        .setFlags(FLAG_PRIMARY)
-        .setOnClickListener { invalidate() }
-        .build()
+    private val mRefreshAction: Action = createGenericAction(
+        title = getCarContext().getString(R.string.retry),
+        icon = CarIcon.ALERT,
+        flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null,
+        onClickListener = OnClickListener { invalidate() }
+    )
 
     override fun onGetTemplate(): Template {
         val headerAction: Action = if (mPreSeedMode) Action.APP_ICON else Action.BACK
@@ -94,11 +97,10 @@ class RequestPermissionScreen(
                 ).build()
             )
                 .setHeaderAction(headerAction)
-                .addAction(
-                    Action.Builder()
-                        .setTitle(carContext.getString(R.string.ok))
-                        .setOnClickListener { finish() }
-                        .build()
+                .addAction(createGenericAction(
+                    title = carContext.getString(R.string.ok),
+                    onClickListener = OnClickListener { finish() }
+                )
                 ).build()
         }
 
@@ -165,24 +167,27 @@ class RequestPermissionScreen(
                 }
             }
             if (!carContext.packageManager.hasSystemFeature(FEATURE_AUTOMOTIVE)) {
-                showErrorMessage(carContext, carContext.getString(R.string.phone_screen_permission_msg))
+                showErrorMessage(
+                    carContext,
+                    carContext.getString(R.string.phone_screen_permission_msg)
+                )
             }
         }
 
-        val action = Action.Builder()
-            .setTitle(carContext.getString(R.string.ok))
-            .setFlags(FLAG_PRIMARY)
-            .setOnClickListener(listener)
-            .build()
+        val action = createGenericAction(
+            title = carContext.getString(R.string.ok),
+            flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null,
+            onClickListener = listener
+        )
 
         var action2: Action? = null
         val locationManager =
             carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (!LocationManagerCompat.isLocationEnabled(locationManager)) {
 
-            action2 = Action.Builder()
-                .setTitle(carContext.getString(R.string.mobile))
-                .setOnClickListener(
+            action2 = createGenericAction(
+                title = carContext.getString(R.string.mobile),
+                onClickListener = OnClickListener {
                     ParkedOnlyOnClickListener.create {
                         carContext.startActivity(
                             Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(
@@ -201,7 +206,8 @@ class RequestPermissionScreen(
                             )
                         }
                     }
-                ).build()
+                }
+            )
         }
 
         val builder = MessageTemplate.Builder(carContext.getString(R.string.request_permission_msg))
@@ -215,13 +221,17 @@ class RequestPermissionScreen(
                 ).build()
             )
             .addAction(action)
-            .addAction(Action.Builder()
-                .setTitle(carContext.getString(R.string.cancel))
-                .setOnClickListener {
-                    showErrorMessage(carContext, carContext.getString(R.string.permission_cancelled))
-                    screenManager.push(HomeScreen(carContext))
-                }
-                .build())
+            .addAction(
+                createGenericAction(
+                    title = carContext.getString(R.string.cancel),
+                    onClickListener = OnClickListener {
+                        showErrorMessage(
+                            carContext,
+                            carContext.getString(R.string.permission_cancelled)
+                        )
+                        screenManager.push(HomeScreen(carContext))
+                    }
+                ))
         action2?.let { builder.setActionStrip(ActionStrip.Builder().addAction(it).build()) }
         return builder.build()
     }

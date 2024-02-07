@@ -1,5 +1,8 @@
 package com.akshay.weatherapp
 
+import android.car.Car
+import android.car.drivingstate.CarUxRestrictions
+import android.car.drivingstate.CarUxRestrictionsManager
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
@@ -8,6 +11,7 @@ import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
+import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -43,7 +47,13 @@ import com.akshay.weatherapp.ui.TemplateRestrictionUi
 
 class HomeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
 
-    private var hasPermissionLocation: Boolean = false
+    private var mCurrentUxRestrictions: CarUxRestrictions? = null
+    private val mCar: Car = Car.createCar(carContext)
+
+    private val mUxrChangeListener = CarUxRestrictionsManager.OnUxRestrictionsChangedListener { carUxRestrictions ->
+        mCurrentUxRestrictions = carUxRestrictions
+        println(carUxRestrictions.isRequiresDistractionOptimization)
+    }
     private val itemListBuilder = ItemList.Builder()
         .setNoItemsMessage(carContext.getString(R.string.no_data_found))
 
@@ -53,10 +63,10 @@ class HomeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycleO
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
-        if (!hasPermissionLocation) {
-            hasPermissionLocation = true
-            checkPermission(carContext)
-        }
+        checkPermission(carContext)
+        val mCarUxRestrictionsManager = mCar.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE) as CarUxRestrictionsManager
+        mCarUxRestrictionsManager.registerListener(mUxrChangeListener)
+        mUxrChangeListener.onUxRestrictionsChanged(mCarUxRestrictionsManager.currentCarUxRestrictions)
     }
 
     /**
@@ -100,7 +110,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycleO
         return Row.Builder()
             .setTitle(title)
             .setBrowsable(true)
-            .setOnClickListener {
+            .setOnClickListener(ParkedOnlyOnClickListener.create{
                 when (title) {
                     LIST_TEMPLATE -> screenManager.push(ListTemplateExample(carContext))
                     GRID_TEMPLATE -> screenManager.push(GridTemplateExample(carContext))
@@ -121,7 +131,7 @@ class HomeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycleO
                     TEMPLATE_RESTRICTION -> screenManager.push(TemplateRestrictionUi(carContext))
                     HARDWARE_PROPERTIES -> screenManager.push(VehiclePropertiesScreen(carContext))
                 }
-            }
+            })
             .build()
     }
 }

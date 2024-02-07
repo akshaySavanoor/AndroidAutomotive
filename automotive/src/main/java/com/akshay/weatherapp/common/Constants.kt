@@ -55,6 +55,7 @@ class Constants {
         const val PACKAGE_PREFIX = "androidx.car.app"
         const val TOGGLE_VIEW = "Toggle View"
         const val RADIO_VIEW = "Radio View"
+        const val HARDWARE_DEBUG_TAG = "VehiclePropertiesScreen"
 
         const val HARDWARE_PROPERTIES = "Hardware Properties"
         enum class SignInState {

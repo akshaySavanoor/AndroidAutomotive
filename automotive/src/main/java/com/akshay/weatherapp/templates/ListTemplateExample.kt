@@ -21,9 +21,11 @@ import com.akshay.weatherapp.common.Constants.Companion.WEATHER_CONDITION
 import com.akshay.weatherapp.common.Constants.Companion.WIND
 import com.akshay.weatherapp.common.RepositoryUtils
 import com.akshay.weatherapp.common.RepositoryUtils.getRetryAction
-import com.akshay.weatherapp.common.Utility
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
+import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility.Companion.colorize
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
@@ -109,7 +111,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 else -> weatherResponseModelData?.let {
                     screenManager.push(WeatherDetailsScreen(carContext, it, title))
                 } ?: run {
-                        showErrorMessage(
+                    showErrorMessage(
                         carContext,
                         carContext.getString(R.string.failed_to_fetch_weather_data)
                     )
@@ -128,24 +130,6 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     )
                 )
                 setEnabled(mIsEnabled)
-
-//              setToggle(Toggle.Builder {
-//                if (it) {
-//                    println("On")
-//                } else {
-//                    println("Off")
-//                }
-//            }
-//                .setChecked(false)
-//                .build())
-//             addText("additional text")
-//             addAction(
-//                Action.Builder()
-//                    .setIcon(CarIcon.Builder(IconCompat.createWithResource(carContext, R.drawable.ic_arrow_icon))
-//                .build())
-//                    .setOnClickListener{}
-//                    .build()
-//            )
             }
         when {
             !isToggleEnabled && !isRadioViewEnabled -> {
@@ -278,50 +262,50 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             // Some hosts may allow more items in the list than others, so create more.
             addItem(
                 createWeatherRow(
-                    TOGGLE_VIEW,
-                    R.drawable.switch_button
+                    title = TOGGLE_VIEW,
+                    icon = R.drawable.switch_button
                 )
             )
             addItem(
                 createWeatherRow(
-                    RADIO_VIEW,
-                    R.drawable.ic_radio_button
+                    title = RADIO_VIEW,
+                    icon = R.drawable.ic_radio_button
                 )
             )
             addItem(
                 createWeatherRow(
-                    COORDINATES,
-                    R.drawable.ic_coordinate
+                    title = COORDINATES,
+                    icon = R.drawable.ic_coordinate
                 )
             )
             addItem(
                 createWeatherRow(
-                    WEATHER_CONDITION,
-                    R.drawable.ic_weather
+                    title = WEATHER_CONDITION,
+                    icon = R.drawable.ic_weather
                 )
             )
             addItem(
                 createWeatherRow(
-                    TEMPERATURE,
-                    R.drawable.ic_temperature
+                    title = TEMPERATURE,
+                    icon = R.drawable.ic_temperature
                 )
             )
             addItem(
                 createWeatherRow(
-                    CLOUD,
-                    R.drawable.ic_clouds
+                    title = CLOUD,
+                    icon = R.drawable.ic_clouds
                 )
             )
             addItem(
                 createWeatherRow(
-                    WIND,
-                    R.drawable.ic_wind
+                    title = WIND,
+                    icon = R.drawable.ic_wind
                 )
             )
             addItem(
                 createWeatherRow(
-                    SYSTEM_INFORMATION,
-                    R.drawable.ic_system
+                    title = SYSTEM_INFORMATION,
+                    icon = R.drawable.ic_system
                 )
             )
             if (isRadioViewEnabled) {
@@ -358,8 +342,18 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 setTitle(LIST_TEMPLATE)
                 setIcon(CarIcon.ERROR)
                 setHeaderAction(Action.BACK)
-                setActionStrip(Utility.goToHome(carContext, this@ListTemplateExample))
-                addAction(getRetryAction(carContext, this@ListTemplateExample))
+                setActionStrip(
+                    goToHome(
+                        carContext = carContext,
+                        screen = this@ListTemplateExample
+                    )
+                )
+                addAction(
+                    getRetryAction(
+                        carContext = carContext,
+                        screen = this@ListTemplateExample
+                    )
+                )
                 build()
             }
         }
@@ -373,37 +367,37 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         return weatherListBuilder.apply {
             setTitle(LIST_TEMPLATE)
             setHeaderAction(Action.BACK)
-            addAction(Action.Builder()
-                .setIcon(getIconByResource(R.drawable.ic_add, carContext))
-                .setOnClickListener {
-                    showErrorMessage(
-                        carContext,
-                        carContext.getString(R.string.floating_icon_pressed)
-                    )
-                }
-                .setBackgroundColor(YELLOW)
-                .build())
-            setActionStrip(
-                ActionStrip.Builder().addAction(
-                    Action.Builder()
-                        .setTitle(
+            addAction(
+                createGenericAction(
+                    icon = getIconByResource(R.drawable.ic_add, carContext),
+                    backgroundColor = YELLOW,
+                    onClickListener = OnClickListener {
+                        showErrorMessage(
+                            carContext,
+                            carContext.getString(R.string.floating_icon_pressed)
+                        )
+                    }
+                )
+            )
+
+            setActionStrip(createGenericActionStrip(
+                createGenericAction(
+                    title = carContext.getString(
+                        if (mIsEnabled) R.string.enable_all_rows else R.string.disable_all_rows
+                    ),
+                    onClickListener = OnClickListener {
+                        showErrorMessage(
+                            carContext,
                             carContext.getString(
-                                if (mIsEnabled) R.string.enable_all_rows else R.string.disable_all_rows
+                                if (!mIsEnabled) R.string.interactive_mode_enabled else R.string.enabled_read_only_mode
                             )
                         )
-                        .setOnClickListener {
-                            showErrorMessage(
-                                carContext,
-                                carContext.getString(
-                                    if (!mIsEnabled) R.string.interactive_mode_enabled else R.string.enabled_read_only_mode
-                                )
-                            )
-                            mIsEnabled = !mIsEnabled
-                            setLoading(true)
-                            invalidate() // Invalidates the current template, triggering a call to onGetTemplate for rendering a new screen.
-                        }
-                        .build()
-                ).build()
+                        mIsEnabled = !mIsEnabled
+                        setLoading(true)
+                        invalidate() // Invalidates the current template, triggering a call to onGetTemplate for rendering a new screen.
+                    }
+                )
+            )
             )
             setSingleList(itemListBuilder.build())
         }.build()
