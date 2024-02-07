@@ -154,4 +154,5 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="failed_to_fetch_weather_data">Unable to retrieve weather information.</string>
     <string name="no_data_found">"No data found"</string>
+    <string name="permission_is_needed_to_access_the_car_information">Permission is needed to access the car information</string>
 </resources>
