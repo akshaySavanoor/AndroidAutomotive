@@ -28,7 +28,7 @@ import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
@@ -58,8 +58,20 @@ object RoutingMapAction {
      */
     fun getMapActionStrip(carContext: CarContext): ActionStrip {
         return ActionStrip.Builder()
-            .addAction(createAction(carContext,carContext.getString(R.string.zoomed_in_toast_msg), R.drawable.ic_zoom_in_24 ))
-            .addAction(createAction(carContext,carContext.getString(R.string.zoomed_out_toast_msg), R.drawable.ic_zoom_out_24 ))
+            .addAction(
+                createAction(
+                    carContext,
+                    carContext.getString(R.string.zoomed_in_toast_msg),
+                    R.drawable.ic_zoom_in_24
+                )
+            )
+            .addAction(
+                createAction(
+                    carContext,
+                    carContext.getString(R.string.zoomed_out_toast_msg),
+                    R.drawable.ic_zoom_out_24
+                )
+            )
             .addAction(Action.PAN)
             .build()
     }
@@ -69,14 +81,14 @@ object RoutingMapAction {
             setTitle(carContext.getString(R.string.yes))
             setFlags(FLAG_PRIMARY)
             setOnClickListener {
-                showToast(carContext, carContext.getString(R.string.yes_action_toast_msg))
+                showErrorMessage(carContext, carContext.getString(R.string.yes_action_toast_msg))
             }
         }
             .build()
         val noAction = Action.Builder().apply {
             setTitle(carContext.getString(R.string.no))
             setOnClickListener {
-                showToast(carContext, carContext.getString(R.string.no_action_toast_msg))
+                showErrorMessage(carContext, carContext.getString(R.string.no_action_toast_msg))
             }
         }
             .build()
@@ -84,7 +96,7 @@ object RoutingMapAction {
         val alertCallBack = object : AlertCallback {
             override fun onCancel(reason: Int) {
                 if (reason == AlertCallback.REASON_TIMEOUT) {
-                    showToast(carContext, carContext.getString(R.string.request_timeout))
+                    showErrorMessage(carContext, carContext.getString(R.string.request_timeout))
                 }
             }
 
@@ -120,12 +132,7 @@ object RoutingMapAction {
                             .showAlert(createAlert(carContext))
                     }
                     .setIcon(
-                        CarIcon.Builder(
-                            IconCompat.createWithResource(
-                                carContext,
-                                R.drawable.ic_baseline_add_alert_24
-                            )
-                        ).build()
+                        getIconByResource(R.drawable.ic_baseline_add_alert_24, carContext)
                     ).build()
             )
         }
@@ -138,14 +145,7 @@ object RoutingMapAction {
                         CarToast.LENGTH_SHORT
                     ).show()
                 }
-                .setIcon(
-                    CarIcon.Builder(
-                        IconCompat.createWithResource(
-                            carContext,
-                            R.drawable.ic_bug_report_24px
-                        )
-                    ).build()
-                ).build()
+                .setIcon(getIconByResource(R.drawable.ic_bug_report_24px, carContext)).build()
         )
         builder.addAction(
             Action.Builder()

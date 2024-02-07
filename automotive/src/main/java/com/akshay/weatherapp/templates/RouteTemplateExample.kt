@@ -10,7 +10,7 @@ import androidx.car.app.navigation.model.RoutePreviewNavigationTemplate
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.ui.RoutingMapAction
 import com.akshay.weatherapp.ui.SamplePlaces
 
@@ -72,7 +72,7 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
                 setIcon(getIconByResource(if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
                 else R.drawable.ic_favorite_white_24dp,carContext))
                 setOnClickListener {
-                    showToast(
+                    showErrorMessage(
                         carContext,
                         if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
                         else carContext.getString(R.string.added_to_favourites),
@@ -86,7 +86,7 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
             .apply {
                 setTitle(navigateActionText)
                 setOnClickListener {
-                    showToast(
+                    showErrorMessage(
                         carContext,
                         carContext.getString(R.string.nav_requested_toast_msg)
                     )

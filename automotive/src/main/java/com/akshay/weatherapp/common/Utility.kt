@@ -68,10 +68,6 @@ class Utility {
             }
         }
 
-        fun showToast(carContext: CarContext, message: String) {
-            CarToast.makeText(carContext, message, CarToast.LENGTH_SHORT).show()
-        }
-
         fun isDeviceOnLine(carContext: CarContext?): Boolean {
             var isConnected = false
             carContext?.let {
@@ -105,7 +101,7 @@ class Utility {
                 )
                 declaredPermissions = info.requestedPermissions ?: emptyArray()
             } catch (e: PackageManager.NameNotFoundException) {
-                showToast(carContext, carContext.getString(R.string.package_not_found))
+                showErrorMessage(carContext, carContext.getString(R.string.package_not_found))
                 return
             }
 
@@ -141,7 +137,10 @@ class Utility {
             }
 
             if (!carContext.packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
-                showToast(carContext, carContext.getString(R.string.phone_screen_permission_msg))
+                showErrorMessage(
+                    carContext,
+                    carContext.getString(R.string.phone_screen_permission_msg)
+                )
             }
         }
 
@@ -206,7 +205,7 @@ class Utility {
         }
 
         fun goToHome(carContext: CarContext, screen: Screen): ActionStrip {
-            return  ActionStrip.Builder()
+            return ActionStrip.Builder()
                 .addAction(Action.Builder()
                     .setTitle(carContext.getString(R.string.home))
                     .setOnClickListener {
@@ -216,8 +215,11 @@ class Utility {
                 .build()
         }
 
-        private fun hasPermission(context: Context, permission: String): Boolean {
-            return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+         private fun hasPermission(context: Context, permission: String): Boolean {
+            return ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
         }
 
         fun getIconCompatByResource(@DrawableRes icon: Int, carContext: CarContext): IconCompat {
@@ -228,7 +230,7 @@ class Utility {
             return CarIcon.Builder(IconCompat.createWithResource(carContext, icon)).build()
         }
 
-        fun checkPermission(carContext: CarContext, ) {
+        fun checkPermission(carContext: CarContext) {
             val hasPermissionLocation =
                 (hasPermission(carContext, Manifest.permission.ACCESS_FINE_LOCATION) ||
                         hasPermission(carContext, Manifest.permission.ACCESS_COARSE_LOCATION)) &&
@@ -238,10 +240,10 @@ class Utility {
             if (!hasPermissionLocation) {
                 requestPermission(carContext) { approved, rejected ->
                     if (approved.isNotEmpty()) {
-                        showToast(carContext, carContext.getString(R.string.approved))
+                        showErrorMessage(carContext, carContext.getString(R.string.approved))
 
                     } else if (rejected.isNotEmpty()) {
-                        showToast(carContext, carContext.getString(R.string.rejected))
+                        showErrorMessage(carContext, carContext.getString(R.string.rejected))
                     }
                 }
             }

@@ -25,7 +25,7 @@ import androidx.car.app.model.Row
 import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Location
 import com.akshay.weatherapp.viewmodel.LocationViewModel
@@ -78,14 +78,14 @@ class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
     }
 
     private fun onRouteSelected(currentPlace: String) {
-        showToast(
+        showErrorMessage(
             currentContext,
             currentContext.getString(R.string.selected_route_toast_msg, currentPlace)
         )
     }
 
     private fun onRoutesVisible(startIndex: Int, endIndex: Int) {
-        showToast(
+        showErrorMessage(
             currentContext,
             currentContext.getString(R.string.visible_routes_toast_msg, (endIndex - startIndex))
         )
@@ -133,7 +133,6 @@ class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
 
-        val colorSpanStart = if (currentPlace.isOpen) 2 else 2
         val colorSpanEnd = if (currentPlace.isOpen) 11 else 8
 
         val colorSpan =
@@ -141,7 +140,7 @@ class SamplePlaces(placeDataScreen: Screen, private val root: String? = null) {
 
         statusWithDesc.setSpan(
             colorSpan,
-            colorSpanStart,
+            2,
             colorSpanEnd,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )

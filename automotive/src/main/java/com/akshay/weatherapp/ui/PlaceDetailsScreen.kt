@@ -20,7 +20,7 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.viewmodel.LocationViewModel
@@ -74,7 +74,7 @@ class PlaceDetailsScreen(
                         )
                     )
                     .setOnClickListener {
-                        showToast(
+                        showErrorMessage(
                             carContext,
                             if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
                             else carContext.getString(R.string.added_to_favourites),

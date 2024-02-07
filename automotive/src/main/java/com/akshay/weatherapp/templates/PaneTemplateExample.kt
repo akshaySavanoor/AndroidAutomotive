@@ -21,7 +21,7 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
 import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.viewmodel.LocationViewModel
 
@@ -185,7 +185,7 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
                     }
                 )
                 setOnClickListener {
-                    showToast(carContext, carContext.getString(R.string.unable_to_call))
+                    showErrorMessage(carContext, carContext.getString(R.string.unable_to_call))
                 }
                 build()
             }

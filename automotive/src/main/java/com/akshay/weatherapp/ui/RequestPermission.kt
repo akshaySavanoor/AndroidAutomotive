@@ -22,7 +22,7 @@ import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Constants.Companion.PACKAGE_PREFIX
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.templates.GridTemplateExample
 import com.akshay.weatherapp.templates.ListTemplateExample
 import com.akshay.weatherapp.templates.LongMessageTemplateExample
@@ -107,7 +107,7 @@ class RequestPermissionScreen(
                 permissions.toTypedArray().toMutableList()
             ) { approved, rejected ->
                 if (approved.isNotEmpty()) {
-                    showToast(carContext, carContext.getString(R.string.approved))
+                    showErrorMessage(carContext, carContext.getString(R.string.approved))
                     currentScreen?.let {
                         screenManager.pop()
                         when (currentScreen) {
@@ -160,12 +160,12 @@ class RequestPermissionScreen(
                         }
                     } ?: screenManager.push(HomeScreen(carContext))
                 } else if (rejected.isNotEmpty()) {
-                    showToast(carContext, carContext.getString(R.string.rejected))
+                    showErrorMessage(carContext, carContext.getString(R.string.rejected))
                     screenManager.push(HomeScreen(carContext))
                 }
             }
             if (!carContext.packageManager.hasSystemFeature(FEATURE_AUTOMOTIVE)) {
-                showToast(carContext, carContext.getString(R.string.phone_screen_permission_msg))
+                showErrorMessage(carContext, carContext.getString(R.string.phone_screen_permission_msg))
             }
         }
 
@@ -193,7 +193,7 @@ class RequestPermissionScreen(
                                 FEATURE_AUTOMOTIVE
                             )
                         ) {
-                            showToast(
+                            showErrorMessage(
                                 carContext,
                                 carContext.getString(
                                     R.string.phone_screen_permission_msg
@@ -218,7 +218,7 @@ class RequestPermissionScreen(
             .addAction(Action.Builder()
                 .setTitle(carContext.getString(R.string.cancel))
                 .setOnClickListener {
-                    showToast(carContext, carContext.getString(R.string.permission_cancelled))
+                    showErrorMessage(carContext, carContext.getString(R.string.permission_cancelled))
                     screenManager.push(HomeScreen(carContext))
                 }
                 .build())

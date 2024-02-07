@@ -24,7 +24,7 @@ import com.akshay.weatherapp.common.RepositoryUtils.getRetryAction
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.colorize
 import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
-import com.akshay.weatherapp.common.Utility.Companion.showToast
+import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
 
@@ -109,7 +109,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                 else -> weatherResponseModelData?.let {
                     screenManager.push(WeatherDetailsScreen(carContext, it, title))
                 } ?: run {
-                    Utility.showErrorMessage(
+                        showErrorMessage(
                         carContext,
                         carContext.getString(R.string.failed_to_fetch_weather_data)
                     )
@@ -376,7 +376,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             addAction(Action.Builder()
                 .setIcon(getIconByResource(R.drawable.ic_add, carContext))
                 .setOnClickListener {
-                    showToast(
+                    showErrorMessage(
                         carContext,
                         carContext.getString(R.string.floating_icon_pressed)
                     )
@@ -392,7 +392,7 @@ class ListTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                             )
                         )
                         .setOnClickListener {
-                            showToast(
+                            showErrorMessage(
                                 carContext,
                                 carContext.getString(
                                     if (!mIsEnabled) R.string.interactive_mode_enabled else R.string.enabled_read_only_mode
