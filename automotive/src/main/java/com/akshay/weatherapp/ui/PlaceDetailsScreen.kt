@@ -6,20 +6,20 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
 import androidx.car.app.model.Action.FLAG_PRIMARY
-import androidx.car.app.model.ActionStrip
-import androidx.car.app.model.CarColor
 import androidx.car.app.model.CarColor.PRIMARY
 import androidx.car.app.model.CarColor.SECONDARY
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.ForegroundCarColorSpan
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.Pane
 import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import androidx.car.app.versioning.CarAppApiLevels
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
-import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.WeatherResponseModel
@@ -43,37 +43,30 @@ class PlaceDetailsScreen(
 
     override fun onGetTemplate(): Template {
 
-        val navigateAction = Action.Builder().run {
-            setTitle(carContext.getString(R.string.navigate))
-            setFlags(FLAG_PRIMARY)
-            setIcon(
-                CarIcon.Builder(
-                    getIconCompatByResource(
-                        R.drawable.baseline_navigation_24,
-                        carContext
-                    )
-                )
-                    .setTint(CarColor.BLUE) //Host may override the tint color
-                    .build()
-            )
-            // Only certain Intent actions are supported by `startCarApp`. Check its documentation
-            // for all of the details. To open another app that can handle navigating to a location
-            // you must use the CarContext.ACTION_NAVIGATE action and not Intent.ACTION_VIEW like
-            // you might on a phone.
-            setOnClickListener { carContext.startCarApp(place.toIntent(CarContext.ACTION_NAVIGATE)) }
-            build()
-        }
+        val navigateAction = createGenericAction(
+            title = carContext.getString(R.string.navigate),
+            flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null,
+            icon = getIconByResource(
+                icon = R.drawable.baseline_navigation_24,
+                carContext = carContext
+            ),
+            onClickListener = OnClickListener {
+                carContext.startCarApp(place.toIntent(CarContext.ACTION_NAVIGATE))
+            }
+        )
+        // Only certain Intent actions are supported by `startCarApp`. Check its documentation
+        // for all of the details. To open another app that can handle navigating to a location
+        // you must use the CarContext.ACTION_NAVIGATE action and not Intent.ACTION_VIEW like
+        // you might on a phone.
 
-        val actionStrip = ActionStrip.Builder()
-            .addAction(
-                Action.Builder()
-                    .setIcon(
-                        getIconByResource(
-                            if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
-                            else R.drawable.ic_favorite_white_24dp, carContext
-                        )
-                    )
-                    .setOnClickListener {
+        val actionStrip =
+            createGenericActionStrip(
+                createGenericAction(
+                    icon = getIconByResource(
+                        if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
+                        else R.drawable.ic_favorite_white_24dp, carContext
+                    ),
+                    onClickListener = OnClickListener {
                         showErrorMessage(
                             carContext,
                             if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
@@ -82,9 +75,9 @@ class PlaceDetailsScreen(
                         mIsFavorite = !mIsFavorite
                         invalidate()
                     }
-                    .build()
+                )
             )
-            .build()
+
         val cityName = SpannableString(
             carContext.getString(
                 R.string.city_with_country,

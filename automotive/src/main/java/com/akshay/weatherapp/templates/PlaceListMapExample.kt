@@ -17,6 +17,7 @@ import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.RepositoryUtils
 import com.akshay.weatherapp.common.RepositoryUtils.setUpObserversAndCallApi
+import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.PlaceDetailsScreen
@@ -85,9 +86,8 @@ class PlaceListMapExample(carContext: CarContext) : Screen(carContext),
         invalidate()
     }
 
-    private val currentLocationCallback: (Location) -> Unit = {
-        location ->
-        if (location != currentLocation){
+    private val currentLocationCallback: (Location) -> Unit = { location ->
+        if (location != currentLocation) {
             currentLocation = location
             invalidate()
         }
@@ -134,7 +134,7 @@ class PlaceListMapExample(carContext: CarContext) : Screen(carContext),
                 setTitle(Constants.PLACE_LIST_MAP_TEMPLATE)
                 setIcon(CarIcon.ERROR)
                 setHeaderAction(Action.BACK)
-                setActionStrip(Utility.goToHome(carContext, this@PlaceListMapExample))
+                setActionStrip(goToHome(carContext, this@PlaceListMapExample))
                 addAction(RepositoryUtils.getRetryAction(carContext, this@PlaceListMapExample))
                 build()
             }
@@ -143,13 +143,13 @@ class PlaceListMapExample(carContext: CarContext) : Screen(carContext),
         builder.setItemList(
             ItemList.Builder()
                 .addItem(
-                placeDetailRow.run {
-                    setTitle(carContext.getString(R.string.browse_place_details))
-                    setBrowsable(true)
-                    setOnClickListener(onClickListener)
-                    build()
-                }
-            )
+                    placeDetailRow.run {
+                        setTitle(carContext.getString(R.string.browse_place_details))
+                        setBrowsable(true)
+                        setOnClickListener(onClickListener)
+                        build()
+                    }
+                )
                 .build()
         )
             .setTitle(carContext.getString(R.string.my_location))

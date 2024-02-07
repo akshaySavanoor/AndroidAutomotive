@@ -2,17 +2,18 @@ package com.akshay.weatherapp.templates
 
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
-import androidx.car.app.model.Action
 import androidx.car.app.model.Action.BACK
 import androidx.car.app.model.Action.FLAG_PRIMARY
-import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
 import androidx.car.app.model.CarIcon
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.Template
 import androidx.car.app.versioning.CarAppApiLevels
-import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 
 /**
  * Template for UI messages conveying brief information and optional actions.
@@ -42,75 +43,53 @@ import com.akshay.weatherapp.R
 class MessageTemplateExample(carContext: CarContext) : Screen(carContext) {
     private var mIsConfirmed = false
     override fun onGetTemplate(): Template {
-        val settings = Action.Builder()
-            .run {
-                setTitle(carContext.getString(R.string.skip))
-                setOnClickListener {
-                    if (!mIsConfirmed) {
-                        screenManager.pop()
-                    }
-                    mIsConfirmed = false
-                    invalidate()
+        val settings = createGenericAction(
+            title = carContext.getString(R.string.skip),
+            onClickListener = OnClickListener {
+                if (!mIsConfirmed) {
+                    screenManager.pop()
                 }
-                build()
+                mIsConfirmed = false
+                invalidate()
             }
+        )
 
         if (mIsConfirmed) {
             return MessageTemplate.Builder(carContext.getString(R.string.no_routes_found))
-                .run {
-                    setIcon(CarIcon.ALERT)
-                    setActionStrip(
-                        ActionStrip.Builder()
-                            .addAction(settings)
-                            .build()
+                .setIcon(CarIcon.ALERT)
+                .setActionStrip(
+                    createGenericActionStrip(
+                        settings
                     )
-                    build()
-                }
+                )
+                .build()
         }
-        val primaryActionBuilder = Action.Builder()
-            .setOnClickListener {
+        val primaryActionBuilder = createGenericAction(
+            title = carContext.getString(R.string.confirm),
+            onClickListener = OnClickListener {
                 mIsConfirmed = !mIsConfirmed
                 invalidate() //Call invalidate() to re-render the onGetTemplate()
-            }
-            .setTitle(carContext.getString(R.string.confirm))
-
-        if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) {
-            primaryActionBuilder.setFlags(FLAG_PRIMARY)
-        }
+            },
+            flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null
+        )
 
         return MessageTemplate.Builder(carContext.getString(R.string.would_you_like_to_start_new_route))
             .run {
                 setTitle(carContext.getString(R.string.route_option))
                 setIcon(
-                    CarIcon.Builder(
-                        IconCompat.createWithResource(
-                            carContext,
-                            R.drawable.ic_route
-                        )
+                    getIconByResource(
+                        icon = R.drawable.ic_route,
+                        carContext = carContext
                     )
-//                    .setTint(CarColor.GREEN) //we can add optional tint color
-                        .build()
                 )
                 setHeaderAction(BACK)
-                addAction(primaryActionBuilder.build())
-                addAction(
-                    Action.Builder()
-                        .run {
-                            setBackgroundColor(CarColor.RED)
-                            setTitle(carContext.getString(R.string.cancel))
-                            setOnClickListener {
-                                screenManager.pop()
-                            }
-                            build()
-                        }
-                )
-                setActionStrip(
-                    ActionStrip.Builder()
-                        .run {
-                            addAction(settings)
-                            build()
-                        }
-                )
+                addAction(primaryActionBuilder)
+                addAction(createGenericAction(
+                    title = carContext.getString(R.string.cancel),
+                    backgroundColor = CarColor.RED,
+                    onClickListener = OnClickListener { screenManager.pop() }
+                ))
+                setActionStrip(createGenericActionStrip(settings))
                 build()
             }
     }

@@ -9,7 +9,9 @@ import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.*
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Place
 import com.akshay.weatherapp.ui.FilterForSearch
@@ -146,16 +148,19 @@ class SearchTemplateExample(carContext: CarContext) : Screen(carContext), Defaul
             }
         }
 
-        val actionStrip = ActionStrip.Builder()
-            .addAction(
-                Action.Builder()
-                    .setTitle(carContext.getString(R.string.filter))
-                    .setOnClickListener {
-                        screenManager.push(FilterForSearch(carContext))
+        val actionStrip =
+            createGenericActionStrip(
+                createGenericAction(
+                    title = carContext.getString(R.string.filter),
+                    onClickListener = OnClickListener {
+                        screenManager.push(
+                            FilterForSearch(
+                                carContext
+                            )
+                        )
                     }
-                    .build()
+                )
             )
-            .build()
 
         return SearchTemplate.Builder(searchListener)
             .run {

@@ -8,9 +8,12 @@ import android.location.LocationManager
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
+import androidx.car.app.model.Action.FLAG_PRIMARY
+import androidx.car.app.model.OnClickListener
 import androidx.core.content.ContextCompat
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.service.RetrofitInstance
@@ -21,14 +24,11 @@ import retrofit2.Call
 object RepositoryUtils {
 
     private val locationViewModel by lazy { LocationViewModel() }
-    private lateinit var myLocationListener: MyLocationListener
-    private var locationManager: LocationManager? = null
-    private var hasPermissionLocation: Boolean = false
     private var currentLocation: Location? = null
     private var call: Call<WeatherResponseModel>? = null
 
     private fun isLocationChanged(newLocation: Location): Boolean {
-        return currentLocation?.let { it.latitude != newLocation.latitude || it.longitude != newLocation.longitude }
+        return currentLocation?.run { latitude != newLocation.latitude || longitude != newLocation.longitude }
             ?: true
     }
 
@@ -59,56 +59,49 @@ object RepositoryUtils {
         weatherResponseData: (WeatherResponseModel?) -> Unit,
         currentLocationData: ((Location) -> Unit)? = null
     ) {
+        val onLoadingStatusChanged: (Boolean) -> Unit = loadingStatus
+        val onErrorStatusChanged: (String?) -> Unit = errorStatus
+        val onWeatherDataReceived: (WeatherResponseModel?) -> Unit = weatherResponseData
+        val onCurrentLocationReceived: ((Location) -> Unit)? = currentLocationData
+
         locationViewModel.apply {
+            isLoading.observe(currentScreen, onLoadingStatusChanged)
 
-            isLoading.observe(currentScreen) {
-                loadingStatus(it)
-            }
+            mError.observe(currentScreen, onErrorStatusChanged)
 
-            mError.observe(currentScreen) {
-                errorStatus(it)
-            }
-
-            weatherData.observe(currentScreen) { weatherResponse ->
-                weatherResponseData(weatherResponse)
-            }
-
+            weatherData.observe(currentScreen, onWeatherDataReceived)
         }
 
-        myLocationListener = MyLocationListener { location ->
-            currentLocationData?.let {
-                it(location)
-            }
-            if (isLocationChanged(location)) {
-                currentLocation = location
-                call = RetrofitInstance.weatherApiService.getCurrentWeather(
-                    location.latitude,
-                    location.longitude,
-                    ApiKey.API_KEY
-                )
-                call?.let { locationViewModel.fetchWeatherData(carContext, it) }
-            }
-        }
+        val locationManager =
+            carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        locationManager = carContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        hasPermissionLocation =
-            ContextCompat.checkSelfPermission(
-                carContext,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) ==
-                    PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        carContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) ==
-                    PackageManager.PERMISSION_GRANTED
+        val hasPermissionLocation = ContextCompat.checkSelfPermission(
+            carContext,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    carContext,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
 
         if (hasPermissionLocation) {
-            locationManager?.requestLocationUpdates(
+            locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 1000L,
                 0f,
-                myLocationListener
+                MyLocationListener { location ->
+                    onCurrentLocationReceived?.invoke(location)
+
+                    if (isLocationChanged(location)) {
+                        currentLocation = location
+                        val call = RetrofitInstance.weatherApiService.getCurrentWeather(
+                            location.latitude,
+                            location.longitude,
+                            ApiKey.API_KEY
+                        )
+                        call.let { locationViewModel.fetchWeatherData(carContext, it) }
+                    }
+                }
             )
         } else {
             Utility.requestPermission(carContext) { approved, rejected ->
@@ -118,15 +111,16 @@ object RepositoryUtils {
     }
 
     fun getRetryAction(carContext: CarContext, screen: Screen): Action {
-        return Action.Builder()
-            .setTitle(carContext.getString(R.string.retry))
-            .setFlags(Action.FLAG_PRIMARY)
-            .setOnClickListener {
+        return createGenericAction(
+            title = carContext.getString(R.string.retry),
+            flag = FLAG_PRIMARY,
+            onClickListener = OnClickListener {
                 locationViewModel.fetchWeatherData(
                     carContext,
                     call ?: locationViewModel.getDefaultCall()
                 )
                 screen.invalidate()
-            }.build()
+            }
+        )
     }
 }

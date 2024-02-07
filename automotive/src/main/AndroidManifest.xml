@@ -54,7 +54,6 @@
 
 
     <!-- "android:supportsRtl"="false" indicates that app doesn't support right-to-left (RTL) layouts.
-         "If we set the app category as 'map,' it will appear in the default list of navigation apps."
          "android:exported='true' indicates that apps can allow other applications to use this." -->
     <application
         android:appCategory="maps"

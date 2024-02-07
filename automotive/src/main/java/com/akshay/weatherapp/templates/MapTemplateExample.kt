@@ -6,13 +6,15 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.Template
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants.Companion.FAVOURITE
 import com.akshay.weatherapp.common.Constants.Companion.SEARCH
 import com.akshay.weatherapp.common.Constants.Companion.SETTINGS
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.ui.SamplePlaces
 
@@ -62,7 +64,15 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
         }
         val actionStrip = ActionStrip.Builder()
             .run {
-                addAction(createActionWithTitle(carContext.getString(R.string.locations)))
+                addAction(
+                    createGenericAction(title = carContext.getString(R.string.locations),
+                        onClickListener = OnClickListener {
+                            showErrorMessage(
+                                carContext = carContext,
+                                message = carContext.getString(R.string.locations)
+                            )
+                        })
+                )
                 addAction(createActionWithIcon(carContext, R.drawable.ic_search, SEARCH))
                 addAction(createActionWithIcon(carContext, R.drawable.ic_settings, SETTINGS))
                 addAction(createActionWithIcon(carContext, starIcon, FAVOURITE))
@@ -86,19 +96,16 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
 //            .setCurrentLocationEnabled(true)
                 setItemList(samplePlaces.getPlaceList())
                 setOnContentRefreshListener {
-                    showErrorMessage(carContext, carContext.getString(R.string.gas_station_info_updated))
+                    showErrorMessage(
+                        carContext,
+                        carContext.getString(R.string.gas_station_info_updated)
+                    )
                     invalidate()
                 }
                 setTitle(carContext.getString(R.string.gas_stations))
                 setHeaderAction(Action.BACK)
                 build()
             }
-    }
-
-    private fun createActionWithTitle(title: String): Action {
-        return Action.Builder()
-            .setTitle(title)
-            .build()
     }
 
     private fun createActionWithIcon(
@@ -133,7 +140,12 @@ class MapTemplateExample(carContext: CarContext) : Screen(carContext) {
                     }
                 }
             }
-            .setIcon(getIconByResource(iconResId, carContext))
+            .setIcon(
+                getIconByResource(
+                    icon = iconResId,
+                    carContext = carContext
+                )
+            )
             .build()
     }
 

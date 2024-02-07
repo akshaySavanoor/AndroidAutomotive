@@ -4,8 +4,8 @@ import android.text.SpannableString
 import android.text.Spanned
 import androidx.car.app.AppManager
 import androidx.car.app.CarContext
-import androidx.car.app.CarToast
 import androidx.car.app.model.Action
+import androidx.car.app.model.Action.FLAG_IS_PERSISTENT
 import androidx.car.app.model.Action.FLAG_PRIMARY
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.Alert
@@ -27,27 +27,13 @@ import androidx.car.app.navigation.model.TravelEstimate
 import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 object RoutingMapAction {
-
-    private fun createAction(carContext: CarContext, toastMsg: String, iconImage: Int): Action {
-        return Action.Builder()
-            .setOnClickListener {
-                CarToast.makeText(
-                    carContext,
-                    toastMsg,
-                    CarToast.LENGTH_SHORT
-                ).show()
-            }
-            .setIcon(
-                getIconByResource(iconImage, carContext)
-            )
-            .build()
-    }
 
     /**
      * Note: Ensure that the number of actions does not exceed 4.
@@ -59,17 +45,31 @@ object RoutingMapAction {
     fun getMapActionStrip(carContext: CarContext): ActionStrip {
         return ActionStrip.Builder()
             .addAction(
-                createAction(
-                    carContext,
-                    carContext.getString(R.string.zoomed_in_toast_msg),
-                    R.drawable.ic_zoom_in_24
+                createGenericAction(
+                    icon = getIconByResource(
+                        icon = R.drawable.ic_zoom_in_24,
+                        carContext = carContext
+                    ),
+                    onClickListener = OnClickListener {
+                        showErrorMessage(
+                            carContext = carContext,
+                            message = carContext.getString(R.string.zoomed_in_toast_msg)
+                        )
+                    }
                 )
             )
             .addAction(
-                createAction(
-                    carContext,
-                    carContext.getString(R.string.zoomed_out_toast_msg),
-                    R.drawable.ic_zoom_out_24
+                createGenericAction(
+                    icon = getIconByResource(
+                        icon = R.drawable.ic_zoom_out_24,
+                        carContext = carContext
+                    ),
+                    onClickListener = OnClickListener {
+                        showErrorMessage(
+                            carContext = carContext,
+                            message = carContext.getString(R.string.zoomed_out_toast_msg)
+                        )
+                    }
                 )
             )
             .addAction(Action.PAN)
@@ -77,21 +77,25 @@ object RoutingMapAction {
     }
 
     private fun createAlert(carContext: CarContext): Alert {
-        val yesAction = Action.Builder().apply {
-            setTitle(carContext.getString(R.string.yes))
-            setFlags(FLAG_PRIMARY)
-            setOnClickListener {
-                showErrorMessage(carContext, carContext.getString(R.string.yes_action_toast_msg))
-            }
-        }
-            .build()
-        val noAction = Action.Builder().apply {
-            setTitle(carContext.getString(R.string.no))
-            setOnClickListener {
-                showErrorMessage(carContext, carContext.getString(R.string.no_action_toast_msg))
-            }
-        }
-            .build()
+        val yesAction =
+            createGenericAction(
+                title = carContext.getString(R.string.yes),
+                flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null,
+                onClickListener = OnClickListener {
+                    showErrorMessage(
+                        carContext,
+                        carContext.getString(R.string.yes_action_toast_msg)
+                    )
+                }
+            )
+
+        val noAction =
+            createGenericAction(
+                title = carContext.getString(R.string.no),
+                onClickListener = OnClickListener {
+                    showErrorMessage(carContext, carContext.getString(R.string.no_action_toast_msg))
+                }
+            )
 
         val alertCallBack = object : AlertCallback {
             override fun onCancel(reason: Int) {
@@ -126,33 +130,32 @@ object RoutingMapAction {
         val builder = ActionStrip.Builder()
         if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_5) {
             builder.addAction(
-                Action.Builder()
-                    .setOnClickListener {
+                createGenericAction(
+                    icon = getIconByResource(R.drawable.ic_baseline_add_alert_24, carContext),
+                    onClickListener = OnClickListener {
                         carContext.getCarService(AppManager::class.java)
                             .showAlert(createAlert(carContext))
                     }
-                    .setIcon(
-                        getIconByResource(R.drawable.ic_baseline_add_alert_24, carContext)
-                    ).build()
+                )
             )
         }
         builder.addAction(
-            Action.Builder()
-                .setOnClickListener {
-                    CarToast.makeText(
-                        carContext,
-                        carContext.getString(R.string.bug_reported_toast_msg),
-                        CarToast.LENGTH_SHORT
-                    ).show()
+            createGenericAction(
+                icon = getIconByResource(R.drawable.ic_bug_report_24px, carContext),
+                onClickListener = OnClickListener {
+                    showErrorMessage(
+                        carContext = carContext,
+                        message = carContext.getString(R.string.bug_reported_toast_msg)
+                    )
                 }
-                .setIcon(getIconByResource(R.drawable.ic_bug_report_24px, carContext)).build()
+            )
         )
         builder.addAction(
-            Action.Builder()
-                .setTitle(carContext.getString(R.string.stop_action_title))
-                .setOnClickListener(onStopNavigation)
-                .setFlags(Action.FLAG_IS_PERSISTENT) //Flag indicates that this action will not fade in/out inside an ActionStrip.
-                .build()
+            createGenericAction(
+                title = carContext.getString(R.string.stop_action_title),
+                flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_IS_PERSISTENT else null,//Flag indicates that this action will not fade in/out inside an ActionStrip.
+                onClickListener = onStopNavigation
+            )
         )
         return builder.build()
     }

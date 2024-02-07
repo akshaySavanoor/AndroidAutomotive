@@ -3,14 +3,13 @@ package com.akshay.weatherapp.templates
 import android.net.Uri
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
-import androidx.car.app.model.Action
 import androidx.car.app.model.Action.BACK
 import androidx.car.app.model.Action.FLAG_PRIMARY
-import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
 import androidx.car.app.model.CarIcon
 import androidx.car.app.model.InputCallback
 import androidx.car.app.model.MessageTemplate
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.ParkedOnlyOnClickListener
 import androidx.car.app.model.Template
 import androidx.car.app.model.signin.InputSignInMethod
@@ -19,10 +18,11 @@ import androidx.car.app.model.signin.QRCodeSignInMethod
 import androidx.car.app.model.signin.SignInTemplate
 import androidx.car.app.versioning.CarAppApiLevels
 import androidx.core.graphics.drawable.IconCompat
-import com.akshay.weatherapp.HomeScreen
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.app_secrets.ApiKey.DUMMY_LOGIN_URL
 import com.akshay.weatherapp.common.Constants
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
 import com.akshay.weatherapp.common.Utility.Companion.clickable
 import com.akshay.weatherapp.common.Utility.Companion.generateRandomString
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
@@ -54,12 +54,12 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
     var error: String? = null
     private var currentState = Constants.Companion.SignInState.EMAIL
     private val additionalText = clickable(
-        carContext.getString(R.string.sign_in_additional_text),
-        32,
-        16,
-        61,
-        14,
-        {
+        s = carContext.getString(R.string.sign_in_additional_text),
+        startingIndexOfFirstText = 32,
+        endingIndexOfFirstText = 16,
+        startingIndexOfSecondText = 61,
+        endingIndexOfSecondText = 14,
+        action1 = {
             screenManager.push(
                 LongMessageTemplateExample(
                     carContext,
@@ -67,7 +67,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
                 )
             )
         },
-        {
+        action2 = {
             screenManager.push(LongMessageTemplateExample(carContext))
         }
     )
@@ -77,34 +77,34 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
      * ERROR: java.lang.IllegalArgumentException: Action list exceeded max number of 0 primary actions
      */
 
-    private val mQRCodeSignInAction = Action.Builder()
-        .setTitle(carContext.getString(R.string.use_qr_code))
-        .setOnClickListener(ParkedOnlyOnClickListener.create {
+    private val mQRCodeSignInAction = createGenericAction(
+        title = carContext.getString(R.string.use_qr_code),
+        onClickListener = ParkedOnlyOnClickListener.create {
             currentState = Constants.Companion.SignInState.OR_CODE
             invalidate()
-        })
-        .build()
+        }
+    )
 
-    private val mPinSignInAction = Action.Builder()
-        .setTitle(carContext.getString(R.string.use_pin))
-        .setOnClickListener(ParkedOnlyOnClickListener.create {
+    private val mPinSignInAction = createGenericAction(
+        title = carContext.getString(R.string.use_pin),
+        onClickListener = ParkedOnlyOnClickListener.create {
             currentState = Constants.Companion.SignInState.PIN
             invalidate()
-        })
-        .build()
+        }
+    )
 
-    private val mInputSignIn = Action.Builder()
-        .setTitle(carContext.getString(R.string.use_email))
-        .setOnClickListener(ParkedOnlyOnClickListener.create {
+    private val mInputSignIn = createGenericAction(
+        title = carContext.getString(R.string.use_email),
+        onClickListener = ParkedOnlyOnClickListener.create {
             currentState = Constants.Companion.SignInState.EMAIL
             invalidate()
-        })
-        .build()
+        }
+    )
 
-    private val skipAction = Action.Builder()
-        .setTitle(carContext.getString(R.string.skip))
-        .setOnClickListener { screenManager.pop() }
-        .build()
+    private val skipAction = createGenericAction(
+        title = carContext.getString(R.string.skip),
+        onClickListener = OnClickListener { screenManager.pop() }
+    )
 
     /**
      * Note: spans are allowed in the hint field , However host can override.
@@ -179,11 +179,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
                 setHeaderAction(BACK)
                 setAdditionalText(additionalText)
                 setInstructions(carContext.getString(R.string.sign_in_instruction))
-                setActionStrip(
-                    ActionStrip.Builder()
-                        .addAction(skipAction)
-                        .build()
-                )
+                setActionStrip(createGenericActionStrip(skipAction))
                 addAction(if (carContext.carAppApiLevel > CarAppApiLevels.LEVEL_3) mQRCodeSignInAction else mPinSignInAction)
                 build()
             }
@@ -201,11 +197,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
                 setTitle(carContext.getString(R.string.sign_in))
                 setInstructions(carContext.getString(R.string.pin_sign_in_instruction))
                 setHeaderAction(BACK)
-                setActionStrip(
-                    ActionStrip.Builder()
-                        .addAction(skipAction)
-                        .build()
-                )
+                setActionStrip(createGenericActionStrip(skipAction))
                 addAction(mInputSignIn)
                 setAdditionalText(additionalText)
                 build()
@@ -223,11 +215,7 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
                 setTitle(carContext.getString(R.string.sign_in))
                 setInstructions(carContext.getString(R.string.qr_code_sign_in_title))
                 setHeaderAction(BACK)
-                setActionStrip(
-                    ActionStrip.Builder()
-                        .addAction(skipAction)
-                        .build()
-                )
+                setActionStrip(createGenericActionStrip(skipAction))
                 addAction(mInputSignIn)
                 addAction(mPinSignInAction)
                 setAdditionalText(additionalText)
@@ -247,13 +235,15 @@ class SignInTemplateExample(carContext: CarContext) : Screen(carContext) {
                 )
                     .build()
             )
-            .addAction(Action.Builder()
-                .setTitle(carContext.getString(R.string.go_to_home))
-                .setFlags(FLAG_PRIMARY)
-                .setOnClickListener {
-                    screenManager.push(HomeScreen(carContext))
-                }
-                .build())
+            .addAction(
+                createGenericAction(
+                    title = carContext.getString(R.string.go_to_home),
+                    flag = FLAG_PRIMARY,
+                    onClickListener = OnClickListener {
+                        screenManager.popToRoot()
+                    }
+                )
+            )
             .build()
     }
 

@@ -7,20 +7,20 @@ import androidx.car.app.Screen
 import androidx.car.app.constraints.ConstraintManager
 import androidx.car.app.model.Action
 import androidx.car.app.model.Action.FLAG_PRIMARY
-import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarColor
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.Distance
 import androidx.car.app.model.DistanceSpan
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.Pane
 import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.car.app.versioning.CarAppApiLevels
 import com.akshay.weatherapp.R
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
-import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.viewmodel.LocationViewModel
@@ -146,60 +146,51 @@ class PaneTemplateExample(carContext: CarContext) : Screen(carContext) {
             paneBuilder.addRow(createRow(i))
         }
 
-        val primaryActionBuilder = Action.Builder()
-            .apply {
-                setIcon(getIconByResource(icon = R.drawable.ic_navigation, carContext = carContext))
-                setTitle(carContext.getString(R.string.navigate))
-                setOnClickListener {
-                    carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE))
-                }
-            }
-
-        if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) {
-            primaryActionBuilder.setFlags(FLAG_PRIMARY)
-        }
+        val primaryActionBuilder =
+            createGenericAction(
+                title = carContext.getString(R.string.navigate),
+                icon = getIconByResource(icon = R.drawable.ic_navigation, carContext = carContext),
+                onClickListener = OnClickListener { carContext.startCarApp(randomPlace.toIntent(CarContext.ACTION_NAVIGATE)) },
+                flag = if (carContext.carAppApiLevel >= CarAppApiLevels.LEVEL_4) FLAG_PRIMARY else null
+            )
 
         /**
          * CAUTION: The number of addAction calls on the pane should not exceed the supported maximum of 2.
          * ERROR: java.lang.IllegalArgumentException - The number of actions on the pane exceeded the supported max of 2.
          */
         paneBuilder.apply {
-            addAction(primaryActionBuilder.build())
-            addAction(
-                Action.Builder()
-                    .setTitle(carContext.getString(R.string.browse_place_details))
-                    .setOnClickListener { screenManager.push(MapTemplateExample(carContext)) }
-                    .build()
+            addAction(primaryActionBuilder)
+            addAction(createGenericAction(
+                title = carContext.getString(R.string.browse_place_details),
+                onClickListener = OnClickListener {
+                    screenManager.push(
+                        MapTemplateExample(
+                            carContext
+                        )
+                    )
+                }
+            )
             )
         }
 
-        val callAction = Action.Builder()
-            .run {
-                setTitle(carContext.getString(R.string.call))
-                setIcon(
-                    CarIcon.Builder(
-                       getIconCompatByResource(R.drawable.ic_call, carContext)
-                    ).run {
-                        setTint(CarColor.BLUE) //Tint can be skipped by the host
-                        build()
-                    }
+        val callAction = createGenericAction(
+            title = carContext.getString(R.string.call),
+            icon = getIconByResource(
+                icon = R.drawable.ic_call,
+                carContext = carContext
+            ),
+            onClickListener = OnClickListener {
+                showErrorMessage(
+                    carContext,
+                    carContext.getString(R.string.unable_to_call)
                 )
-                setOnClickListener {
-                    showErrorMessage(carContext, carContext.getString(R.string.unable_to_call))
-                }
-                build()
             }
+        )
 
         return PaneTemplate.Builder(paneBuilder.build())
             .run {
                 setHeaderAction(Action.BACK)
-                setActionStrip(
-                    ActionStrip.Builder()
-                        .run {
-                            addAction(callAction)
-                            build()
-                        }
-                )
+                setActionStrip(createGenericActionStrip(callAction))
                 setTitle(carContext.getString(R.string.pane_template))
                 build()
             }

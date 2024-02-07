@@ -5,9 +5,9 @@ import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.annotations.ExperimentalCarApi
 import androidx.car.app.model.Action
-import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.Row
 import androidx.car.app.model.SectionedItemList
 import androidx.car.app.model.Template
@@ -19,6 +19,8 @@ import com.akshay.weatherapp.common.Constants.Companion.MOBILE_PAYMENT
 import com.akshay.weatherapp.common.Constants.Companion.WITHIN_FIVE
 import com.akshay.weatherapp.common.Constants.Companion.WITHIN_TEN
 import com.akshay.weatherapp.common.Constants.Companion.WITHIN_TWENTY
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 
 /**
@@ -106,17 +108,19 @@ class FilterForSearch(carContext: CarContext) : Screen(carContext) {
             clearSectionedLists()
             setTitle(carContext.getString(R.string.filter_gas_stations))
             setHeaderAction(Action.BACK)
-            setActionStrip(ActionStrip.Builder()
-                .addAction(
-                    Action.Builder()
-                        .setTitle(carContext.getString(R.string.apply))
-                        .setOnClickListener {
-                            showErrorMessage(carContext, carContext.getString(R.string.filter_applied))
+            setActionStrip(
+                createGenericActionStrip(
+                    createGenericAction(
+                        title = carContext.getString(R.string.apply),
+                        onClickListener = OnClickListener {
+                            showErrorMessage(
+                                carContext,
+                                carContext.getString(R.string.filter_applied)
+                            )
                             screenManager.pop()
-
                         }
-                        .build()
-                ).build())
+                    ))
+            )
             addSectionedList(distanceSectionedList)
             addSectionedList(paymentSectionedList)
             build()

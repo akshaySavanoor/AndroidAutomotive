@@ -20,6 +20,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
+import com.akshay.weatherapp.common.Constants.Companion.HARDWARE_DEBUG_TAG
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.viewmodel.VehiclePropertiesViewModel
 
@@ -35,8 +36,6 @@ class VehiclePropertiesScreen(
 
     private var _viewModel: VehiclePropertiesViewModel? = null
     private val viewModel get() = _viewModel!!
-
-    private val TAG = carContext.getString(R.string.vehiclepropertiesscreen)
 
     private val propertyIds = listOf(
         VehiclePropertyIds.PERF_VEHICLE_SPEED,
@@ -116,8 +115,6 @@ class VehiclePropertiesScreen(
     private fun checkForPermission() {
         if (!isPermissionGranted) {
             requestPermissionPrompt()
-        } else {
-            invalidate()
         }
     }
 
@@ -171,7 +168,7 @@ class VehiclePropertiesScreen(
             }
 
             override fun onErrorEvent(p0: Int, p1: Int) {
-                Log.e(TAG, carContext.getString(R.string.property_error))
+                Log.e(HARDWARE_DEBUG_TAG, carContext.getString(R.string.property_error))
             }
 
         }
@@ -199,33 +196,24 @@ class VehiclePropertiesScreen(
     }
 
     private fun createRow(property: Int, value: Any): Row {
-        return when (property) {
-            VehiclePropertyIds.PERF_VEHICLE_SPEED -> {
-                Row.Builder().setTitle(carContext.getString(R.string.current_speed))
-                    .addText(carContext.getString(R.string.value_kmph, value)).build()
-            }
-
-            VehiclePropertyIds.CURRENT_GEAR -> {
-                Row.Builder().setTitle(carContext.getString(R.string.current_gear))
-                    .addText(value.toString()).build()
-            }
-
-            VehiclePropertyIds.EV_BATTERY_LEVEL -> {
-                Row.Builder().setTitle(carContext.getString(R.string.current_ev_battery_level))
-                    .addText("$value").build()
-            }
-
-            VehiclePropertyIds.FUEL_LEVEL -> {
-                Row.Builder().setTitle(carContext.getString(R.string.current_fuel_level))
-                    .addText("$value").build()
-            }
-
-            VehiclePropertyIds.IGNITION_STATE -> {
-                Row.Builder().setTitle(carContext.getString(R.string.ignition_state))
-                    .addText("$value").build()
-            }
-
-            else -> Row.Builder().build()
+        val titleResId = when (property) {
+            VehiclePropertyIds.PERF_VEHICLE_SPEED -> R.string.current_speed
+            VehiclePropertyIds.CURRENT_GEAR -> R.string.current_gear
+            VehiclePropertyIds.EV_BATTERY_LEVEL -> R.string.current_ev_battery_level
+            VehiclePropertyIds.FUEL_LEVEL -> R.string.current_fuel_level
+            VehiclePropertyIds.IGNITION_STATE -> R.string.ignition_state
+            else -> return Row.Builder().build()
         }
+
+        val title = carContext.getString(titleResId)
+        val valueText = when (value) {
+            is Number -> carContext.getString(R.string.value_kmph, value)
+            else -> value.toString()
+        }
+
+        return Row.Builder()
+            .setTitle(title)
+            .addText(valueText)
+            .build()
     }
 }

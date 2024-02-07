@@ -1,8 +1,5 @@
 package com.akshay.weatherapp.templates
 
-import android.car.Car
-import android.car.drivingstate.CarUxRestrictions
-import android.car.drivingstate.CarUxRestrictionsManager
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.OptIn
@@ -19,11 +16,14 @@ import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
 import com.akshay.weatherapp.common.Constants.Companion.GRID_TEMPLATE
 import com.akshay.weatherapp.common.Constants.Companion.LOADING_GRID_ITEM
-import com.akshay.weatherapp.common.RepositoryUtils
+import com.akshay.weatherapp.common.RepositoryUtils.getRetryAction
 import com.akshay.weatherapp.common.RepositoryUtils.setUpObserversAndCallApi
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
+import com.akshay.weatherapp.common.TemplateUtility.getIconCompatByResource
+import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
-import com.akshay.weatherapp.common.Utility.Companion.getIconCompatByResource
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.ui.WeatherDetailsScreen
 
@@ -59,23 +59,9 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
     private var loadingActionFlag = true
     private val delayForLoader = 3000L
     private val handler = Handler(Looper.getMainLooper())
-    private var mCurrentUxRestrictions: CarUxRestrictions? = null
-    private val mCar: Car = Car.createCar(carContext)
-
-    private val mUxrChangeListener = CarUxRestrictionsManager.OnUxRestrictionsChangedListener { carUxRestrictions ->
-            mCurrentUxRestrictions = carUxRestrictions
-            println(carUxRestrictions.isRequiresDistractionOptimization)
-        }
 
     init {
         lifecycle.addObserver(this)
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
-        super.onCreate(owner)
-        val mCarUxRestrictionsManager = mCar.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE) as CarUxRestrictionsManager
-        mCarUxRestrictionsManager.registerListener(mUxrChangeListener)
-            mUxrChangeListener.onUxRestrictionsChanged(mCarUxRestrictionsManager.currentCarUxRestrictions)
     }
 
     /**
@@ -90,22 +76,22 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         //we can add loader to the grid items.
         when (title) {
             LOADING_GRID_ITEM -> {
-                    return gridListBuilder.run {
-                        if (!loadingActionFlag) {
-                            setTitle(title) //Titles don't support colored text
-                            setImage(CarIcon.Builder(icon).build())
-                                .setOnClickListener {
-                                    handler.removeCallbacksAndMessages(null)
-                                    loadingActionFlag = !loadingActionFlag
-                                    invalidate()
-                                }
-                        } else {
-                            setTitle(title)
-                            setLoading(true)
-                        }
-                        build()
+                return gridListBuilder.run {
+                    if (!loadingActionFlag) {
+                        setTitle(title) //Titles don't support colored text
+                        setImage(CarIcon.Builder(icon).build())
+                            .setOnClickListener {
+                                handler.removeCallbacksAndMessages(null)
+                                loadingActionFlag = !loadingActionFlag
+                                invalidate()
+                            }
+                    } else {
+                        setTitle(title)
+                        setLoading(true)
                     }
+                    build()
                 }
+            }
 
             COORDINATES -> {
                 gridListBuilder
@@ -141,14 +127,6 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
             .build()
     }
 
-    private val exitAction = Action.Builder().run {
-        setTitle(carContext.getString(R.string.exit))
-        setOnClickListener {
-            carContext.finishCarApp()
-        }
-        build()
-    }
-
     private val loadingCallback: (Boolean) -> Unit = { isLoading ->
         mIsLoading = isLoading
         if (isLoading) {
@@ -170,7 +148,13 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
 
     @OptIn(ExperimentalCarApi::class)
     override fun onGetTemplate(): Template {
-        setUpObserversAndCallApi(carContext, this, loadingCallback, errorCallback, weatherDataCallback)
+        setUpObserversAndCallApi(
+            carContext,
+            this,
+            loadingCallback,
+            errorCallback,
+            weatherDataCallback
+        )
         handler.postDelayed({
             loadingActionFlag = false
             invalidate()
@@ -185,30 +169,41 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
         val loaderRefreshIcon = getIconCompatByResource(R.drawable.loader_refresh, carContext)
 
         val gridItemCoordinates = createGridItem(
-            COORDINATES, coordinatesIcon
+            title = COORDINATES,
+            icon = coordinatesIcon
         )
         val gridItemWeather = createGridItem(
-            Constants.WEATHER_CONDITION, weatherIcon
+            title = Constants.WEATHER_CONDITION,
+            icon = weatherIcon
         )
         val gridItemTemperature = createGridItem(
-            Constants.TEMPERATURE, temperatureIcon
+            title = Constants.TEMPERATURE,
+            icon = temperatureIcon
         )
-        val gridItemWind = createGridItem(Constants.WIND, windIcon)
-        val gridItemCloud = createGridItem(Constants.CLOUD, cloudIcon)
+        val gridItemWind = createGridItem(
+            title = Constants.WIND,
+            icon = windIcon
+        )
+        val gridItemCloud = createGridItem(
+            title = Constants.CLOUD,
+            icon = cloudIcon
+        )
         val gridItemSystemInfo =
             createGridItem(
-                Constants.SYSTEM_INFORMATION, systemInformationIcon,
+                title = Constants.SYSTEM_INFORMATION,
+                icon = systemInformationIcon,
             )
-        val loadingGridItem = createGridItem(LOADING_GRID_ITEM, loaderRefreshIcon)
+        val loadingGridItem = createGridItem(
+            title = LOADING_GRID_ITEM,
+            icon = loaderRefreshIcon
+        )
 
         val gridBuilder = GridTemplate.Builder()
-            .run {
-                setActionStrip(
-                ActionStrip.Builder()
-                    .addAction(exitAction)
-                    .build()
-            )
-            }// Action buttons (up to 2, except for templates with maps, which allow up to 4)
+            .setActionStrip(createGenericActionStrip(createGenericAction(
+                title = carContext.getString(R.string.exit),
+                onClickListener = OnClickListener { screenManager.pop() }
+            ))
+            ) // Action buttons (up to 2, except for templates with maps, which allow up to 4)
 
         if (mIsLoading) {
             return gridBuilder
@@ -238,8 +233,18 @@ class GridTemplateExample(carContext: CarContext) : Screen(carContext), DefaultL
                     setTitle(GRID_TEMPLATE)
                     setIcon(CarIcon.ERROR)
                     setHeaderAction(Action.BACK)
-                    setActionStrip(Utility.goToHome(carContext, this@GridTemplateExample))
-                    addAction(RepositoryUtils.getRetryAction(carContext, this@GridTemplateExample))
+                    setActionStrip(
+                        goToHome(
+                            carContext = carContext,
+                            screen = this@GridTemplateExample
+                        )
+                    )
+                    addAction(
+                        getRetryAction(
+                            carContext = carContext,
+                            screen = this@GridTemplateExample
+                        )
+                    )
                     build()
                 }
         }

@@ -5,11 +5,13 @@ import androidx.car.app.Screen
 import androidx.car.app.model.Action
 import androidx.car.app.model.CarText
 import androidx.car.app.model.Header
+import androidx.car.app.model.OnClickListener
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.RoutePreviewNavigationTemplate
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
-import com.akshay.weatherapp.common.Utility.Companion.getIconByResource
+import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
+import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.ui.RoutingMapAction
 import com.akshay.weatherapp.ui.SamplePlaces
@@ -61,26 +63,26 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
                 .addVariant(carContext.getString(R.string.continue_route))
                 .build()
 
-        val secondEndHeaderAction = Action.Builder()
-            .apply {
-                setOnClickListener { finish() }
-                setIcon(getIconByResource(R.drawable.ic_close_white_24dp, carContext))
-            }
+        val secondEndHeaderAction = createGenericAction(
+            icon = getIconByResource(R.drawable.ic_close_white_24dp, carContext),
+            onClickListener = OnClickListener { finish() }
+        )
 
-        val firstEndHeaderAction = Action.Builder()
-            .apply {
-                setIcon(getIconByResource(if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
-                else R.drawable.ic_favorite_white_24dp,carContext))
-                setOnClickListener {
-                    showErrorMessage(
-                        carContext,
-                        if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
-                        else carContext.getString(R.string.added_to_favourites),
-                    )
-                    mIsFavorite = !mIsFavorite
-                    invalidate()
-                }
+        val firstEndHeaderAction = createGenericAction(
+            icon = getIconByResource(
+                if (mIsFavorite) R.drawable.ic_favorite_filled_white_24dp
+                else R.drawable.ic_favorite_white_24dp, carContext
+            ),
+            onClickListener = OnClickListener {
+                showErrorMessage(
+                    carContext,
+                    if (mIsFavorite) carContext.getString(R.string.removed_from_favourites)
+                    else carContext.getString(R.string.added_to_favourites),
+                )
+                mIsFavorite = !mIsFavorite
+                invalidate()
             }
+        )
 
         val navigationAction = Action.Builder()
             .apply {
@@ -100,8 +102,8 @@ class RouteTemplateExample(carContext: CarContext) : Screen(carContext) {
         val header = Header.Builder()
             .run {
                 setStartHeaderAction(Action.BACK)
-                addEndHeaderAction(firstEndHeaderAction.build())
-                addEndHeaderAction(secondEndHeaderAction.build())
+                addEndHeaderAction(firstEndHeaderAction)
+                addEndHeaderAction(secondEndHeaderAction)
                 setTitle(carContext.getString(R.string.navigate))
                 build()
             }
