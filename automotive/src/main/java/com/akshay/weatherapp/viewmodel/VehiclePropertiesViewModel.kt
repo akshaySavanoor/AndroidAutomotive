@@ -21,12 +21,20 @@ class VehiclePropertiesViewModel(
         return repository.fetchEvBatteryLevel()
     }
 
+    fun checkEvBatteryLevelChanged(newVal:Float): Boolean {
+        return repository.checkEvBatteryLevelChanged(newVal)
+    }
+
     fun setFuelLevel(value: Float) {
         repository.setFuelLevel(value)
     }
 
     fun fetchFuelLevel(): Float {
         return repository.fetchFuelLevel()
+    }
+
+    fun checkFuelLevelChanged(newVal:Float): Boolean {
+        return repository.checkFuelLevelChanged(newVal)
     }
 
     fun setIgnitionState(value: Int) {
@@ -37,6 +45,10 @@ class VehiclePropertiesViewModel(
         return repository.fetchIgnitionState()
     }
 
+    fun checkIgnitionStateChanged(newVal:Int): Boolean {
+        return repository.checkIgnitionStateChanged(newVal)
+    }
+
     fun setSpeedInKmph(value: Float) {
         repository.setSpeedInKmph(value)
     }
@@ -45,11 +57,19 @@ class VehiclePropertiesViewModel(
         return repository.fetchSpeedInKmph()
     }
 
+    fun checkSpeedChanged(newVal:Float): Boolean {
+        return repository.checkSpeedChanged(newVal)
+    }
+
     fun setCurrentGear(value: Int) {
         repository.setCurrentGear(value)
     }
 
     fun fetchCurrentGear(): String {
         return repository.fetchCurrentGear()
+    }
+
+    fun checkCurrentGearChanged(newVal:Int): Boolean {
+        return repository.checkCurrentGearChanged(newVal)
     }
 }

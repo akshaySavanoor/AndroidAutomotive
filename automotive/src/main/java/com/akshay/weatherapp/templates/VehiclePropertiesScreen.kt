@@ -4,6 +4,7 @@ import android.car.Car
 import android.car.VehiclePropertyIds
 import android.car.hardware.CarPropertyValue
 import android.car.hardware.property.CarPropertyManager
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
@@ -14,20 +15,26 @@ import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
+import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.viewmodel.VehiclePropertiesViewModel
 
 
 class VehiclePropertiesScreen(
     carContext: CarContext,
-) : Screen(carContext) {
+) : Screen(carContext), DefaultLifecycleObserver {
 
-    private val itemListBuilder =
-        ItemList.Builder().setNoItemsMessage(carContext.getString(R.string.no_data_found))
+    private val itemListBuilder = ItemList.Builder()
+        .setNoItemsMessage(carContext.getString(R.string.permission_is_needed_to_access_the_car_information))
+
+    private var carPropertyManager: CarPropertyManager? = null
+
     private var _viewModel: VehiclePropertiesViewModel? = null
     private val viewModel get() = _viewModel!!
-    private var carPropertyManager: CarPropertyManager? = null
 
     private val TAG = carContext.getString(R.string.vehiclepropertiesscreen)
 
@@ -39,23 +46,83 @@ class VehiclePropertiesScreen(
         VehiclePropertyIds.EV_BATTERY_LEVEL
     )
 
+    private var isLoading = true
+    private var isPermissionGranted = ContextCompat.checkSelfPermission(
+        carContext, Car.PERMISSION_SPEED
+    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+        carContext, Car.PERMISSION_ENERGY
+    ) == PackageManager.PERMISSION_GRANTED
+
+    init {
+        lifecycle.addObserver(this)
+    }
+
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+        checkForPermission()
+    }
+
     override fun onGetTemplate(): Template {
-        createPropertiesList()
-        return ListTemplate.Builder()
-            .setTitle(Constants.HARDWARE_PROPERTIES)
-            .setHeaderAction(Action.BACK)
-            .setSingleList(itemListBuilder.build())
-            .build()
+        if (isPermissionGranted) {
+            if (_viewModel == null) {
+                carPropertyManager =
+                    Car.createCar(carContext).getCarManager(Car.PROPERTY_SERVICE) as CarPropertyManager
+                carPropertyManager?.let {
+                    _viewModel = VehiclePropertiesViewModel(it, carContext)
+                }
+            }
+            createPropertiesList()
+        }
+        val carHardwareList = ListTemplate.Builder()
+        if (isLoading && !isPermissionGranted) {
+            return carHardwareList.run {
+                setTitle(Constants.HARDWARE_PROPERTIES)
+                setHeaderAction(Action.BACK)
+                setLoading(true)
+                build()
+            }
+        }
+        return carHardwareList.setTitle(Constants.HARDWARE_PROPERTIES).setHeaderAction(Action.BACK)
+            .setSingleList(itemListBuilder.build()).build()
+    }
+
+    private fun requestPermissionPrompt() {
+        try {
+            carContext.requestPermissions(
+                listOf(
+                    Car.PERMISSION_SPEED, Car.PERMISSION_ENERGY
+                )
+            ) { result, _ ->
+                try {
+                    if (result == listOf(Car.PERMISSION_SPEED, Car.PERMISSION_ENERGY)) {
+                        isLoading = false
+                        isPermissionGranted = true
+                        invalidate()
+                    } else {
+                        screenManager.pop()
+                        Utility.showErrorMessage(
+                            carContext, carContext.getString(R.string.permission_denied)
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun checkForPermission() {
+        if (!isPermissionGranted) {
+            requestPermissionPrompt()
+        } else {
+            invalidate()
+        }
     }
 
     @OptIn(ExperimentalCarApi::class)
     private fun createPropertiesList() {
-
-        carPropertyManager =
-            Car.createCar(carContext).getCarManager(Car.PROPERTY_SERVICE) as CarPropertyManager
-        carPropertyManager?.let {
-            _viewModel = VehiclePropertiesViewModel(it, carContext)
-        }
 
         val speed = viewModel.fetchSpeedInKmph()
         val gear = viewModel.fetchCurrentGear()
@@ -67,27 +134,40 @@ class VehiclePropertiesScreen(
             override fun onChangeEvent(value: CarPropertyValue<*>) {
                 when (value.propertyId) {
                     VehiclePropertyIds.PERF_VEHICLE_SPEED -> {
-                        viewModel.setSpeedInKmph(value.value.toString().toFloat())
+                        if (viewModel.checkSpeedChanged(value.value as Float)) {
+                            viewModel.setSpeedInKmph(value.value.toString().toFloat())
+                            invalidate()
+                        }
                     }
 
                     VehiclePropertyIds.CURRENT_GEAR -> {
-                        viewModel.setCurrentGear(value.value.toString().toInt())
+                        if (viewModel.checkCurrentGearChanged(value.value as Int)) {
+                            viewModel.setCurrentGear(value.value.toString().toInt())
+                            invalidate()
+                        }
                     }
 
                     VehiclePropertyIds.FUEL_LEVEL -> {
-                        viewModel.setFuelLevel(value.value.toString().toFloat())
+                        if (viewModel.checkFuelLevelChanged(value.value as Float)) {
+                            viewModel.setFuelLevel(value.value.toString().toFloat())
+                            invalidate()
+                        }
                     }
 
                     VehiclePropertyIds.EV_BATTERY_LEVEL -> {
-                        viewModel.setEvBatteryLevel(value.value.toString().toFloat())
+                        if (viewModel.checkEvBatteryLevelChanged(value.value as Float)) {
+                            viewModel.setEvBatteryLevel(value.value.toString().toFloat())
+                            invalidate()
+                        }
                     }
 
                     VehiclePropertyIds.IGNITION_STATE -> {
-                        viewModel.setIgnitionState(value.value.toString().toInt())
+                        if (viewModel.checkIgnitionStateChanged(value.value as Int)) {
+                            viewModel.setIgnitionState(value.value.toString().toInt())
+                            invalidate()
+                        }
                     }
-
                 }
-                invalidate()
             }
 
             override fun onErrorEvent(p0: Int, p1: Int) {
@@ -95,22 +175,7 @@ class VehiclePropertiesScreen(
             }
 
         }
-
-        try {
-            carContext.requestPermissions(listOf(Car.PERMISSION_SPEED)) { result, _ ->
-                try {
-                    if (result == listOf(Car.PERMISSION_SPEED)) {
-                        registerCallbacks(callback, propertyIds)
-                    } else {
-                        Log.e(TAG, carContext.getString(R.string.permission_denied))
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        registerCallbacks(callback, propertyIds)
 
 
         itemListBuilder.apply {
@@ -121,18 +186,14 @@ class VehiclePropertiesScreen(
             addItem(createRow(VehiclePropertyIds.FUEL_LEVEL, fuelLevel))
             addItem(createRow(VehiclePropertyIds.IGNITION_STATE, ignitionState))
         }
-
     }
 
     private fun registerCallbacks(
-        callback: CarPropertyManager.CarPropertyEventCallback,
-        propertyIds: List<Int>
+        callback: CarPropertyManager.CarPropertyEventCallback, propertyIds: List<Int>
     ) {
         propertyIds.forEach {
             carPropertyManager?.registerCallback(
-                callback,
-                it,
-                CarPropertyManager.SENSOR_RATE_NORMAL
+                callback, it, CarPropertyManager.SENSOR_RATE_NORMAL
             )
         }
     }
@@ -140,46 +201,31 @@ class VehiclePropertiesScreen(
     private fun createRow(property: Int, value: Any): Row {
         return when (property) {
             VehiclePropertyIds.PERF_VEHICLE_SPEED -> {
-                Row.Builder()
-                    .setTitle(carContext.getString(R.string.current_speed))
-                    .addText(carContext.getString(R.string.value_kmph, value))
-                    .build()
+                Row.Builder().setTitle(carContext.getString(R.string.current_speed))
+                    .addText(carContext.getString(R.string.value_kmph, value)).build()
             }
 
             VehiclePropertyIds.CURRENT_GEAR -> {
-                Row.Builder()
-                    .setTitle(carContext.getString(R.string.current_gear))
-                    .addText(value.toString())
-                    .build()
+                Row.Builder().setTitle(carContext.getString(R.string.current_gear))
+                    .addText(value.toString()).build()
             }
 
             VehiclePropertyIds.EV_BATTERY_LEVEL -> {
-                Row.Builder()
-                    .setTitle(carContext.getString(R.string.current_ev_battery_level))
-                    .addText("$value")
-                    .build()
+                Row.Builder().setTitle(carContext.getString(R.string.current_ev_battery_level))
+                    .addText("$value").build()
             }
 
             VehiclePropertyIds.FUEL_LEVEL -> {
-                Row.Builder()
-                    .setTitle(carContext.getString(R.string.current_fuel_level))
-                    .addText("$value")
-                    .build()
+                Row.Builder().setTitle(carContext.getString(R.string.current_fuel_level))
+                    .addText("$value").build()
             }
 
             VehiclePropertyIds.IGNITION_STATE -> {
-                Row.Builder()
-                    .setTitle(carContext.getString(R.string.ignition_state))
-                    .addText("$value")
-                    .build()
+                Row.Builder().setTitle(carContext.getString(R.string.ignition_state))
+                    .addText("$value").build()
             }
 
-            else -> throw IllegalArgumentException(
-                carContext.getString(
-                    R.string.invalid_property_id,
-                    property.toString()
-                )
-            )
+            else -> Row.Builder().build()
         }
     }
 }

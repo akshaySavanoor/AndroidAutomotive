@@ -11,21 +11,11 @@ class VhalRepository(
     carPropertyManager: CarPropertyManager,
     val carContext: CarContext
 ) {
-    private var speed: Float = 0.0f
-    private var currentGear: Int = 0
-    private var evBatteryLevel: Float = 0.0f
-    private var fuelLevel: Float = 0.0f
-    private var ignitionState: Int = VehicleIgnitionState.ON
-
-    init {
-        carPropertyManager.apply {
-            speed = getFloatProperty(VehiclePropertyIds.PERF_VEHICLE_SPEED, 0)
-            currentGear = getIntProperty(VehiclePropertyIds.CURRENT_GEAR, 0)
-            evBatteryLevel = getFloatProperty(VehiclePropertyIds.EV_BATTERY_LEVEL, 0)
-            fuelLevel = getFloatProperty(VehiclePropertyIds.FUEL_LEVEL, 0)
-            ignitionState = getIntProperty(VehiclePropertyIds.IGNITION_STATE, 0)
-        }
-    }
+    private var speed = carPropertyManager.getFloatProperty(VehiclePropertyIds.PERF_VEHICLE_SPEED,0)
+    private var currentGear = carPropertyManager.getIntProperty(VehiclePropertyIds.CURRENT_GEAR, 0)
+    private var evBatteryLevel = carPropertyManager.getFloatProperty(VehiclePropertyIds.EV_BATTERY_LEVEL, 0)
+    private var fuelLevel = carPropertyManager.getFloatProperty(VehiclePropertyIds.FUEL_LEVEL, 0)
+    private var ignitionState = carPropertyManager.getIntProperty(VehiclePropertyIds.IGNITION_STATE, 0)
 
     fun setEvBatteryLevel(value: Float) {
         evBatteryLevel = value
@@ -35,12 +25,20 @@ class VhalRepository(
         return evBatteryLevel
     }
 
+    fun checkEvBatteryLevelChanged(newVal:Float):Boolean{
+        return newVal != evBatteryLevel
+    }
+
     fun setFuelLevel(value: Float) {
         fuelLevel = value
     }
 
     fun fetchFuelLevel(): Float {
         return fuelLevel
+    }
+
+    fun checkFuelLevelChanged(newVal: Float):Boolean{
+        return newVal != fuelLevel
     }
 
     fun setIgnitionState(value: Int) {
@@ -61,12 +59,20 @@ class VhalRepository(
         }
     }
 
+    fun checkIgnitionStateChanged(newVal: Int):Boolean{
+        return newVal != ignitionState
+    }
+
     fun setSpeedInKmph(value: Float) {
         speed = value
     }
 
     fun fetchSpeedInKmph(): Float {
         return speed * 3.6f
+    }
+
+    fun checkSpeedChanged(newVal: Float):Boolean{
+        return newVal != speed
     }
 
     fun setCurrentGear(value: Int) {
@@ -89,5 +95,8 @@ class VhalRepository(
                 carContext.getString(R.string.p)
             }
         }
+    }
+    fun checkCurrentGearChanged(newVal: Int):Boolean{
+        return newVal != currentGear
     }
 }
