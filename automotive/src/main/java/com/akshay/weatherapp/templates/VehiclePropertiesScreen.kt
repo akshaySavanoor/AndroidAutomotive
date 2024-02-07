@@ -115,8 +115,6 @@ class VehiclePropertiesScreen(
     private fun checkForPermission() {
         if (!isPermissionGranted) {
             requestPermissionPrompt()
-        } else {
-            invalidate()
         }
     }
 
