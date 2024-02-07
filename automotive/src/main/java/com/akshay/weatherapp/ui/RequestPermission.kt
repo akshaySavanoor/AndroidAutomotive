@@ -187,7 +187,7 @@ class RequestPermissionScreen(
 
             action2 = createGenericAction(
                 title = carContext.getString(R.string.mobile),
-                onClickListener = OnClickListener {
+                onClickListener =
                     ParkedOnlyOnClickListener.create {
                         carContext.startActivity(
                             Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).addFlags(
@@ -205,7 +205,6 @@ class RequestPermissionScreen(
                                 )
                             )
                         }
-                    }
                 }
             )
         }
