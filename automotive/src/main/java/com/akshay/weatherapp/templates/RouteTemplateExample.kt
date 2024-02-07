@@ -13,8 +13,8 @@ import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
 import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
-import com.akshay.weatherapp.ui.RoutingMapAction
-import com.akshay.weatherapp.ui.SamplePlaces
+import com.akshay.weatherapp.misc.RoutingMapAction
+import com.akshay.weatherapp.misc.SamplePlaces
 
 /**
  * RoutePreviewTemplateFragment displays up to 3 available routes for a selected destination,

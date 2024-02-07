@@ -43,7 +43,7 @@ import com.akshay.weatherapp.templates.RouteTemplateExample
 import com.akshay.weatherapp.templates.SearchTemplateExample
 import com.akshay.weatherapp.templates.SignInTemplateExample
 import com.akshay.weatherapp.templates.VehiclePropertiesScreen
-import com.akshay.weatherapp.ui.TemplateRestrictionUi
+import com.akshay.weatherapp.misc.TemplateRestrictionUi
 
 class HomeScreen(carContext: CarContext) : Screen(carContext), DefaultLifecycleObserver {
 

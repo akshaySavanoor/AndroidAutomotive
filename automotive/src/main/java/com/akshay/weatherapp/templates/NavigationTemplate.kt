@@ -7,7 +7,7 @@ import androidx.car.app.model.Distance
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.NavigationTemplate
 import androidx.car.app.navigation.model.RoutingInfo
-import com.akshay.weatherapp.ui.RoutingMapAction
+import com.akshay.weatherapp.misc.RoutingMapAction
 
 /**
  * - Displayed when the car is parked, typically for showing detailed messages.

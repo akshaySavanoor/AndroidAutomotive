@@ -21,7 +21,7 @@ documentation [Gitbook](https://akshay-2.gitbook.io/untitled/)
     - [Sign-In Template](automotive/src/main/java/com/akshay/weatherapp/templates/SignInTemplateExample.kt)
     - [Search Template](automotive/src/main/java/com/akshay/weatherapp/templates/SearchTemplateExample.kt)
     - [Map Template](automotive/src/main/java/com/akshay/weatherapp/templates/MapTemplateExample.kt)
-    - [Navigation Template](automotive/src/main/java/com/akshay/weatherapp/templates/NavigationTemplateExample.kt)
+    - [Navigation Template](automotive/src/main/java/com/akshay/weatherapp/templates/PlaceListMapExample.kt)
 - [Limitations](automotive/src/main/java/com/akshay/weatherapp/templates/GridTemplateExample.kt)
 
 ## Introduction
@@ -98,7 +98,7 @@ run
 
 ## IMPORTANT: Setting up API Keys
 
-To configure your application, create a directory named `app_secrets` and within it, add a file named `ApiKey` with the following content:
+To configure your application, create a directory named app_secrets. Within this directory, add a file named ApiKey with the following content:
 
 ```kotlin
 object ApiKey {
@@ -107,4 +107,5 @@ object ApiKey {
     const val DUMMY_LOGIN_URL = "https://practicetestautomation.com/practice-test-login/"
 }
 ```
+Visit 'https://home.openweathermap.org/api_keys' to obtain a free weather API key.
 

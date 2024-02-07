@@ -20,7 +20,7 @@ import com.akshay.weatherapp.common.RepositoryUtils.setUpObserversAndCallApi
 import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.model.WeatherResponseModel
-import com.akshay.weatherapp.ui.PlaceDetailsScreen
+import com.akshay.weatherapp.misc.PlaceDetailsScreen
 
 /**
  * The Place List template is designed for navigation apps and presents an ordered list

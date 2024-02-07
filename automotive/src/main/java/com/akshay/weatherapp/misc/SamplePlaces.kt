@@ -1,4 +1,4 @@
-package com.akshay.weatherapp.ui
+package com.akshay.weatherapp.misc
 
 import android.text.SpannableString
 import android.text.Spanned

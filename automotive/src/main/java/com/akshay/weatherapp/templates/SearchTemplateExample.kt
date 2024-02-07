@@ -14,7 +14,7 @@ import com.akshay.weatherapp.common.TemplateUtility.createGenericActionStrip
 import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.toIntent
 import com.akshay.weatherapp.model.Place
-import com.akshay.weatherapp.ui.FilterForSearch
+import com.akshay.weatherapp.misc.FilterForSearch
 import com.akshay.weatherapp.viewmodel.LocationViewModel
 
 /**

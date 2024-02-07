@@ -25,7 +25,7 @@ import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility
 import com.akshay.weatherapp.common.Utility.Companion.getColoredString
 import com.akshay.weatherapp.model.WeatherResponseModel
-import com.akshay.weatherapp.ui.WeatherDetailsScreen
+import com.akshay.weatherapp.misc.WeatherDetailsScreen
 
 /**
  * Displays a grid layout with items suitable for users relying primarily on images for selections.

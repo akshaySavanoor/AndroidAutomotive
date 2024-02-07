@@ -28,7 +28,7 @@ import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility.Companion.colorize
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.model.WeatherResponseModel
-import com.akshay.weatherapp.ui.WeatherDetailsScreen
+import com.akshay.weatherapp.misc.WeatherDetailsScreen
 
 
 /**

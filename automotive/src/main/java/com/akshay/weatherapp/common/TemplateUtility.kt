@@ -26,7 +26,7 @@ object TemplateUtility {
     }
 
     fun getIconByResource(@DrawableRes icon: Int, carContext: CarContext): CarIcon {
-        return CarIcon.Builder(IconCompat.createWithResource(carContext, icon)).build()
+        return CarIcon.Builder(getIconCompatByResource(icon, carContext)).build()
     }
 
     fun createGenericAction(

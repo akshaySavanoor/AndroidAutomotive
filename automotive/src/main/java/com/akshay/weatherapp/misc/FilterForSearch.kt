@@ -1,4 +1,4 @@
-package com.akshay.weatherapp.ui
+package com.akshay.weatherapp.misc
 
 import androidx.annotation.OptIn
 import androidx.car.app.CarContext
@@ -41,30 +41,21 @@ class FilterForSearch(carContext: CarContext) : Screen(carContext) {
     private val paymentListBuilder =
         ItemList.Builder().setNoItemsMessage(carContext.getString(R.string.no_data_found))
 
-    private fun createWeatherRow(title: String, currentOption: String): Row {
-        if (currentOption in listOf(CREDIT_CARD, MOBILE_PAYMENT, CASH)) {
-            return Row.Builder()
-                .setToggle(
-                    Toggle.Builder {
-                        if (it) {
-                            selectedPaymentList.add(currentOption)
-                        }
-                    }.setChecked(
-                        selectedPaymentList.contains(currentOption)
-                    ).build()
-                )
-                .setTitle(title)
-                .build()
-        }
+    private fun createPaymentRow(title: String, currentOption: String): Row {
+        val isPaymentOption = currentOption in listOf(CREDIT_CARD, MOBILE_PAYMENT, CASH)
+        val toggleBuilder = Toggle.Builder {
+            if (it) {
+                if (isPaymentOption) {
+                    selectedPaymentList.add(currentOption)
+                } else {
+                    flag = currentOption
+                    invalidate()
+                }
+            }
+        }.setChecked(if (isPaymentOption) selectedPaymentList.contains(currentOption) else flag == currentOption)
+
         return Row.Builder()
-            .setToggle(
-                Toggle.Builder {
-                    if (it) {
-                        flag = currentOption
-                        invalidate()
-                    }
-                }.setChecked(flag == currentOption).build()
-            )
+            .setToggle(toggleBuilder.build())
             .setTitle(title)
             .build()
     }
@@ -73,26 +64,26 @@ class FilterForSearch(carContext: CarContext) : Screen(carContext) {
     override fun onGetTemplate(): Template {
         distanceListBuilder.apply {
             clearItems()
-            addItem(createWeatherRow(carContext.getString(R.string.within_5_km), WITHIN_FIVE))
-            addItem(createWeatherRow(carContext.getString(R.string.within_10_km), WITHIN_TEN))
-            addItem(createWeatherRow(carContext.getString(R.string.within_20_km), WITHIN_TWENTY))
+            addItem(createPaymentRow(carContext.getString(R.string.within_5_km), WITHIN_FIVE))
+            addItem(createPaymentRow(carContext.getString(R.string.within_10_km), WITHIN_TEN))
+            addItem(createPaymentRow(carContext.getString(R.string.within_20_km), WITHIN_TWENTY))
         }
 
         paymentListBuilder.apply {
             clearItems()
             addItem(
-                createWeatherRow(
+                createPaymentRow(
                     carContext.getString(R.string.credit_card_accepted),
                     CREDIT_CARD
                 )
             )
             addItem(
-                createWeatherRow(
+                createPaymentRow(
                     carContext.getString(R.string.mobile_payment_supported),
                     MOBILE_PAYMENT
                 )
             )
-            addItem(createWeatherRow(carContext.getString(R.string.cash_accepted), CASH))
+            addItem(createPaymentRow(carContext.getString(R.string.cash_accepted), CASH))
         }
 
         val distanceSectionedList = SectionedItemList.create(

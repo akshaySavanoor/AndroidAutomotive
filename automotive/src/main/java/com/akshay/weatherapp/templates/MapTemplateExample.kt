@@ -16,7 +16,7 @@ import com.akshay.weatherapp.common.Constants.Companion.SETTINGS
 import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
 import com.akshay.weatherapp.common.TemplateUtility.getIconByResource
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
-import com.akshay.weatherapp.ui.SamplePlaces
+import com.akshay.weatherapp.misc.SamplePlaces
 
 /**
  * The **Place List template** is designed to present an ordered list of locations, augmented by a map

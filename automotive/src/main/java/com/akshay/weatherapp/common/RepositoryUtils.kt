@@ -17,7 +17,7 @@ import com.akshay.weatherapp.common.TemplateUtility.createGenericAction
 import com.akshay.weatherapp.common.Utility.Companion.showErrorMessage
 import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.service.RetrofitInstance
-import com.akshay.weatherapp.ui.MyLocationListener
+import com.akshay.weatherapp.misc.MyLocationListener
 import com.akshay.weatherapp.viewmodel.LocationViewModel
 import retrofit2.Call
 

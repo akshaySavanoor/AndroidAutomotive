@@ -1,4 +1,4 @@
-package com.akshay.weatherapp.ui
+package com.akshay.weatherapp.misc
 
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
