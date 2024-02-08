@@ -19,8 +19,8 @@ import com.akshay.weatherapp.common.RepositoryUtils
 import com.akshay.weatherapp.common.RepositoryUtils.setUpObserversAndCallApi
 import com.akshay.weatherapp.common.TemplateUtility.goToHome
 import com.akshay.weatherapp.common.Utility
-import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.misc.PlaceDetailsScreen
+import com.akshay.weatherapp.model.WeatherResponseModel
 
 /**
  * The Place List template is designed for navigation apps and presents an ordered list
@@ -67,6 +67,11 @@ class PlaceListMapExample(carContext: CarContext) : Screen(carContext),
         lifecycle.addObserver(this)
     }
 
+    private fun isLocationChanged(newLocation: Location): Boolean {
+        return currentLocation?.run { latitude != newLocation.latitude || longitude != newLocation.longitude }
+            ?: true
+    }
+
     private val loadingCallback: (Boolean) -> Unit = { isLoading ->
         mIsLoading = isLoading
         if (isLoading) {
@@ -87,7 +92,7 @@ class PlaceListMapExample(carContext: CarContext) : Screen(carContext),
     }
 
     private val currentLocationCallback: (Location) -> Unit = { location ->
-        if (location != currentLocation) {
+        if (isLocationChanged(location)) {
             currentLocation = location
             invalidate()
         }
