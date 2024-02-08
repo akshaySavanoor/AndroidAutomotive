@@ -140,10 +140,10 @@ data class Sys(
     var country: String,
 
     @SerializedName("sunrise")
-    var sunrise: Int,
+    var sunrise: Long,
 
     @SerializedName("sunset")
-    var sunset: Int
+    var sunset: Long
 
 )
 

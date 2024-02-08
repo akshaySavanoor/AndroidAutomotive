@@ -20,6 +20,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.akshay.weatherapp.R
 import com.akshay.weatherapp.model.Location
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class Utility {
     companion object {
@@ -222,6 +226,13 @@ class Utility {
                     }
                 }
             }
+        }
+
+        fun unixTimeToTimeWithAMPM(unixTime: Long): String {
+            val instant = Instant.ofEpochSecond(unixTime)
+            val time = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Kolkata")).toLocalTime()
+            val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+            return formatter.format(time)
         }
 
         //Only for the development purpose

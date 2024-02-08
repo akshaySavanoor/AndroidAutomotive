@@ -8,8 +8,6 @@ import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import com.akshay.weatherapp.R
-import com.akshay.weatherapp.model.Coordinates
-import com.akshay.weatherapp.model.WeatherResponseModel
 import com.akshay.weatherapp.common.Constants.Companion.CITY_NAME
 import com.akshay.weatherapp.common.Constants.Companion.CLOUD
 import com.akshay.weatherapp.common.Constants.Companion.COORDINATES
@@ -33,6 +31,9 @@ import com.akshay.weatherapp.common.Constants.Companion.WIND
 import com.akshay.weatherapp.common.Constants.Companion.WIND_DIRECTION
 import com.akshay.weatherapp.common.Constants.Companion.WIND_SPEED
 import com.akshay.weatherapp.common.Utility.Companion.kelvinToCelsius
+import com.akshay.weatherapp.common.Utility.Companion.unixTimeToTimeWithAMPM
+import com.akshay.weatherapp.model.Coordinates
+import com.akshay.weatherapp.model.WeatherResponseModel
 
 class WeatherDetailsScreen(
     carContext: CarContext,
@@ -123,8 +124,8 @@ class WeatherDetailsScreen(
         itemListBuilder.apply {
             addItem(createWeatherRow(COUNTRY_CODE, weatherResponseModel.sys.country))
             addItem(createWeatherRow(CITY_NAME, weatherResponseModel.name))
-            addItem(createWeatherRow(SUN_RISE_TIME, "${weatherResponseModel.sys.sunrise} UTC"))
-            addItem(createWeatherRow(SUN_SET_TIME, "${weatherResponseModel.sys.sunset} UTC"))
+            addItem(createWeatherRow(SUN_RISE_TIME, unixTimeToTimeWithAMPM(weatherResponseModel.sys.sunrise)))
+            addItem(createWeatherRow(SUN_SET_TIME, unixTimeToTimeWithAMPM(weatherResponseModel.sys.sunset)))
         }
     }
 
