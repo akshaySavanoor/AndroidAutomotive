@@ -1,4 +1,4 @@
-package com.akshay.weatherapp
+package com.akshay.weatherapp.misc
 
 import android.car.Car
 import android.car.VehiclePropertyIds
@@ -18,6 +18,7 @@ import androidx.car.app.model.Template
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.akshay.weatherapp.R
 import com.akshay.weatherapp.common.Constants
 import com.akshay.weatherapp.common.Constants.Companion.HARDWARE_DEBUG_TAG
 import com.akshay.weatherapp.common.Utility
